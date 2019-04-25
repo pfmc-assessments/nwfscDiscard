@@ -28,7 +28,7 @@ discardsCatchShares <- function(dat, strata, conf.df=NULL, conf.df.cols=NULL, da
 									 minVessels=1,
 									 writeLog=logFile)
 
-	dis <- Boot.sumry.fxn(outB,B=0,strtNms=strata)
+	dis <- bootSummary.fn(outB,B=0,strtNms=strata)
 
 	if(!is.null(conf.df)) {
 		#Combine each summary dataframe with confidentiality output

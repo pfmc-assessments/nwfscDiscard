@@ -56,7 +56,7 @@
 #26 Feb 2015  A.Hicks                 Changed the CV equations so that the observed mean is in the denominator
 #_______________________________________________________________________________
 
-  Boot.sumry.fxn<-function(dat,B=NULL,fname=NULL,strtNms=NULL){
+  bootSummary.fn<-function(dat,B=NULL,fname=NULL,strtNms=NULL){
     if(B!=0){
     postscript(paste(fname,'_',Sys.Date(),'.ps',sep=''))
     par(mfcol=c(3,3))
