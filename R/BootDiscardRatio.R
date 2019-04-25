@@ -27,7 +27,7 @@ bootDiscardRatio.fn <- function(dat,strat,B,bootVars="d_port_group",years=NULL,y
         if(writeLog!="") {cat("\nYear",years[yr],"\n",file=writeLog,append=T)}
         cat("\nYear",years[yr],"\n")
         pe[[yr]] <- dis[[yr]] <- ret[[yr]] <- rat[[yr]] <- out[[yr]] <- list()
-        dat.yr <- yrV3.fxn(dat,colnm=yrColNm,yrs=years[yr],subset=T)
+        dat.yr <- year.fn(dat,colnm=yrColNm,yrs=years[yr],subset=T)
 
         #work within each strata separately, to get statistics by strata
         dat.strat <- split(dat.yr,dat.yr[,strat])
