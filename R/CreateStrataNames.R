@@ -1,4 +1,4 @@
-#'
+#' Define strata names
 #'
 #' @param z list of strata names
 #'

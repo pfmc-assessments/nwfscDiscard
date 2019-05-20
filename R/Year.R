@@ -1,7 +1,7 @@
-#'
+#' Subset the data by year
 #'
 #' 
-#' @templatedat
+#' @template dat
 #' @template colnm 
 #' @param yrs  the years as a vector (must have c(yr,yr,etc)). Can be any integer values (i.e., c(2001, 2003:2007,2009,1999))
 #' @template nmcol 
