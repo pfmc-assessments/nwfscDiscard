@@ -1,4 +1,43 @@
-bootstrapDiscardData <- function(ob,sp,B,colnms,colnms.new,colLevs,stratNms,ratioType=c("proportion","expansion"),bootFile,resultsFile) {
+#' Bootstrap uncertainty and summarize WCGOP discard data
+#'
+#' @template ob
+#' @param sp species name that should match the name in the ob data file, can be single species or multiple names (e.g. c("Gopher Rockfish", "Black and Yellow Rockfish"))
+#' @template colnms 
+#' @template colnms.new 
+#' @template colLevs
+#' @template stratNms 
+#' @param ratioType 
+#' @param bootFile file with the bootstap output
+#' @param resultsFile file with the summarized and final bootstap values
+#'
+#'
+#' @author Allan Hicks and Chantel Wetzel
+#' @export
+#'
+#' @examples
+#'
+#'   \dontrun{
+#'      # define what data  you want to bootstrap
+#'      gearLevels <- c("Bottom Trawl")
+#'		gearNames <- c("BottomTrawl")
+#'`		stateLevels <- list("CA","OR","WA")  #r_state
+#'		stateNames <- c("CA","OR","WA")
+#'
+#'     # Call function
+#'     out <- bootstrapDiscardData(ob, sp="Petrale Sole", B=10000,
+#'	            colnms=c("gear2","r_state"),
+#'	            colnms.new=c("gear3","State"),
+#'				colLevs=list(gearLevels,stateLevels),
+#'				stratNms=list(gearNames,stateNames),
+#'				bootFile='Petrale_bootstap.out',
+#'				resultsFile='Petrale_bootstap.out')
+#'
+#'	   write.csv(out$ncs, 'Petrale_OB_DisRatios_ncs.csv', row.names=F)
+#'	   write.csv(out$cs,  'Petrale_OB_DisRatios_cs.csv', row.names=F)
+#'
+#'   }
+#'
+bootstrapDiscardData <- function(ob, sp, B, colnms, colnms.new, colLevs, stratNms, ratioType = c("proportion","expansion"), bootFile, resultsFile) {
 
 	dte=Sys.Date()
 

@@ -1,4 +1,18 @@
-#some stats by year and strata
+#' Summarize discards within a strata
+#' 
+#' @template dat
+#' @template colnms
+#' @param yrColNm
+#' @param summaryNames identifiers for the vessel, trip number, and haul id
+#' @param totalNames Discard or retention
+#' @param vesselColName Vessel id within the WCGOP database
+#' @param vesselCrit the minimum number of vessels within a strata for confidentiality. Stratas with less this number will be flagged as having confidential information.
+#'
+#'
+#'
+#' @author Allan Hicks and Chantel WEtzel
+#' @export
+#'
 summarizeStrata.fn <- function(dat,colnms=NULL,yrColNm=NULL,summaryNames=c("drvid","trip_id","haul_id"),totalNames=c("dis","ret"),vesselColName="drvid",vesselCrit=3) {
 
     numVessels <- NULL

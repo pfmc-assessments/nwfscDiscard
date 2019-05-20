@@ -1,3 +1,18 @@
+#' Function that calculates discards for the catch share vessels
+#' 
+#' @template dat
+#' @param strat
+#' @param conf.df
+#' @param conf.df.cols
+#' @param dat.cols
+#' @param ratio
+#' @param logFile
+#'
+#'
+#'
+#' @author Allan Hicks and Chantel WEtzel
+#' @export
+#'
 discardsCatchShares <- function(dat, strata, conf.df=NULL, conf.df.cols=NULL, dat.cols=NULL, ratio=c("proportion","expansion"), logFile="") {
 	#calculate catch shares discard quantities
 

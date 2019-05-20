@@ -1,4 +1,16 @@
-checkConfidentiality <- function(dat,colnms,colLevs,newColNm=paste(colnms,"new",sep=""),strNms=NULL) {
+#' Bootstrap uncertainty and summarize WCGOP discard data
+#'
+#' @param dat passed ob data file filtered down to the species specific data (sp)
+#' @param sp species name that should match the name in the ob data file
+#' @template colnms 
+#' @template colLevs
+#' @param newColNm 
+#' @param strNms 
+#'
+#'
+#' @author Allan Hicks and Chantel WEtzel
+#' @export
+checkConfidentiality <- function(dat, colnms, colLevs, newColNm = paste(colnms,"new",sep=""), strNms = NULL) {
 
 	dat2 <-strata.fn(dat,colnms=colnms,colLevs=colLevs,colnms.new=newColNm,stratNms=strNms)
 	dat2$CatchShares <- F

@@ -1,10 +1,16 @@
-#clssifies unique values (characters, factors, etc)
-#different from year in that year converts the year to integer, whereas this function does not
-#dat = name of data set
-#colnm = name of the column where the variable to be classified is located, put in quotes, e.g., 'GEAR'
-#z = the values to classify that variable, as a vector (must have c(,,etc)). Should be unique values
-#nmcol = name of additional column to add that indicates the values specified.  An NA will be put for values that are not in z
-#subset = whether or not to return a dataframe with only rows that meet criteria
+#' Clssifies unique values (characters, factors, etc)
+#' Different from year in that year converts the year to integer, whereas this function does not.
+#'
+#'
+#' @template dat
+#' @template colnm 
+#' @template z 
+#' @template nmcol
+#' @template subset
+#'
+#' @author Allan Hicks and Chantel Wetzel
+#' @export
+#'
 classify.fn<-function(dat,colnm,z,nmcol=paste(colnm,"new",sep=""),subset=F) {
   if(!(colnm %in% colnames(dat))) {
     stop("colnm ",colnm," is not a name in the dataframe\n")

@@ -1,3 +1,20 @@
+#' Function that calculates discards for the non-catch share vessels
+#' 
+#' @template dat
+#' @param strat
+#' @param B
+#' @param conf.df
+#' @param conf.df.cols
+#' @param dat.cols
+#' @param ratio
+#' @param saveBootFile
+#' @param logFile
+#'
+#'
+#'
+#' @author Allan Hicks and Chantel WEtzel
+#' @export
+#'
 discardsNonCatchShares <- function(dat, strata, B, conf.df=NULL, conf.df.cols=NULL, dat.cols=NULL, ratio=c("proportion","expansion"), saveBootFile="outB.Rdat", logFile="") {
 	#calculate catch shares discard quantities
 #I think I can set dat.cols=c("Years",strata)

@@ -1,3 +1,16 @@
+#' Function that checks if observation was made by a Catch Share vessel
+#' 
+#' @template dat
+#' @param  yearLevs years to split the data according to catch shares, default = as.character(2011:max(dat$ryear)
+#' @param sectorLevs  sectors that are appart of catch shares, default = list(c('Catch Shares','LE CA Halibut','Shoreside Hake')
+#' @template  colnms
+#' @template colnms.new
+#'
+#'
+#'
+#' @author Allan Hicks and Chantel WEtzel
+#' @export
+#'
 determineCatchShares <- function(dat,
 								 yearLevs=as.character(2011:max(dat$ryear)),
 								 sectorLevs=list(c('Catch Shares','LE CA Halibut','Shoreside Hake')),
