@@ -1,4 +1,4 @@
-## nwfscDiscardBootstrap
+## nwfscDiscard
 
 Code developed to evaluate the confidentiality by strata and to provide bootsrap estimates of discard estimates for West Coast Groundfish Observer Program (WCGOP) data. Code maintained by @chantelwetzel-noaa.
 
@@ -9,6 +9,6 @@ Note: this code was developed for use by scientists at the Northwest Fisheries S
 install.packages("devtools")
 library(devtools)
 
-devtools::install_github("nwfsc-assess/nwfscDiscardBootstrap")
+devtools::install_github("nwfsc-assess/nwfscDiscard")
 ```
 
