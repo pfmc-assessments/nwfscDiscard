@@ -24,20 +24,21 @@
 #'
 #' @export
 #'
-createStrata.fn<-function(dat,colnm,vars,strataNames=NULL,nmcol=paste(colnm,"new",sep=""),subset=F) {
+createStrata.fn<-function(dat, colnm, vars, strataNames = NULL, nmcol = paste0(colnm, "new"), subset = F) 
+{
   flag <- F
   dat[,nmcol] <- NA
   if(is.numeric(dat[,colnm]) & is.numeric(vars)) {   #both are numeric, so use FindInterval (left-hand side is closed, thus it categorizes by [low,high)
-      tmp <- findInterval(dat[,colnm],sort(vars))
-      tmp[tmp==0] <- NA   #zero indicates it is less than lowest index value
-      tmp[tmp==(length(vars))] <- NA   #the maximum number indicates that it is greater than the maximum strata value entered
-      #levNames <- paste("[",vars[-length(vars)],"-",vars[-1],")",sep="")
+      tmp <- findInterval(dat[,colnm], sort(vars))
+      tmp[tmp == 0] <- NA   #zero indicates it is less than lowest index value
+      tmp[tmp == (length(vars))] <- NA   #the maximum number indicates that it is greater than the maximum strata value entered
+      
       if(is.null(strataNames)) {
         strataNames <- createStrataNames(vars)
       }
-      dat[,nmcol] <- strataNames[tmp]
+
+      dat[ ,nmcol] <- strataNames[tmp]
       flag <- T
-      #tmp <- unlist(lapply(strsplit(c("[0-55)","[366-2000)"),"-"),function(x){which(substring(x[1],2)==depthLevels)}))
 
       if(!is.null(strataNames)) {
         cat("\nPlease check that strata names for continuous variables correctly match up\n\n")
@@ -45,11 +46,12 @@ createStrata.fn<-function(dat,colnm,vars,strataNames=NULL,nmcol=paste(colnm,"new
   }
 
   if(!is.list(vars)) {
-      if((is.character(dat[,colnm])|is.factor(dat[,colnm]))) {   #change vars to character
-        if(is.numeric(vars)) {vars <- as.character(vars)}
-        dat <- classify.fn(dat,colnm,vars,nmcol,subset)
+      #change vars to character
+      if((is.character(dat[ ,colnm]) | is.factor(dat[ ,colnm]))) {   
+        if(is.numeric(vars)) { vars <- as.character(vars) }
+        dat <- classify.fn(dat, colnm,vars, nmcol, subset)
         if(!is.null(strataNames)) {
-            dat[,nmcol] <- strataNames[match(dat[,nmcol],vars)]
+            dat[,nmcol] <- strataNames[match(dat[ ,nmcol], vars)]
         }
       }
       subset <- F
@@ -59,28 +61,28 @@ createStrata.fn<-function(dat,colnm,vars,strataNames=NULL,nmcol=paste(colnm,"new
         cat("The data column",colnm,"is numeric, but the vars",vars,"is not numeric.\n")
         cat("This may not be the desired behavior, but it is subsetting the numeric variable by those specific values\n")
         cat("Please check your results\n")
-        dat <- classify.fn(dat,colnm,vars,nmcol,subset)
+        dat <- classify.fn(dat, colnm, vars, nmcol, subset)
         subset <- F
         flag <- T
         if(!is.null(strataNames)) {
-            dat[,nmcol] <- strataNames[match(dat[,nmcol],vars)]
+            dat[ ,nmcol] <- strataNames[match(dat[ ,nmcol], vars)]
         }
       }
   }
 
   if(is.list(vars)) {
-      if((is.character(dat[,colnm])|is.factor(dat[,colnm]))) {   #change vars to character
-        if(is.numeric(vars)) {vars <- as.character(vars)}
-        dat <- classifyMult.fn(dat,colnm,vars,nmcol,strataNames,subset)
+      if((is.character(dat[ ,colnm]) | is.factor(dat[ ,colnm]))) {   #change vars to character
+        if(is.numeric(vars)) { vars <- as.character(vars) }
+        dat <- classifyMult.fn(dat, colnm, vars, nmcol, strataNames, subset)
       }
       subset <- F
       flag <- T
 
-      if(is.numeric(dat[,colnm]) & !any(unlist(lapply(vars,is.numeric)))) {
-        cat("The data column",colnm,"is numeric, but the vars is not numeric.\n")
+      if(is.numeric(dat[ ,colnm]) & !any(unlist(lapply(vars, is.numeric)))) {
+        cat("The data column", colnm, "is numeric, but the vars is not numeric.\n")
         cat("This may not be the desired behavior, but it is subsetting the numeric variable by those specific values\n")
         cat("Please check your results\n")
-        dat <- classifyMult.fn(dat,colnm,vars,nmcol,strataNames,subset)
+        dat <- classifyMult.fn(dat, colnm, vars, nmcol, strataNames, subset)
         subset <- F
         flag <- T
       }

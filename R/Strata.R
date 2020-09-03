@@ -21,12 +21,12 @@
 #'
 #'
 #'
-#' @author Allan Hicks and Chantel WEtzel
+#' @author Allan Hicks and Chantel Wetzel
 #' @export
 #'
-strata.fn <- function(dat,colnms=NULL,colnms.new=paste(colnms,"new",sep=""),colLevs=NULL,stratNms=NULL,
-                            yrColNm=NULL,yrColNm.new=paste(yrColNm,"new",sep=""),yrs=NULL,
-                            subset=T,verbose=T) {
+strata.fn <- function(dat, colnms = NULL, colnms.new = paste0(colnms, "new"), colLevs = NULL, stratNms = NULL,
+                      yrColNm = NULL, yrColNm.new = paste0(yrColNm,"new"), yrs = NULL,
+                      subset = T, verbose = T) {
     if(is.null(colnms) & is.null(yrColNm)) {
         cat("No columns or years defined for selection\n")
         return(invisible(NULL))
@@ -41,7 +41,7 @@ strata.fn <- function(dat,colnms=NULL,colnms.new=paste(colnms,"new",sep=""),colL
         columnNames <- yrColNm.new
         if(is.numeric(yrColNm)) {yrColNm <- names(dat)[yrColNm]}
         cat("Subsetting by",yrColNm,"\n")
-        out <- year.fn(dat=dat,colnm=yrColNm,yrs=yrs,nmcol=yrColNm.new,subset=F)
+        out <- year.fn(dat = dat, colnm = yrColNm, yrs = yrs, nmcol = yrColNm.new, subset = F)
         removed <- sum(is.na(out[,yrColNm.new]))
         messages <- c(messages,paste(removed,"observations removed because year did not match"),paste(sum(!is.na(out[,yrColNm.new])),"observations kept because of a matching year"))
         if(verbose) {

@@ -82,25 +82,25 @@
         for(a in 1:length(names(dat[[y]]))){
           if(!is.na(dat[[y]][a])){
              cat("y:",y,"a:",a,"\n")
-             tmp<-data.frame(Years=names(dat)[y],
-                  Strata=names(dat[[y]])[a],
-                  matrix(unlist(strsplit(as.character(names(dat[[y]])[a]),".",fixed=T)),nrow=1,byrow=T,dimnames=list(NULL,strtNms)),
-                  matrix(unlist(dat[[y]][[a]][1]),nrow=1,byrow=T,dimnames=list(NULL,c("obs.discard.lbs","obs.retained.lbs","obs.stnd.dis.ratio"))),
-                  matrix(mean(unlist(dat[[y]][[a]][2])),nrow=1,byrow=T,dimnames=list(NULL,c("mn.discard.lbs"))),
-                  matrix(median(unlist(dat[[y]][[a]][2])),nrow=1,byrow=T,dimnames=list(NULL,c("md.discard.lbs"))),
-                  matrix(sd(unlist(dat[[y]][[a]][2])),nrow=1,byrow=T,dimnames=list(NULL,c("sd.discard.lbs"))),
-                  matrix(sd(unlist(dat[[y]][[a]][2]))/mean(unlist(dat[[y]][[a]][2])),nrow=1,byrow=T,dimnames=list(NULL,c("cv.discard.lbs"))),
-                  matrix(mean(unlist(dat[[y]][[a]][3])),nrow=1,byrow=T,dimnames=list(NULL,c("mn.retained.lbs"))),
-                  matrix(median(unlist(dat[[y]][[a]][3])),nrow=1,byrow=T,dimnames=list(NULL,c("md.retained.lbs"))),
-                  matrix(sd(unlist(dat[[y]][[a]][3])),nrow=1,byrow=T,dimnames=list(NULL,c("sd.retained.lbs"))),
-                  matrix(sd(unlist(dat[[y]][[a]][3]))/mean(unlist(dat[[y]][[a]][3])),nrow=1,byrow=T,dimnames=list(NULL,c("cv.retained.lbs"))),
-                  matrix(mean(unlist(dat[[y]][[a]][4])),nrow=1,byrow=T,dimnames=list(NULL,c("mn.stnd.dis.ratio"))),
-                  matrix(median(unlist(dat[[y]][[a]][4])),nrow=1,byrow=T,dimnames=list(NULL,c("md.stnd.dis.ratio"))),
-                  matrix(sd(unlist(dat[[y]][[a]][4])),nrow=1,byrow=T,dimnames=list(NULL,c("sd.stnd.dis.ratio"))),
-                  matrix((sd(unlist(dat[[y]][[a]][4]))/unlist(dat[[y]][[a]][1])[3]),nrow=1,byrow=T,dimnames=list(NULL,c("cv.stnd.dis.ratio"))),
-                  boot.sample=length(unlist(dat[[y]][[a]][4])),
-                  bias.est=(matrix(mean(unlist(dat[[y]][[a]][4])),nrow=1,byrow=T))-(matrix(unlist(dat[[y]][[a]][[1]][3]),nrow=1,byrow=T))
-                  )
+             tmp<-data.frame(Years = names(dat)[y],
+                             Strata = names(dat[[y]])[a],
+                             matrix(unlist(strsplit(as.character(names(dat[[y]])[a]),".", fixed = T)), nrow = 1, byrow = T, dimnames = list(NULL,strtNms)),
+                             matrix(unlist(dat[[y]][[a]][1]), nrow = 1, byrow = T, dimnames = list(NULL,c("obs.discard.mts","obs.retained.mts","obs.stnd.dis.ratio"))),
+                             matrix(mean(unlist(dat[[y]][[a]][2])),nrow=1,byrow=T,dimnames=list(NULL,c("mn.discard.mts"))),
+                             matrix(median(unlist(dat[[y]][[a]][2])),nrow=1,byrow=T,dimnames=list(NULL,c("md.discard.mts"))),
+                             matrix(sd(unlist(dat[[y]][[a]][2])),nrow=1,byrow=T,dimnames=list(NULL,c("sd.discard.mts"))),
+                             matrix(sd(unlist(dat[[y]][[a]][2]))/mean(unlist(dat[[y]][[a]][2])),nrow=1,byrow=T,dimnames=list(NULL,c("cv.discard.mts"))),
+                             matrix(mean(unlist(dat[[y]][[a]][3])),nrow=1,byrow=T,dimnames=list(NULL,c("mn.retained.mts"))),
+                             matrix(median(unlist(dat[[y]][[a]][3])),nrow=1,byrow=T,dimnames=list(NULL,c("md.retained.mts"))),
+                             matrix(sd(unlist(dat[[y]][[a]][3])),nrow=1,byrow=T,dimnames=list(NULL,c("sd.retained.mts"))),
+                             matrix(sd(unlist(dat[[y]][[a]][3]))/mean(unlist(dat[[y]][[a]][3])),nrow=1,byrow=T,dimnames=list(NULL,c("cv.retained.mts"))),
+                             matrix(mean(unlist(dat[[y]][[a]][4])),nrow=1,byrow=T,dimnames=list(NULL,c("mn.stnd.dis.ratio"))),
+                             matrix(median(unlist(dat[[y]][[a]][4])),nrow=1,byrow=T,dimnames=list(NULL,c("md.stnd.dis.ratio"))),
+                             matrix(sd(unlist(dat[[y]][[a]][4])),nrow=1,byrow=T,dimnames=list(NULL,c("sd.stnd.dis.ratio"))),
+                             matrix((sd(unlist(dat[[y]][[a]][4]))/unlist(dat[[y]][[a]][1])[3]),nrow=1,byrow=T,dimnames=list(NULL,c("cv.stnd.dis.ratio"))),
+                             boot.sample=length(unlist(dat[[y]][[a]][4])),
+                             bias.est=(matrix(mean(unlist(dat[[y]][[a]][4])),nrow=1,byrow=T))-(matrix(unlist(dat[[y]][[a]][[1]][3]),nrow=1,byrow=T))
+                             )
           #builds the summary data frame
           if((y==1)&(a==1)){
             out.df<-tmp

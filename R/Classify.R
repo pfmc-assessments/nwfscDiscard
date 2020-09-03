@@ -11,7 +11,7 @@
 #' @author Allan Hicks and Chantel Wetzel
 #' @export
 #'
-classify.fn<-function(dat,colnm,z,nmcol=paste(colnm,"new",sep=""),subset=F) {
+classify.fn<-function(dat, colnm, z, nmcol = paste(colnm,"new",sep=""), subset = F) {
   if(!(colnm %in% colnames(dat))) {
     stop("colnm ",colnm," is not a name in the dataframe\n")
   }

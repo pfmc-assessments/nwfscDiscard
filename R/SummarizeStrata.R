@@ -13,7 +13,8 @@
 #' @author Allan Hicks and Chantel WEtzel
 #' @export
 #'
-summarizeStrata.fn <- function(dat,colnms=NULL,yrColNm=NULL,summaryNames=c("drvid","trip_id","haul_id"),totalNames=c("dis","ret"),vesselColName="drvid",vesselCrit=3) {
+summarizeStrata.fn <- function(dat, colnms = NULL, yrColNm = NULL, summaryNames = c("drvid", "trip_id", "haul_id"),
+                               totalNames = c("dis","ret"), vesselColName = "drvid", vesselCrit = 3) {
 
     numVessels <- NULL
 
@@ -22,22 +23,22 @@ summarizeStrata.fn <- function(dat,colnms=NULL,yrColNm=NULL,summaryNames=c("drvi
         dat.split <- list(allData=dat)
     }else {
         numObs <- as.data.frame(table(dat[,c(yrColNm,colnms)]))
-        if(is.null(yrColNm) & length(colnms)==1) {names(numObs)[1] <- colnms}
-        if(length(yrColNm)==1 & is.null(colnms)) {names(numObs)[1] <- yrColNm}
+        if(is.null(yrColNm) & length(colnms) == 1) {names(numObs)[1] <- colnms}
+        if(length(yrColNm) == 1 & is.null(colnms)) {names(numObs)[1] <- yrColNm}
         dat.split <- split(dat,dat[,c(yrColNm,colnms)])
     }
     names(numObs)[ncol(numObs)] <- "numObs"
      summList.fn <- function(x) {
         if(length(summaryNames)>0) {
-            uniqueCols <- apply(x[,summaryNames],2,function(x){length(unique(x))})
-            nombres <- paste("unique",summaryNames,sep=".")
+            uniqueCols <- apply(x[ ,summaryNames], 2, function(x) { length(unique(x)) })
+            nombres <- paste("unique", summaryNames, sep = ".")
         } else {
             uniqueCols <- summaryNames <- NULL
         }
 
         if(length(totalNames)>0) {
-            totCols <- apply(x[,totalNames],2,sum,na.rm=T)
-            nombres <- c(nombres,paste("sum",totalNames,sep="."))
+            totCols <- apply(x[,totalNames], 2, sum,na.rm = TRUE)
+            nombres <- c(nombres, paste("sum", totalNames, sep="."))
         } else {
             totCols <- totalNames <- NULL
         }
@@ -53,8 +54,8 @@ summarizeStrata.fn <- function(dat,colnms=NULL,yrColNm=NULL,summaryNames=c("drvi
     out <- lapply(dat.split,summList.fn)
     out <- t(as.data.frame(out))
     out <- cbind(numObs,out)
-    out$OKnumVessels<-F
-    out$OKnumVessels[which((out$numVessels==0)|(out$numVessels>=vesselCrit))]<-T
+    out$OKnumVessels <- F
+    out$OKnumVessels[which((out$numVessels == 0) | (out$numVessels >= vesselCrit))] <- T
 
     if(sum(!out[,"OKnumVessels"])>0) {cat("Some strata do not meet the vessel criteria for confidentiality\n")}
 

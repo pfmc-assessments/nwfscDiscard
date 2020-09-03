@@ -9,9 +9,11 @@
 
 #ratio type of ratio to calculate. proportion=d/(d+r), exapnsion=d/r
 
-bootDiscardRatio.fn <- function(dat,strat,B,bootVars="d_port_group",years=NULL,yrColNm="ryear",vesselColNm="drvid",
-                                retained="ret",discard="dis",ratio=c("proportion","expansion"),minVessels=1,
-                                toScreen=0.2,writeLog="",seed=NULL,propSize=1) {
+bootDiscardRatio.fn <- function(dat, strat, B, bootVars = "d_port_group", years = NULL, yrColNm = "ryear",
+                                vesselColNm = "drvid", retained = "ret", discard = "dis", 
+                                ratio = c("proportion","expansion"), minVessels = 1,
+                                toScreen = 0.2, writeLog = "", seed = NULL, propSize = 1) {
+    
     if(!is.null(seed)) {set.seed(seed)}
 
     if(toScreen<1) { toScreen <- toScreen*B }
@@ -46,9 +48,9 @@ bootDiscardRatio.fn <- function(dat,strat,B,bootVars="d_port_group",years=NULL,y
 
                 pe[[yr]][[s]] <- c(sum(dat.strat[[s]][,discard]),sum(dat.strat[[s]][,retained]))
                 pe[[yr]][[s]] <- switch(ratio[1],
-                    proportion = c(pe[[yr]][[s]],pe[[yr]][[s]][1]/sum(pe[[yr]][[s]])),
-                    expansion  = c(pe[[yr]][[s]],sum(dat.strat[[s]][,discard])/sum(dat.strat[[s]][,retained])),
-                    stop("ratio must be proportion or expansion\n"))
+                                        proportion = c(pe[[yr]][[s]], pe[[yr]][[s]][1] / sum(pe[[yr]][[s]])),
+                                        expansion  = c(pe[[yr]][[s]], sum(dat.strat[[s]][,discard]) / sum(dat.strat[[s]][,retained])),
+                                        stop("ratio must be proportion or expansion\n"))
                 names(pe[[yr]][[s]]) <- c("discard","retained","ratio")
 
                 if(length(bootVars)>1) {
