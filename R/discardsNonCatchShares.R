@@ -54,26 +54,34 @@ discardsNonCatchShares <- function(dat, strata, B, conf.df=NULL, conf.df.cols=NU
 		#   Note: Some strata will have vessels but no data because those strata did not catch the species.
 		out <- merge(conf.df[,!colnames(conf.df)%in%c("unique.drvid","sum.dis","sum.ret")],
 					 dis,
-					 by.x=conf.df.cols,
-					 by.y=dat.cols, all.y=T)
-		if(any(is.na(out$numVessels) | (out$numVessels<3&out$numVessels>0))) {
+					 by.x = conf.df.cols,
+					 by.y = dat.cols, 
+					 all.y = T)
+
+		if(any(is.na(out$numVessels) | (out$numVessels < 3&out$numVessels > 0))) {
 			cat("\n-------------- WARNING ------------\n")
 			cat("WARNING: There are confidential strata in your non-catch shares data.\n\n")
-			#cat ("Press [Enter] to continue and acknowledge this.")
-			#line <- readline()
-		} #MAKE SURE IT IS FALSE
+		}
+
 	} else {
 	  	out <- dis
 	}
+
 	out$Ratio_Type <- switch(ratio[1],
-		proportion = 'DIS/(DIS + RET)',
-		expansion  = 'DIS/RET',
-		stop("ratio type must be 'proportion' or 'expansion'\n"))
- 	colnames(out)[(ncol(out)-17):ncol(out)] <- c('Observed_DISCARD.LBS','Observed_RETAINED.LBS','Observed_Ratio',
- 		    'Mean.Boot_DISCARD.LBS','Median.Boot_DISCARD.LBS','StdDev.Boot_DISCARD.LBS','CV.Boot_DISCARD.LBS',
-		    'Mean.Boot_RETAINED.LBS','Median.Boot_RETAINED.LBS','StdDev.Boot_RETAINED.LBS','CV.Boot_RETAINED.LBS',
+							  proportion = 'DIS/(DIS + RET)',
+							  expansion  = 'DIS/RET',
+							  stop("ratio type must be 'proportion' or 'expansion'\n"))
+
+ 	colnames(out)[(ncol(out)-17):ncol(out)] <- c('Observed_DISCARD.MTS','Observed_RETAINED.MTS','Observed_Ratio',
+ 		    'Mean.Boot_DISCARD.MTS','Median.Boot_DISCARD.LBS','StdDev.Boot_DISCARD.LBS','CV.Boot_DISCARD.LBS',
+		    'Mean.Boot_RETAINED.MTS','Median.Boot_RETAINED.MTS','StdDev.Boot_RETAINED.MTS','CV.Boot_RETAINED.MTS',
 		    'Mean.Boot_Ratio','Median.Boot_Ratio','StdDev.Boot_Ratio','CV.Boot_Ratio',
 		    'no.Boot.samples','Est.Bias.Ratio','Ratio_Type')
+
+ 	# If not doing a bootstrap remove those columns from the output
+ 	if( B == 1){
+ 		out = out[ , c(1:13, dim(out)[2])]
+ 	}
 
  	out <- out[!as.logical(out$CatchShares),]
 	return(out)
