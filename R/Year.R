@@ -8,7 +8,7 @@
 #' @template subset
 #'
 #' @export
-year.fn<-function(dat,colnm,yrs,nmcol=paste(colnm,"new",sep=""),subset=F) {
+year.fn<-function(dat, colnm, yrs, nmcol = paste(colnm, "new", sep=""), subset = F) {
   if(!(colnm %in% colnames(dat))) {
     stop("colnm ",colnm," is not a name in the dataframe\n")
   }

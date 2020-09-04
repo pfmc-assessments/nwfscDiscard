@@ -39,9 +39,15 @@ strata.fn <- function(dat, colnms = NULL, colnms.new = paste0(colnms, "new"), co
     #first do year, if necessary
     if(!is.null(yrColNm) & !is.null(yrs)) {
         columnNames <- yrColNm.new
-        if(is.numeric(yrColNm)) {yrColNm <- names(dat)[yrColNm]}
-        cat("Subsetting by",yrColNm,"\n")
-        out <- year.fn(dat = dat, colnm = yrColNm, yrs = yrs, nmcol = yrColNm.new, subset = F)
+        if(is.numeric(yrColNm)) { yrColNm <- names(dat)[yrColNm] }
+        cat("Subsetting by", yrColNm, "\n")
+
+        out <- year.fn(dat = dat, 
+                       colnm = yrColNm, 
+                       yrs = yrs, 
+                       nmcol = yrColNm.new, 
+                       subset = F)
+
         removed <- sum(is.na(out[,yrColNm.new]))
         messages <- c(messages,paste(removed,"observations removed because year did not match"),paste(sum(!is.na(out[,yrColNm.new])),"observations kept because of a matching year"))
         if(verbose) {
@@ -58,10 +64,10 @@ strata.fn <- function(dat, colnms = NULL, colnms.new = paste0(colnms, "new"), co
     #now subset other columns
     if(!is.null(colnms)) {
         cat("subsetting by",colnms,"\n")
-        if(length(colnms)>1 & (!is.list(colLevs) | length(colnms)!=length(colLevs))) {
+        if(length(colnms) > 1 & (!is.list(colLevs) | length(colnms) != length(colLevs))) {
             stop("colLevs must be a list and have an equal number of elements to the length of colnms\n")
         }
-        if(length(colnms)==1 & !is.list(colLevs)) {
+        if(length(colnms) == 1 & !is.list(colLevs)) {
             #make colLevs a list of 1 element so that it works in generalization below
             colLevs <- list(colLevs)
         }
@@ -69,9 +75,15 @@ strata.fn <- function(dat, colnms = NULL, colnms.new = paste0(colnms, "new"), co
         for(i in 1:length(colnms)) {
             if(!is.null(stratNms[[i]]) && !(is.numeric(dat[,colnms[i]]) & is.numeric(colLevs[[i]])) && length(stratNms[[i]])!=length(colLevs[[i]])) {stop("Strata names in level ",i," does not match the number of column levels.\n")}
             if(!is.null(stratNms[[i]]) && (is.numeric(dat[,colnms[i]]) & is.numeric(colLevs[[i]])) && length(stratNms[[i]])!=(length(colLevs[[i]])-1)) {stop("Strata names in numeric level ",i," should have one less name than column levels.\n")}
-            columnNames <- c(columnNames,colnms.new[i])
-            out <- createStrata.fn(dat=out,colnm=colnms[i],vars=colLevs[[i]],stratNms[[i]],nmcol=colnms.new[i],subset=F)
-            removed <- sum(is.na(out[,colnms.new[i]]))
+            columnNames <- c(columnNames, colnms.new[i])
+            out <- createStrata.fn(dat = out,
+                                   colnm = colnms[i],
+                                   vars = colLevs[[i]], 
+                                   stratNms[[i]],
+                                   nmcol = colnms.new[i],
+                                   subset = FALSE)
+
+            removed <- sum(is.na(out[ ,colnms.new[i] ]))
             messages <- c(messages,paste(removed,"observations removed because",colnms[i],"did not match"),paste(sum(!is.na(out[,colnms.new[i]])),"observations kept because of a matching",colnms[i]))
             if(verbose) {
                 cat(messages[length(messages)-1],"\n")
