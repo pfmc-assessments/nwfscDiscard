@@ -9,6 +9,6 @@ Note: this code was developed for use by scientists at the Northwest Fisheries S
 install.packages("devtools")
 library(devtools)
 
-devtools::install_github("nwfsc-assess/nwfscDiscard")
+devtools::install_github("pfmc-assessments/nwfscDiscard")
 ```
 
