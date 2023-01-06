@@ -4,6 +4,7 @@ title: "Data request for species [replace with your species]"
 labels: ["type: request"]
 assignees:
   - chantelwetzel-noaa
+  - andi-stephens-NOAA
 body:
   - type: markdown
     attributes:
@@ -30,7 +31,7 @@ body:
   - type: textarea
     id: info
     attributes:
-      label: Additional Information
+      label: Additional information
       description: Is there any additional information that you would like considered in your data request? 
   - type: checkboxes
     id: clearance
