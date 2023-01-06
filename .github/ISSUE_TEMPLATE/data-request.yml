@@ -27,6 +27,11 @@ body:
     attributes:
       label: Gear grouping
       description: Please provide information on how you would like the data grouped by gear type. The gear groups are bottom trawl, fixed gear, hook and line, midwater trawl, pot, and shrimp trawl. The fixed gear grouping includes a range of gears from the nearshore across the coast. Not all gear types need to be included. For example, one could request data in two groupings of bottom and midwater trawl combined and hook and line, pot, and fixed gears combined. 
+  - type: textarea
+    id: info
+    attributes:
+      label: Additional Information
+      description: Is there any additional information that you would like considered in your data request? 
   - type: checkboxes
     id: clearance
     attributes:
