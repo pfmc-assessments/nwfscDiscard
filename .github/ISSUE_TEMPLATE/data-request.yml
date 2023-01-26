@@ -33,8 +33,8 @@ body:
     attributes:
       label: Areas 
       description: Please provide information on area stratification that you would like to use. For example, if you have a coastwide commercial fleet you would likely want all data across the coast associated with that fleet processed together. In contrast, if you have fleets related to specific areas (e.g., states) please include those areas here so we can produce data for each corresponding gear area.
-   - type: textarea
-    id: info
+  - type: textarea
+    id: bins
     attributes:
       label: Length bins for discard compositions
       description: Please include the length bins for providing discard length composition data.
