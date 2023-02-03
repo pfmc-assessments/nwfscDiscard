@@ -1,5 +1,5 @@
 name: Data request
-description: Request WCGOP discard rates, totals, and biological samples.
+description: Request West Coast Groundfish Observer Program (WCGOP) discard rates, totals, and biological samples.
 title: "Data request for species [replace with your species]"
 labels: ["type: request"]
 assignees:
@@ -9,7 +9,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for taking the time to fill out the WCGOP request form.
+        Thank you for taking the time to fill out the WCGOP request form. WCGOP is collected by observers on West Coast commercial fishing vessels and is considered confidential data. Processed data that meet confidentiality guidelines can be used in to estimate discarding within an assessments. These data can only be provided in an aggregated form that meets confidentiality and aligns with the fleet structure of the model. Requesting the data in a more dissagregated form since confidentialy rules may not be met and because the data processing includes bootstrapping to provide uncertainty estimates around the discard rates and totals.    
   - type: textarea
     id: species
     attributes:
