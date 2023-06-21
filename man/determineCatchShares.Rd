@@ -4,10 +4,13 @@
 \alias{determineCatchShares}
 \title{Function that checks if observation was made by a Catch Share vessel}
 \usage{
-determineCatchShares(dat, yearLevs = as.character(2011:max(dat$ryear)),
-  sectorLevs = list(c("Catch Shares", "LE CA Halibut",
-  "Shoreside Hake")), colnms = c("ryear", "sector"),
-  colnms.new = c("yearCS", "sectorCS"))
+determineCatchShares(
+  dat,
+  yearLevs = as.character(2011:max(dat$ryear)),
+  sectorLevs,
+  colnms = c("ryear", "sector"),
+  colnms.new = c("yearCS", "sectorCS")
+)
 }
 \arguments{
 \item{dat}{the dataframe of observations}

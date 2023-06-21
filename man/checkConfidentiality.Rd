@@ -4,8 +4,14 @@
 \alias{checkConfidentiality}
 \title{Bootstrap uncertainty and summarize WCGOP discard data}
 \usage{
-checkConfidentiality(dat, colnms, colLevs, newColNm = paste(colnms,
-  "new", sep = ""), strNms = NULL)
+checkConfidentiality(
+  dat,
+  colnms,
+  colLevs,
+  newColNm = paste(colnms, "new", sep = ""),
+  sectorLevs,
+  strNms = NULL
+)
 }
 \arguments{
 \item{dat}{passed ob data file filtered down to the species specific data (sp)}

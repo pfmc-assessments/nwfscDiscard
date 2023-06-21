@@ -8,11 +8,19 @@ If the variable is numeric, it creates a strata name that indicates the range of
 Note that numeric cuts are always closed on the left and open on the right
 For non-numeric variables, the specific quantities are subset.}
 \usage{
-createStrata.fn(dat, colnm, vars, strataNames = NULL,
-  nmcol = paste(colnm, "new", sep = ""), subset = F)
+createStrata.fn(
+  dat,
+  colnm,
+  vars,
+  strataNames = NULL,
+  nmcol = paste0(colnm, "new"),
+  subset = F
+)
 }
 \arguments{
 \item{dat}{the dataframe of observations}
+
+\item{colnm}{unsure how this is different from colnms}
 
 \item{vars}{the variables to subset by.
         If numeric & the variable is numeric (dat[,colnm]):

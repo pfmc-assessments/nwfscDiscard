@@ -4,8 +4,20 @@
 \alias{bootstrapDiscardData}
 \title{Bootstrap uncertainty and summarize WCGOP discard data}
 \usage{
-bootstrapDiscardData(ob, sp, B, colnms, colnms.new, colLevs, stratNms,
-  ratioType = c("proportion", "expansion"), bootFile, resultsFile)
+bootstrapDiscardData(
+  ob,
+  sp,
+  B,
+  colnms,
+  colnms.new,
+  colLevs,
+  stratNms,
+  ratioType = c("proportion", "expansion"),
+  switch_names = TRUE,
+  sectorLevs = list(c("Catch Shares", "LE CA Halibut", "Shoreside Hake")),
+  bootFile,
+  resultsFile
+)
 }
 \arguments{
 \item{ob}{observer discard data frame}

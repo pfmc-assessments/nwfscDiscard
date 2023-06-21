@@ -4,9 +4,17 @@
 \alias{discardsNonCatchShares}
 \title{Function that calculates discards for the non-catch share vessels}
 \usage{
-discardsNonCatchShares(dat, strata, B, conf.df = NULL,
-  conf.df.cols = NULL, dat.cols = NULL, ratio = c("proportion",
-  "expansion"), saveBootFile = "outB.Rdat", logFile = "")
+discardsNonCatchShares(
+  dat,
+  strata,
+  B,
+  conf.df = NULL,
+  conf.df.cols = NULL,
+  dat.cols = NULL,
+  ratio = c("proportion", "expansion"),
+  saveBootFile = "outB.Rdat",
+  logFile = ""
+)
 }
 \arguments{
 \item{dat}{the dataframe of observations}

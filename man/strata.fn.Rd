@@ -10,10 +10,18 @@ returns a list with:
      stratObs: the number of observations in each stratum
      summaryUnique: unique observations over the subsetted dataframe for the specified columns}
 \usage{
-strata.fn(dat, colnms = NULL, colnms.new = paste(colnms, "new", sep =
-  ""), colLevs = NULL, stratNms = NULL, yrColNm = NULL,
-  yrColNm.new = paste(yrColNm, "new", sep = ""), yrs = NULL,
-  subset = T, verbose = T)
+strata.fn(
+  dat,
+  colnms = NULL,
+  colnms.new = paste0(colnms, "new"),
+  colLevs = NULL,
+  stratNms = NULL,
+  yrColNm = NULL,
+  yrColNm.new = paste0(yrColNm, "new"),
+  yrs = NULL,
+  subset = T,
+  verbose = T
+)
 }
 \arguments{
 \item{dat}{the dataframe of observations}
@@ -53,5 +61,5 @@ returns a list with:
      summaryUnique: unique observations over the subsetted dataframe for the specified columns
 }
 \author{
-Allan Hicks and Chantel WEtzel
+Allan Hicks and Chantel Wetzel
 }

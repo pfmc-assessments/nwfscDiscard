@@ -5,8 +5,7 @@
 \title{Clssifies unique values (characters, factors, etc)
 Different from year in that year converts the year to integer, whereas this function does not.}
 \usage{
-classify.fn(dat, colnm, z, nmcol = paste(colnm, "new", sep = ""),
-  subset = F)
+classify.fn(dat, colnm, z, nmcol = paste(colnm, "new", sep = ""), subset = F)
 }
 \arguments{
 \item{dat}{the dataframe of observations}

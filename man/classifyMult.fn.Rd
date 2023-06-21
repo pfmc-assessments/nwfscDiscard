@@ -6,8 +6,14 @@
 e.g., WA & OR into WaOR
 different from year in that year converts the year to integer, whereas this function does not}
 \usage{
-classifyMult.fn(dat, colnm, z, nmcol = paste(colnm, "new", sep = ""),
-  strNms = NULL, subset = F)
+classifyMult.fn(
+  dat,
+  colnm,
+  z,
+  nmcol = paste(colnm, "new", sep = ""),
+  strNms = NULL,
+  subset = F
+)
 }
 \arguments{
 \item{dat}{the dataframe of observations}

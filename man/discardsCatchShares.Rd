@@ -4,9 +4,15 @@
 \alias{discardsCatchShares}
 \title{Function that calculates discards for the catch share vessels}
 \usage{
-discardsCatchShares(dat, strata, conf.df = NULL, conf.df.cols = NULL,
-  dat.cols = NULL, ratio = c("proportion", "expansion"),
-  logFile = "")
+discardsCatchShares(
+  dat,
+  strata,
+  conf.df = NULL,
+  conf.df.cols = NULL,
+  dat.cols = NULL,
+  ratio = c("proportion", "expansion"),
+  logFile = ""
+)
 }
 \arguments{
 \item{dat}{the dataframe of observations}

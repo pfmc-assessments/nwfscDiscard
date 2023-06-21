@@ -4,10 +4,15 @@
 \alias{summarizeStrata.fn}
 \title{Summarize discards within a strata}
 \usage{
-summarizeStrata.fn(dat, colnms = NULL, yrColNm = NULL,
+summarizeStrata.fn(
+  dat,
+  colnms = NULL,
+  yrColNm = NULL,
   summaryNames = c("drvid", "trip_id", "haul_id"),
-  totalNames = c("dis", "ret"), vesselColName = "drvid",
-  vesselCrit = 3)
+  totalNames = c("dis", "ret"),
+  vesselColName = "drvid",
+  vesselCrit = 3
+)
 }
 \arguments{
 \item{dat}{the dataframe of observations}

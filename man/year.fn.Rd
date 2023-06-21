@@ -4,8 +4,7 @@
 \alias{year.fn}
 \title{Subset the data by year}
 \usage{
-year.fn(dat, colnm, yrs, nmcol = paste(colnm, "new", sep = ""),
-  subset = F)
+year.fn(dat, colnm, yrs, nmcol = paste(colnm, "new", sep = ""), subset = F)
 }
 \arguments{
 \item{dat}{the dataframe of observations}
