@@ -38,9 +38,9 @@
 #'   }
 #'
 bootstrapDiscardData <- function(ob, sp, B, colnms, colnms.new, colLevs, stratNms, 
-								 ratioType = c("proportion", "expansion"), switch_names = TRUE,
-								 sectorLevs = list(c('Catch Shares','LE CA Halibut','Shoreside Hake')),
-								 bootFile, resultsFile) {
+	ratioType = c("proportion", "expansion"), switch_names = TRUE,
+	sectorLevs = list(c('Catch Shares', 'Catch Shares EM', 'LE CA Halibut','Shoreside Hake')),
+	bootFile, resultsFile) {
 
 	dte = Sys.Date()
 
@@ -61,6 +61,7 @@ bootstrapDiscardData <- function(ob, sp, B, colnms, colnms.new, colLevs, stratNm
 		ob$haul_id <- ob$HAUL_ID
 		ob$r_state <- ob$R_STATE
 		ob$set_lat <- ob$SET_LAT
+		ob$rmonth  <- ob$RMONTH
 		ob$d_port_group <- ob$D_PORT_GROUP
 		ob$r_port_group <- ob$R_PORT_GROUP
 	}
@@ -84,57 +85,66 @@ bootstrapDiscardData <- function(ob, sp, B, colnms, colnms.new, colLevs, stratNm
 	# and the determineCatchShares (if year >= 2011)
 	# Creates a data frame showing gear by year, area, catch shares, number of observations, vessels,
 	# discards, and retained fish weights
-	conf.df <- checkConfidentiality(dat = ob,
-									colnms = colnms,
-								    colLevs = colLevs,
-								    newColNm = colnms.new,
-								    sectorLevs = sectorLevs,
-								    strNms = stratNms)
+	conf.df <- checkConfidentiality(
+		dat = ob,
+		colnms = colnms,
+		colLevs = colLevs,
+		newColNm = colnms.new,
+		sectorLevs = sectorLevs,
+		strNms = stratNms)
 
 	dat <- ob[ob$species %in% sp, ]
-	dat2 <-strata.fn(dat,
-		            colnms = colnms,
-		            colnms.new = colnms.new,
-					colLevs = colLevs,
-					stratNms = stratNms)
+	rm(ob)
+
+	dat2 <- strata.fn(
+		dat = dat,
+		colnms = colnms,
+		colnms.new = colnms.new,
+		colLevs = colLevs,
+		stratNms = stratNms)
 
 	#split by catch shares
 	#first add on CatchShares column with T or F
-	dat2     <- determineCatchShares(dat2, 
-									 sectorLevs = sectorLevs, 
-									 yearLevs=sort(unique(dat2$ryear)))
+	dat2 <- determineCatchShares(
+		dat2, 
+		sectorLevs = sectorLevs, 
+		yearLevs=sort(unique(dat2$ryear)))
+
 	dat2.cs  <- dat2[dat2$CatchShares, ]
 	dat2.ncs <- dat2[!dat2$CatchShares, ]
+	rm(dat2)
 
 	#bootstrap ratio, also reports discard mts and cv
 
 	if(nrow(dat2.cs) > 0) { #calculate catch shares discard quantities
-		dat.cs.out <- discardsCatchShares(dat2.cs, 
-										  strata = colnms.new,
-										  conf.df = conf.df, 
-										  conf.df.cols = c('ryear', colnms.new),
-										  dat.cols = c('Years', colnms.new),
-										  ratio = ratioType,
-										  logFile = "")
+		dat.cs.out <- discardsCatchShares(
+			dat2.cs, 
+			strata = colnms.new,
+			conf.df = conf.df, 
+			conf.df.cols = c('ryear', colnms.new),
+			dat.cols = c('Years', colnms.new),
+			ratio = ratioType,
+			logFile = "")
 	} else {
 		dat.cs.out <- NULL
 	}
 
 	if(nrow(dat2.ncs) > 0) { #calculate catch shares discard quantities
-		dat.ncs.out <- discardsNonCatchShares(dat2.ncs, 
-											  strata = colnms.new, 
-											  B = B,
-										      conf.df = conf.df, 
-										      conf.df.cols = c('ryear',colnms.new),
-										      dat.cols = c('Years',colnms.new),
-										      ratio = ratioType,
-										      saveBootFile = paste0(bootFile,"_dte_ncs.Rdat"),
-										      logFile = "")
+		dat.ncs.out <- discardsNonCatchShares(
+			dat = dat2.ncs, 
+			strata = colnms.new, 
+			B = B,
+			conf.df = conf.df, 
+			conf.df.cols = c('ryear', colnms.new),
+			dat.cols = c('Years', colnms.new),
+			ratio = ratioType,
+			saveBootFile = paste0(bootFile, "_dte_ncs.Rdat"),
+			logFile = "")
 	} else {
 		dat.ncs.out <- NULL
 	}
 	#save results
-	save(dat.ncs.out, file=paste0(resultsFile, "_dte_ncs.Rdat"))
+	save(dat.ncs.out, file = paste0(resultsFile, "_dte_ncs.Rdat"))
 
 	return(list(cs = dat.cs.out, ncs = dat.ncs.out))
 }

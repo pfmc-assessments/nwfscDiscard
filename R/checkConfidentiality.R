@@ -8,7 +8,7 @@
 #' @param strNms 
 #'
 #'
-#' @author Allan Hicks and Chantel WEtzel
+#' @author Allan Hicks and Chantel Wetzel
 #' @export
 checkConfidentiality <- function(dat, colnms, colLevs, newColNm = paste(colnms,"new",sep=""), 
 								 sectorLevs, strNms = NULL) {

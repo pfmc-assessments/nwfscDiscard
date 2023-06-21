@@ -10,9 +10,9 @@
 #ratio type of ratio to calculate. proportion=d/(d+r), exapnsion=d/r
 
 bootDiscardRatio.fn <- function(dat, strat, B, bootVars = "d_port_group", years = NULL, yrColNm = "ryear",
-                                vesselColNm = "drvid", retained = "ret", discard = "dis", 
-                                ratio = c("proportion","expansion"), minVessels = 1,
-                                toScreen = 0.2, writeLog = "", seed = NULL, propSize = 1) {
+    vesselColNm = "drvid", retained = "ret", discard = "dis", 
+    ratio = c("proportion","expansion"), minVessels = 1,
+    toScreen = 0.2, writeLog = "", seed = NULL, propSize = 1) {
     
     if(!is.null(seed)) {set.seed(seed)}
 

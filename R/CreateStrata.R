@@ -49,7 +49,7 @@ createStrata.fn<-function(dat, colnm, vars, strataNames = NULL, nmcol = paste0(c
       #change vars to character
       if((is.character(dat[ ,colnm]) | is.factor(dat[ ,colnm]))) {   
         if(is.numeric(vars)) { vars <- as.character(vars) }
-        dat <- classify.fn(dat, colnm,vars, nmcol, subset)
+        dat <- classify.fn(dat, colnm, vars, nmcol, subset)
         if(!is.null(strataNames)) {
             dat[,nmcol] <- strataNames[match(dat[ ,nmcol], vars)]
         }
