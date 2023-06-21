@@ -22,7 +22,7 @@ classify.fn<-function(dat, colnm, z, nmcol = paste(colnm,"new",sep=""), subset =
   if(!subset) {
     dat[,nmcol] <- NULL
      out <- dat
-     out[dat[,colnm] %in% z,nmcol] <- out[dat[,colnm] %in% z,colnm]  #put in strata to new column and keep not selected as NA
+     out[dat[,colnm] %in% z, nmcol] <- out[dat[, colnm] %in% z,colnm]  #put in strata to new column and keep not selected as NA
   }
   return(invisible(out))
 }
