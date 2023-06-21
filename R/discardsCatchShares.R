@@ -14,7 +14,7 @@
 #' @export
 #'
 discardsCatchShares <- function(dat, strata, conf.df = NULL, conf.df.cols = NULL, dat.cols = NULL, 
-								ratio = c("proportion","expansion"), logFile = "") {
+	ratio = c("proportion","expansion"), logFile = "") {
 	#calculate catch shares discard quantities
 
 	#check for CatchShares, create if necessary and add to strata
@@ -61,13 +61,18 @@ discardsCatchShares <- function(dat, strata, conf.df = NULL, conf.df.cols = NULL
 	} else {
 	  	out <- dis
 	}
-	out$Ratio_Type <- switch(ratio[1],
+	out$ratio_type <- switch(ratio[1],
 							 proportion = 'DIS/(DIS + RET)',
 							 expansion  = 'DIS/RET',
 							 stop("ratio type must be 'proportion' or 'expansion'\n"))
- 	colnames(out)[(ncol(out)-3):ncol(out)] <- c('Observed_DISCARD.MTS','Observed_RETAINED.MTS','Observed_Ratio','Ratio_Type')
 
- 	out <- out[as.logical(out$CatchShares), ]
+ 	colnames(out) <- c(
+ 		'year', 'area', 'gear', 'catch_shares', 'n_obs', 'n_trips', 'n_hauls', 'n_vessels', 'nonconfidential', 'strata',
+ 		'ob_discard_mt','ob_retained_mt','ob_ratio', 'ratio_type')
+ 	out <- as.data.frame(out)
+ 	out <- out[as.logical(out$catch_shares), ]
+ 	ind <- which(out[, "nonconfidential"] == "FALSE")
+ 	out[ind, 11:dim(out)[2]] <- "redacted"
 	return(out)
 }
 
