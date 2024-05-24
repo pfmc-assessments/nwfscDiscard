@@ -21,6 +21,8 @@ summarizeStrata.fn(
 Do not include year columns here, that is kept separate.
 If numeric, it refers to the column number}
 
+\item{yrColNm}{Column name of the year to use (e.g., ryear).}
+
 \item{summaryNames}{identifiers for the vessel, trip number, and haul id}
 
 \item{totalNames}{Discard or retention}

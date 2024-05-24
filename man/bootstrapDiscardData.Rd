@@ -14,7 +14,8 @@ bootstrapDiscardData(
   stratNms,
   ratioType = c("proportion", "expansion"),
   switch_names = TRUE,
-  sectorLevs = list(c("Catch Shares", "LE CA Halibut", "Shoreside Hake")),
+  sectorLevs = list(c("Catch Shares", "Catch Shares EM", "LE CA Halibut",
+    "Shoreside Hake")),
   bootFile,
   resultsFile
 )

@@ -34,6 +34,8 @@ createStrata.fn(
         if the variable to be stratified (dat[,colnm]) is numeric and the vars is not numeric:
                    A warnin gis issued that this is probably not the desired behavior (but could be, for example year, although I use yr.fxn)}
 
+\item{strataNames}{Names for stratas}
+
 \item{nmcol}{name of additional column to add that indicates the values specified.  An NA will be put for values that are not in z.}
 
 \item{subset}{whether or not to return a dataframe with only rows that meet criteria. Default value FALSE.}

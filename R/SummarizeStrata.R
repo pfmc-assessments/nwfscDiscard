@@ -1,8 +1,8 @@
 #' Summarize discards within a strata
-#' 
+#'
 #' @template dat
 #' @template colnms
-#' @param yrColNm
+#' @param yrColNm Column name of the year to use (e.g., ryear).
 #' @param summaryNames identifiers for the vessel, trip number, and haul id
 #' @param totalNames Discard or retention
 #' @param vesselColName Vessel id within the WCGOP database

@@ -1,4 +1,4 @@
-#' 
+#'
 #' This function will classify and subset the data frame based on a single variable and a set of values or cut points.
 #' It produces an additional column with the strata levels.
 #' If the variable is numeric, it creates a strata name that indicates the range of values in that strata
@@ -12,19 +12,19 @@
 #'                     this must contain the lowest boundary and the upper boundary, and all divisions in between.
 #'                     Anything less than the lowest boundary or greater than or equal to the largest boundary are given NA.
 #'                     Note that anything EQUAL TO the largest boundary is given an NA
-#' 
+#'
 #'         if the variable to be stratified (dat[,colnm]) is a character or factor and the vars is numeric, character, or factor:
 #'                    it simply subsets based on the specific values using the classifyV3.fxn
-#' 
+#'
 #'         if the variable to be stratified (dat[,colnm]) is numeric and the vars is not numeric:
 #'                    A warnin gis issued that this is probably not the desired behavior (but could be, for example year, although I use yr.fxn)
-#' @param strataNames
+#' @param strataNames Names for stratas
 #' @template nmcol
 #' @template subset
 #'
 #' @export
 #'
-createStrata.fn<-function(dat, colnm, vars, strataNames = NULL, nmcol = paste0(colnm, "new"), subset = F) 
+createStrata.fn<-function(dat, colnm, vars, strataNames = NULL, nmcol = paste0(colnm, "new"), subset = F)
 {
   flag <- F
   dat[,nmcol] <- NA
@@ -32,7 +32,7 @@ createStrata.fn<-function(dat, colnm, vars, strataNames = NULL, nmcol = paste0(c
       tmp <- findInterval(dat[,colnm], sort(vars))
       tmp[tmp == 0] <- NA   #zero indicates it is less than lowest index value
       tmp[tmp == (length(vars))] <- NA   #the maximum number indicates that it is greater than the maximum strata value entered
-      
+
       if(is.null(strataNames)) {
         strataNames <- createStrataNames(vars)
       }
@@ -47,7 +47,7 @@ createStrata.fn<-function(dat, colnm, vars, strataNames = NULL, nmcol = paste0(c
 
   if(!is.list(vars)) {
       #change vars to character
-      if((is.character(dat[ ,colnm]) | is.factor(dat[ ,colnm]))) {   
+      if((is.character(dat[ ,colnm]) | is.factor(dat[ ,colnm]))) {
         if(is.numeric(vars)) { vars <- as.character(vars) }
         dat <- classify.fn(dat, colnm, vars, nmcol, subset)
         if(!is.null(strataNames)) {
