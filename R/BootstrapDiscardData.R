@@ -2,11 +2,11 @@
 #'
 #' @template ob
 #' @param sp species name that should match the name in the ob data file, can be single species or multiple names (e.g. c("Gopher Rockfish", "Black and Yellow Rockfish"))
-#' @template colnms 
-#' @template colnms.new 
+#' @template colnms
+#' @template colnms.new
 #' @template colLevs
-#' @template stratNms 
-#' @param ratioType 
+#' @template stratNms
+#' @param ratioType
 #' @param bootFile file with the bootstap output
 #' @param resultsFile file with the summarized and final bootstap values
 #'
@@ -37,19 +37,19 @@
 #'
 #'   }
 #'
-bootstrapDiscardData <- function(ob, sp, B, colnms, colnms.new, colLevs, stratNms, 
+bootstrapDiscardData <- function(ob, sp, B, colnms, colnms.new, colLevs, stratNms,
 	ratioType = c("proportion", "expansion"), switch_names = TRUE,
-	sectorLevs = list(c('Catch Shares', 'Catch Shares EM', 'LE CA Halibut','Shoreside Hake')),
+	sectorLevs = list(c('Catch Shares', 'Catch Shares EM', 'LE CA Halibut','Midwater Hake', 'Midwater Rockfish')),
 	bootFile, resultsFile) {
 
 	dte = Sys.Date()
 
 	# The defualt in the code is to use the "ret" and "dis" columns which are in pounds
 	# Providing these value is terms of metric tons allow for use without conversion.
-	# Overwrite the "ret" and "dis" columns with the "RET_MT" and "DIS_RET" to avoid having to 
+	# Overwrite the "ret" and "dis" columns with the "RET_MT" and "DIS_RET" to avoid having to
 	# make changes in all the functions.
 	# Additionally, columns names have been revised in WCGOP.  The below changes allow the code to
-	# run without making changes thoughout.
+	# run without making changes throughout.
 	if(sum(colnames(ob) == "TRIP_ID") == 1){
 		ob$ret     <- ob$RET_MT
 		ob$dis     <- ob$DIS_MT
@@ -79,7 +79,7 @@ bootstrapDiscardData <- function(ob, sp, B, colnms, colnms.new, colLevs, stratNm
 		ob$set_lat <- ob$SET_LAT
 		ob$d_port_group <- ob$D_PORT
 		ob$r_port_group <- ob$R_PORT
-	} 
+	}
 
 	# This function uses the strat.fn (which calls the createStrata.fn, classify.fn, classifyMult.fn)
 	# and the determineCatchShares (if year >= 2011)
@@ -106,8 +106,8 @@ bootstrapDiscardData <- function(ob, sp, B, colnms, colnms.new, colLevs, stratNm
 	#split by catch shares
 	#first add on CatchShares column with T or F
 	dat2 <- determineCatchShares(
-		dat2, 
-		sectorLevs = sectorLevs, 
+		dat2,
+		sectorLevs = sectorLevs,
 		yearLevs=sort(unique(dat2$ryear)))
 
 	dat2.cs  <- dat2[dat2$CatchShares, ]
@@ -118,9 +118,9 @@ bootstrapDiscardData <- function(ob, sp, B, colnms, colnms.new, colLevs, stratNm
 
 	if(nrow(dat2.cs) > 0) { #calculate catch shares discard quantities
 		dat.cs.out <- discardsCatchShares(
-			dat2.cs, 
+			dat2.cs,
 			strata = colnms.new,
-			conf.df = conf.df, 
+			conf.df = conf.df,
 			conf.df.cols = c('ryear', colnms.new),
 			dat.cols = c('Years', colnms.new),
 			ratio = ratioType,
@@ -131,10 +131,10 @@ bootstrapDiscardData <- function(ob, sp, B, colnms, colnms.new, colLevs, stratNm
 
 	if(nrow(dat2.ncs) > 0) { #calculate catch shares discard quantities
 		dat.ncs.out <- discardsNonCatchShares(
-			dat = dat2.ncs, 
-			strata = colnms.new, 
+			dat = dat2.ncs,
+			strata = colnms.new,
 			B = B,
-			conf.df = conf.df, 
+			conf.df = conf.df,
 			conf.df.cols = c('ryear', colnms.new),
 			dat.cols = c('Years', colnms.new),
 			ratio = ratioType,
