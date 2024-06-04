@@ -31,7 +31,13 @@ get_mean_weights <- function(
   colnames(data) <- tolower(colnames(data))
   data$year <- data$ryear
 
-  data <- data[data$species == species & data$catch_disposition == "D", ]
+  if (species %in% data[, "species"]) {
+    data <- data[data$species == species & data$catch_disposition == "D", ]
+  } else {
+    stop(glue::glue("{species} not found in the data."))
+  }
+
+
   if (fleet_colname == "r_state.x") {
     fleet_colname <- "r_state"
   }
