@@ -3,7 +3,7 @@
 #'
 #' @param dir Directory location to save files.
 #' @param data A data frame of WCGOP biological data
-#' @param comp_bins Length or age bins to apply to the composistion data.
+#' @param comp_bins Length or age bins to apply to the composition data.
 #' @param comp_column Column name for the type of composition data to process (e.g., "length" or "age")
 #'
 #' @author Chantel Wetzel
