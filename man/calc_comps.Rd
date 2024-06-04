@@ -11,7 +11,7 @@ calc_comps(dir, data, comp_bins, comp_column = "length")
 
 \item{data}{A data frame of WCGOP biological data}
 
-\item{comp_bins}{Length or age bins to apply to the composistion data.}
+\item{comp_bins}{Length or age bins to apply to the composition data.}
 
 \item{comp_column}{Column name for the type of composition data to process (e.g., "length" or "age")}
 }
