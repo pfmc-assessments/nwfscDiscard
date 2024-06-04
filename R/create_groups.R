@@ -21,6 +21,14 @@ create_groups <- function(
   fleet_groups,
   fleet_names){
 
+
+  data$catch_shares <- "FALSE"
+  catch_shares <- c('Catch Shares', 'Catch Shares EM', 'LE CA Halibut','Midwater Hake',  'Midwater Rockfish')
+  find <- which(data$sector %in% catch_shares & data$year >= 2011)
+  if (length(find) > 0){
+    data$catch_shares[find] <- "TRUE"
+  }
+
   # Assign gear and fleet groups
   data$gear_groups <- NA
   for (g in 1:length(gear_groups)){
@@ -44,5 +52,7 @@ create_groups <- function(
     glue::glue("The following state/areas are not included in the fleet groupings and will be omitted: {fleet}.")
     data <- data[!is.na(data$fleet_groups), ]
   }
+
+  data$fleet <- apply(data[, c("gear_groups", "fleet_groups")], 1, paste, collapse = "-")
   return(data)
 }
