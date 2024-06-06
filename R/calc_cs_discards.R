@@ -3,8 +3,6 @@
 #' @param dir Directory location to save files.
 #' @param data A data frame of WCGOP catch data filtered down to only catch share data
 #' @param conf_data_check Dataframe with the number of observations, trips, and vessels by fleet.
-#' @param redact Switch to remove any confidential data records from output.
-#'
 #'
 #' @author Chantel Wetzel
 #' @export
@@ -12,13 +10,17 @@
 calc_cs_discards <- function(
   dir = NULL,
   data,
-  conf_data_check,
-  redact = TRUE) {
+  conf_data_check) {
 
   if (any(data$catch_shares == FALSE)) {
     data <- data[data$catch_shares == TRUE, ]
   }
 
+  if (sum(colnames(data) == "emtrip_id") == 1) {
+    add_name <- "_em"
+  } else {
+    add_name <- NULL
+  }
 
   discards <- data |>
     dplyr::group_by(year, fleet) |>
@@ -35,18 +37,19 @@ calc_cs_discards <- function(
     y = discards,
     by = c("fleet", "year"))
 
-  # Add a flag for confidential records
-  out$nonconfidential <- NULL
-  out$nonconfidential <- ifelse(out$n_vessels >= 3, TRUE, FALSE)
-  if (redact & sum(out$nonconfidential) != length(out$nonconfidential)) {
-    find_ci <- which(out$nonconfidential == FALSE)
-    out[find_ci, c("observed_discard_mt", "observed_retained_mt", "discard_rate")] <- "confidential"
-  }
-
   if (!is.null(dir)) {
     species <- tolower(unique(data[, "species"]))
+    remove <- ifelse(out$n_vessels >= 3, FALSE, TRUE)
+    if (any(remove)) {
+      out_redacted <- out
+      out_redacted[remove, c("observed_discard_mt", "observed_retained_mt", "discard_rate")] <- "confidential"
+      write.csv(out_redacted,
+                file = file.path(dir, paste0(tolower(species), add_name, "_catch_share_discards_redacted.csv")),
+                row.names = FALSE)
+    }
+
     write.csv(out,
-              file = file.path(dir, paste0(tolower(species), "_catch_share_discards.csv")),
+              file = file.path(dir, paste0(tolower(species), add_name, "_catch_share_discards.csv")),
               row.names = FALSE)
   } else {
     warning("No directory provided. Catch share discard rates not saved.")

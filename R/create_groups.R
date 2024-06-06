@@ -23,7 +23,8 @@ create_groups <- function(
 
 
   data$catch_shares <- "FALSE"
-  catch_shares <- c('Catch Shares', 'Catch Shares EM', 'LE CA Halibut','Midwater Hake',  'Midwater Rockfish')
+  catch_shares <- c('Catch Shares', 'Catch Shares EM', 'LE CA Halibut','Midwater Hake',  'Midwater Rockfish',
+                    'Midwater Hake EM', 'Midwater Rockfish EM')
   find <- which(data$sector %in% catch_shares & data$year >= 2011)
   if (length(find) > 0){
     data$catch_shares[find] <- "TRUE"

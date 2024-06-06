@@ -19,13 +19,12 @@ boostrap_discard <- function(
   data,
   boot_number = boot_number,
   boot_variable = "r_port_group",
-  seed = NULL,
-  redact = TRUE) {
+  seed_number = NULL) {
 
-  if (!is.null(seed)) {
-    set.seed(seed)
+  if (!is.null(seed_number)) {
+    set.seed(seed_number)
   }
-  years <- sort(unique(data[, "ryear"]))
+  years <- sort(unique(data[, "year"]))
   pe <- vector(mode = "list", length = length(years))
   out_df <- NULL
 
@@ -33,7 +32,7 @@ boostrap_discard <- function(
 
     pe[[yr]] <- list()
 
-    data_yr <- data[which(data[,"ryear"] == years[yr]), ]
+    data_yr <- data[which(data[,"year"] == years[yr]), ]
 
     # work within each strata separately, to get statistics by strata
     data_strat <- split(
@@ -107,13 +106,17 @@ boostrap_discard <- function(
 
   all_boot_data <- dplyr::left_join(cf_data, boot_out)
   all_boot_data <- as.data.frame(all_boot_data)
-  remove <- which(all_boot_data[, "n_vessels"] < 3)
-  if (length(remove) > 0) {
-    all_boot_data[remove, 8:ncol(all_boot_data)] <- "confidential"
-  }
 
   if (!is.null(dir)) {
     species <- tolower(unique(data[, "species"]))
+    remove <- ifelse(all_boot_data$n_vessels >= 3, FALSE, TRUE)
+    if (any(remove)) {
+      all_boot_data_redacted <- all_boot_data
+      all_boot_data_redacted[remove, c("observed_discard_mt", "observed_retained_mt", "discard_rate")] <- "confidential"
+      write.csv(all_boot_data_redacted,
+                file = file.path(dir, paste0(tolower(species), "_noncatch_share_discards_redacted.csv")),
+                row.names = FALSE)
+    }
     write.csv(all_boot_data,
               file = file.path(dir, paste0(tolower(species), "_noncatch_share_discards.csv")),
               row.names = FALSE)

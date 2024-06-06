@@ -24,10 +24,18 @@ check_confidential <- function(
   fleet_groups,
   fleet_names){
 
-  if (length(c("fleet_groups", "gear_groups") %in% colnames(data)) != 2) {
+  if (sum(colnames(data) == "emtrip_id") == 1) {
+    data$trip_id <- data$emtrip_id
+    add_name <- "_em"
+  } else {
+    add_name <- NULL
+  }
 
-    # Remove duplicate columns
-    data <- data[, which(!colnames(data) %in% c("MT", "SPGRFTOB1", "SCIENTIFIC_NAME"))]
+  if (length(c("fleet_groups", "gear_groups") %in% colnames(data)) != 2) {
+    if (sum(colnames(data) == "trip_id") == 1){
+      # Remove duplicate columns
+      data <- data[, which(!colnames(data) %in% c("MT", "SPGRFTOB1", "SCIENTIFIC_NAME"))]
+    }
     colnames(data)[which(colnames(data) == "gear")] <- "gear_to_use"
     colnames(data) <- tolower(colnames(data))
     if ("ryear" %in% colnames(data)) {
@@ -77,10 +85,10 @@ check_confidential <- function(
 
   if (!is.null(dir)) {
     write.csv(vessels_by_year,
-              file = file.path(dir, paste0(tolower(species), "_confidentiality.csv")),
+              file = file.path(dir, paste0(tolower(species), "_confidentiality", add_name, ".csv")),
               row.names = FALSE)
     write.csv(vessels_by_year_cs,
-              file = file.path(dir, paste0(tolower(species), "_cs_confidentiality.csv")),
+              file = file.path(dir, paste0(tolower(species), "_catch_share_confidentiality",  add_name, ".csv")),
               row.names = FALSE)
   }
 
