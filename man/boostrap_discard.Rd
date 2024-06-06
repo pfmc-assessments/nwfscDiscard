@@ -9,8 +9,7 @@ boostrap_discard(
   data,
   boot_number = boot_number,
   boot_variable = "r_port_group",
-  seed = NULL,
-  redact = TRUE
+  seed_number = NULL
 )
 }
 \arguments{

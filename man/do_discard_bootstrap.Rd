@@ -15,7 +15,7 @@ do_discard_bootstrap(
   fleet_groups,
   fleet_names,
   seed_number = 1,
-  redact = TRUE
+  rm_em_data = FALSE
 )
 }
 \arguments{
@@ -36,9 +36,12 @@ do_discard_bootstrap(
 
 \item{fleet_names}{Vector of fleet names (example: c("coastwide")).}
 
-\item{gear_name}{Vector of gear group names (example: c("trawl", "fixed gear")).}
+\item{seed_number}{The seed number.}
 
-\item{ratio_type}{}
+\item{rm_em_data}{Logical indicating whether EM records should be removed from the observer
+catch records (OBCatch) data file.}
+
+\item{gear_name}{Vector of gear group names (example: c("trawl", "fixed gear")).}
 }
 \description{
 Bootstrap uncertainty and summarize WCGOP discard data
