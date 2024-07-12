@@ -3,6 +3,7 @@
 export(boostrap_discard)
 export(calc_comps)
 export(calc_cs_discards)
+export(calc_prop_gemm_catch)
 export(check_confidential)
 export(combine_cs_discards)
 export(create_groups)
