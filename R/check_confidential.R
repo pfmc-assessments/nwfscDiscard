@@ -84,6 +84,7 @@ check_confidential <- function(
   }
 
   if (!is.null(dir)) {
+
     write.csv(vessels_by_year,
               file = file.path(dir, paste0(tolower(species), "_confidentiality", add_name, ".csv")),
               row.names = FALSE)

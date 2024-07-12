@@ -36,6 +36,12 @@ do_discard_bootstrap <- function(
     stop(glue::glue("{species} not found in the data."))
   }
 
+  if (grepl("/", species)) {
+    species_name_mod <- gsub("/", " ", species)
+    replace <- which(data[, "species"] == species)
+    data[replace, "species"] <- species_name_mod
+    species <- species_name_mod
+  }
 
   # Format the observer catch data column names
   if (sum(colnames(data) == "TRIP_ID") == 1) {
@@ -71,13 +77,15 @@ do_discard_bootstrap <- function(
 
   ncs_data_out <- cs_data_out <- em_data_out <- NULL
 
-  if (rm_em_data & sum(colnames(data) == "emtrip_id") == 1) {
+  if (rm_em_data & sum(colnames(data) == "trip_id") == 1) {
     # Only do this if we are also processing the EM catch data file to avoid using records twice
     # Doing this after the confidentiality check since if they are removed the confidentiality check
     # should still include these vessels since the the discard rates from EM and non-EM catch share
     # vessels would likely be combined external to the data processing.
-    remove <- which(data[, "sectors"] == "Catch Shares EM")
-    data <- data[-remove, ]
+    remove <- which(data[, "sector"] == "Catch Shares EM")
+    if (length(remove) > 0 ) {
+      data <- data[-remove, ]
+    }
   }
 
   if (sum(colnames(data) == "emtrip_id") == 1) {
