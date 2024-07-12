@@ -110,16 +110,16 @@ boostrap_discard <- function(
   if (!is.null(dir)) {
     species <- tolower(unique(data[, "species"]))
     remove <- ifelse(all_boot_data$n_vessels >= 3, FALSE, TRUE)
+    write.csv(all_boot_data,
+              file = file.path(dir, paste0(species, "_noncatch_share_discards.csv")),
+              row.names = FALSE)
     if (any(remove)) {
-      all_boot_data_redacted <- all_boot_data
-      all_boot_data_redacted[remove, c("observed_discard_mt", "observed_retained_mt", "discard_rate")] <- "confidential"
-      write.csv(all_boot_data_redacted,
-                file = file.path(dir, paste0(tolower(species), "_noncatch_share_discards_redacted.csv")),
+      all_boot_data[remove, 8:ncol(all_boot_data)] <- "confidential"
+      write.csv(all_boot_data,
+                file = file.path(dir, paste0(species, "_noncatch_share_discards_redacted.csv")),
                 row.names = FALSE)
     }
-    write.csv(all_boot_data,
-              file = file.path(dir, paste0(tolower(species), "_noncatch_share_discards.csv")),
-              row.names = FALSE)
+
   } else {
     warning("No directory provided. Catch share discard rates not saved.")
   }
