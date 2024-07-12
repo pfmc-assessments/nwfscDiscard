@@ -14,6 +14,30 @@ combine_cs_discards <- function(
   em_data,
   dir = NULL) {
 
+  data <- rbind (cs_data, em_data)
 
+  combined_data <- data |>
+    dplyr::group_by(year, fleet) |>
+    dplyr::summarise(
+      catch_shares = TRUE,
+      n_obs = sum(n_obs),
+      n_hauls = sum(n_hauls),
+      n_trips = sum(n_trips),
+      n_vessels = sum(n_vessels),
+      observed_discard_mt = sum(observed_discard_mt),
+      observed_retained_mt = sum(observed_retained_mt),
+      discard_rate = round(observed_discard_mt / (observed_discard_mt + observed_retained_mt), 3)
+    )
 
+  if (!is.null(dir)) {
+    species_to_save <- tolower(species)
+    if (grepl("/", species)) {
+      species_to_save <- tolower(gsub("/", " ", species))
+    }
+    write.csv(combined_data,
+              file = file.path(dir, paste0(species_to_save, "_combined_cs_rates.csv")),
+              row.names = FALSE)
+  }
+
+  return(combined_data)
 }
