@@ -163,7 +163,7 @@ Additionally, a subset of catch share vessels use electronic monitoring (EM) rat
 that have a physical observer onboard for all trips. These vessels have specific
 rules about what they can and cannot be discarded at-sea and which species need
 to be recorded in the logbook and/or monitored by video. The EM program manual
-can be found (online)[https://www.fisheries.noaa.gov/s3/2023-11/2024ElectronicMonitoring-ProgramManual-Updated-November2023.pdf] and includes a list of IFQ species.  All IFQ species
+can be found [online](https://www.fisheries.noaa.gov/s3/2023-11/2024ElectronicMonitoring-ProgramManual-Updated-November2023.pdf) and includes a list of IFQ species.  All IFQ species
 can be discarded at sea within view of cameras. If appropriate, the discard from
 EM vessels can be processed and are treated as a census of discarding. A subset
 of trips for vessels that use EM will have a physical onboard observer and be
