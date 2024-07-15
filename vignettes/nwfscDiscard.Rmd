@@ -1,0 +1,220 @@
+---
+title: "nwfscDiscard"
+author: "Chantel Wetzel"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{nwfscDiscard}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+The **nwfscDiscard** package was written by scientists at the Northwest Fisheries Science Center (NWFSC) to explore and process West Coast Groundfish Observer Program (WCGOP) data. This package can be
+used to process WCGOP data for West Coast groundfish assessments.
+
+## Use
+
+**nwfscDiscard** can be used to:
+
+* Ensure confidentiality is met based on the requested stratification of data
+by gear and area.
+
+* Summarize observed discard rates by gear and area for catch share and non-
+catch share vessels.
+
+* Summarize biological data from observed discards for use in groundfish
+stock assessments.
+
+* Visualize data.
+
+## Functions
+
+A list of all functions in the packages can be viewed by:
+
+```r
+ls("package:nwfscDiscard")
+```
+
+## Examples
+
+### Defining Data Structure
+
+The code combines the data into fleet structures requested by users based on gear
+and areas. The gear and area grouping are passed to all of the processing functions:
+
+```{r strata}
+# Gears to keep and how they should be grouped within a list:
+gear_groups = list(c("Bottom Trawl", "Midwater Trawl", "Shrimp Trawl"), c("Hook & Line", "Pot"))
+gear_names = c("trawl", "fixed gear")
+
+# Fleet areas:
+fleet_groups = list(c("WA", "OR", "CA"))
+fleet_names = c("coastwide")
+```
+
+where the above code groups the data into two coastwide fleets based upon gear
+types. The data can be grouped by state or by latitude.  The WCGOP data contains
+both a departure and return states.  Generally, the return state is used to group
+data based on state areas. If the data area being grouped by latitude this can be
+done by using the latitude of the set (SET_LAT), the average latitude across a
+set (AVG_LAT), or by the latitude that the gear was retreived (UP_LAT).  If the
+data needs to be split north and south of 40 10 N. latitude, the WCGOP data contains
+a field that specifies north or south based on the average latitude (AREA). Since
+the data can be split across various fields (state or latitude) the column name
+to specify the grouping needs to be specified:
+
+```{r grouping}
+fleet_colname = "r_state"
+```
+
+where the above example groups the data based on the return state. The fleet 
+column name should be a column in the data.
+
+Once the grouping has been specified, the data are checked to ensure the grouping
+can meet confidentiality rules. This check based on all the data within the specified
+grouping, not just the observations of a particular species.
+
+```{r confidential}
+check_confidential(
+    dir = here::here(),
+    data = catch,
+    gear_groups = gear_groups,
+    gear_names = gear_names,
+    fleet_colname = "r_state",
+    fleet_groups = fleet_groups,
+    fleet_names = fleet_names)
+```
+
+### Biological Data
+
+The length and or age compositions of discarded fish can be the processed for use 
+in assessment.
+
+```{r comps}
+get_biological_data(
+    dir = here::here(),
+    data = biological_data,
+    species = "Sablefish",
+    len_bins = seq(20, 90, 2),
+    age_bins = 1:50,
+    gear_groups = gear_groups,
+    gear_names = gear_names,
+    fleet_colname = "r_state",
+    fleet_groups = fleet_groups,
+    fleet_names = fleet_names)
+```
+
+where the species name, length, and age bins need to be provided.
+
+The mean weight of the discarded fish can also be calculated for using in an 
+assessment:
+
+```{r comps}
+get_mean_weights(
+    dir = here::here(),
+    data = catch_data,
+    species = "Sablefish",
+    gear_groups = gear_groups,
+    gear_names = gear_names,
+    fleet_colname = "r_state",
+    fleet_groups = fleet_groups,
+    fleet_names = fleet_names)
+```
+
+### Discard Rates and Total Observed Discards
+
+The observed catch are then processed for discard rates or totals.  Data from
+catch share and non-catch share vessels are processed separately based on 
+attributes of the data. Catch share vessels have 100 percent observer coverage 
+starting in 2011 and are treated as a census of discarding in the IFQ fishery.  
+Non-catch share vessels have variable rates of observer coverage and the discard 
+rates are based on the observed trips. These trips are then bootstrap to estimate 
+uncertainty around the discard rates. 
+
+```{r rates}
+ob_out <- do_discard_bootstrap(
+  dir = here::here(),
+  data = catch_data,
+  species = "Sablefish",
+  boot_number = 10000,
+  gear_groups = gear_groups,
+  gear_names = gear_names,
+  fleet_colname = fleet_colname,
+  fleet_groups = fleet_groups,
+  fleet_names = fleet_names,
+  seed_number = 1,
+  rm_em_data = TRUE)
+```
+
+Additionally, a subset of catch share vessels use electronic monitoring (EM) rather
+that have a physical observer onboard for all trips. These vessels have specific
+rules about what they can and cannot be discarded at-sea and which species need
+to be recorded in the logbook and/or monitored by video. The EM program manual
+can be found (online)[https://www.fisheries.noaa.gov/s3/2023-11/2024ElectronicMonitoring-ProgramManual-Updated-November2023.pdf] and includes a list of IFQ species.  All IFQ species
+can be discarded at sea within view of cameras. If appropriate, the discard from
+EM vessels can be processed and are treated as a census of discarding. A subset
+of trips for vessels that use EM will have a physical onboard observer and be
+included in the catch records. If EM discards are processed and added to the 
+observed non-EM catch share discards, one must exclude the physical onobard observer 
+data from EM vessels since this would duplicate records.
+
+
+```{r em-rates}
+em_out <- do_discard_bootstrap(
+  dir = here::here(),
+  data = em_catch_data,
+  species = "Sablefish",
+  gear_groups = gear_groups,
+  gear_names = gear_names,
+  fleet_colname = fleet_colname,
+  fleet_groups = fleet_groups,
+  fleet_names = fleet_names)
+```
+
+The discard rates from the catch share vessels with onboard observers and EM 
+observation can be then combined:
+
+```{r combine}
+combine_cs_discards(
+  cs_data = ob_out$cs,
+  em_data = em_out$em,
+  dir = here::here)
+```
+
+### Visualizing the Data
+
+Currently, there are a couple of functions that provide summaries and plots of the 
+data to help users.  The first is a function that pull data from the GEMM which
+has expanded catches based on the retained and discard observations by WCGOP. The
+catch by sector is then summarized by sectors that are catch shares or non-catch
+shares.  This information could be used to better inform how the rates between the
+groups could be combined for use in an assessment (e.g., are the majority of catches
+occurring by catch share vessels?).
+
+```{r gemm}
+calc_prop_gemm_catch(
+  dir = here::here(),
+  species = "Sablefish")
+```
+
+Visualize the discard length or ages by gear type or catch share vs. non-catch
+shares:
+
+```{r bio-plot}
+plot_wcgop_bio(
+  data = biological_data,
+  species = "Sablefish",
+  plot = 1:2,
+  column = "length")
+```
+
+
