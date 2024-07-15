@@ -14,25 +14,25 @@
 #'
 #'
 create_groups <- function(
-  data,
-  gear_groups,
-  gear_names,
-  fleet_colname,
-  fleet_groups,
-  fleet_names){
-
-
+    data,
+    gear_groups,
+    gear_names,
+    fleet_colname,
+    fleet_groups,
+    fleet_names) {
   data$catch_shares <- "FALSE"
-  catch_shares <- c('Catch Shares', 'Catch Shares EM', 'LE CA Halibut','Midwater Hake',  'Midwater Rockfish',
-                    'Midwater Hake EM', 'Midwater Rockfish EM')
+  catch_shares <- c(
+    "Catch Shares", "Catch Shares EM", "LE CA Halibut", "Midwater Hake", "Midwater Rockfish",
+    "Midwater Hake EM", "Midwater Rockfish EM"
+  )
   find <- which(data$sector %in% catch_shares & data$year >= 2011)
-  if (length(find) > 0){
+  if (length(find) > 0) {
     data$catch_shares[find] <- "TRUE"
   }
 
   # Assign gear and fleet groups
   data$gear_groups <- NA
-  for (g in 1:length(gear_groups)){
+  for (g in 1:length(gear_groups)) {
     find <- which(data$gear_to_use %in% unlist(gear_groups[g]))
     data[find, "gear_groups"] <- gear_names[g]
   }
@@ -43,7 +43,7 @@ create_groups <- function(
     data <- data[!is.na(data$gear_groups), ]
   }
   data$fleet_groups <- NA
-  for (f in 1:length(fleet_groups)){
+  for (f in 1:length(fleet_groups)) {
     find <- which(data[, fleet_colname] %in% unlist(fleet_groups[f]))
     data[find, "fleet_groups"] <- fleet_names[f]
   }

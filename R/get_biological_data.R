@@ -17,17 +17,16 @@
 #'
 #'
 get_biological_data <- function(
-  dir,
-  data,
-  species,
-  len_bins,
-  age_bins,
-  gear_groups,
-  gear_names,
-  fleet_colname,
-  fleet_groups,
-  fleet_names){
-
+    dir,
+    data,
+    species,
+    len_bins,
+    age_bins,
+    gear_groups,
+    gear_names,
+    fleet_colname,
+    fleet_groups,
+    fleet_names) {
   if (length(gear_names) != length(gear_groups)) {
     stop("The gear groups and names are not of the same length.")
   }
@@ -47,15 +46,16 @@ get_biological_data <- function(
     gear_names = gear_names,
     fleet_colname = fleet_colname,
     fleet_groups = fleet_groups,
-    fleet_names = fleet_names)
+    fleet_names = fleet_names
+  )
 
 
   # Calculate weighting
   data$exp1 <- data[, "species_number"] / data[, "bio_specimen_count"]
   data$exp_sp_wt[is.na(data$exp_sp_wt)] <-
-    (data$species_weight[is.na(data$exp_sp_wt)]/
-       data$hooks_sampled[is.na(data$exp_sp_wt)])*
-    data$total_hooks[is.na(data$exp_sp_wt)]
+    (data$species_weight[is.na(data$exp_sp_wt)] /
+      data$hooks_sampled[is.na(data$exp_sp_wt)]) *
+      data$total_hooks[is.na(data$exp_sp_wt)]
 
   data$exp2 <- data$exp_sp_wt / data$species_weight
   data$wghtd_freq <- data$frequency * data$exp1 * data$exp2
@@ -81,5 +81,4 @@ get_biological_data <- function(
       comp_column = "age"
     )
   }
-
 }

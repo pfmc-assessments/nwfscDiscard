@@ -1,29 +1,26 @@
-Package: nwfscDiscard
 Type: Package
+Package: nwfscDiscard
 Title: Northwest Fisheries Science Center
 Version: 2.0
 Date: 2018-04-13
-Authors@R:
-    c(person(given = c("Chantel", "R."),
-             family = "Wetzel",
-             role = c("aut", "cre"),
-             email = "chantel.wetzel@noaa.gov"),
-      person(given = c("Allan", "C."),
-             family = "Hicks",
-             role = c("aut")))
+Authors@R:c(
+    person(c("Chantel", "R."), "Wetzel", , "chantel.wetzel@noaa.gov", role = c("aut", "cre")),
+    person(c("Allan", "C."), "Hicks", role = "aut")
+  )
 Maintainer: chantel.wetzel <chantel.wetzel@noaa.gov>
 Description: Northwest Fisheries Science Center WCGOP data processing.
 License: GPL (>=3)
-Suggests:
-  knitr,
-  rmarkdown
-Imports:
-	dplyr,
-	glue,
-	ggplot2
 Depends:
     dplyr (>= 1.0.0),
     R (>= 4.0)
+Imports:
+    dplyr,
+    ggplot2,
+    glue
+Suggests:
+    knitr,
+    rmarkdown
+VignetteBuilder: 
+    knitr
 Encoding: UTF-8
-VignetteBuilder: knitr
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2

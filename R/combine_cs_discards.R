@@ -10,11 +10,10 @@
 #'
 #
 combine_cs_discards <- function(
-  cs_data,
-  em_data,
-  dir = NULL) {
-
-  data <- rbind (cs_data, em_data)
+    cs_data,
+    em_data,
+    dir = NULL) {
+  data <- rbind(cs_data, em_data)
 
   combined_data <- data |>
     dplyr::group_by(year, fleet) |>
@@ -35,8 +34,9 @@ combine_cs_discards <- function(
       species_to_save <- tolower(gsub("/", " ", species))
     }
     write.csv(combined_data,
-              file = file.path(dir, paste0(species_to_save, "_combined_cs_rates.csv")),
-              row.names = FALSE)
+      file = file.path(dir, paste0(species_to_save, "_combined_cs_rates.csv")),
+      row.names = FALSE
+    )
   }
 
   return(combined_data)
