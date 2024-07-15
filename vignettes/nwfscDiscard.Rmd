@@ -51,7 +51,7 @@ ls("package:nwfscDiscard")
 The code combines the data into fleet structures requested by users based on gear
 and areas. The gear and area grouping are passed to all of the processing functions:
 
-```{r strata}
+```r
 # Gears to keep and how they should be grouped within a list:
 gear_groups = list(c("Bottom Trawl", "Midwater Trawl", "Shrimp Trawl"), c("Hook & Line", "Pot"))
 gear_names = c("trawl", "fixed gear")
@@ -72,7 +72,7 @@ a field that specifies north or south based on the average latitude (AREA). Sinc
 the data can be split across various fields (state or latitude) the column name
 to specify the grouping needs to be specified:
 
-```{r grouping}
+```r
 fleet_colname = "r_state"
 ```
 
@@ -83,7 +83,7 @@ Once the grouping has been specified, the data are checked to ensure the groupin
 can meet confidentiality rules. This check based on all the data within the specified
 grouping, not just the observations of a particular species.
 
-```{r confidential}
+```r
 check_confidential(
     dir = here::here(),
     data = catch,
@@ -99,7 +99,7 @@ check_confidential(
 The length and or age compositions of discarded fish can be the processed for use 
 in assessment.
 
-```{r comps}
+```r
 get_biological_data(
     dir = here::here(),
     data = biological_data,
@@ -118,7 +118,7 @@ where the species name, length, and age bins need to be provided.
 The mean weight of the discarded fish can also be calculated for using in an 
 assessment:
 
-```{r comps}
+```r
 get_mean_weights(
     dir = here::here(),
     data = catch_data,
@@ -140,7 +140,7 @@ Non-catch share vessels have variable rates of observer coverage and the discard
 rates are based on the observed trips. These trips are then bootstrap to estimate 
 uncertainty around the discard rates. 
 
-```{r rates}
+```r
 ob_out <- do_discard_bootstrap(
   dir = here::here(),
   data = catch_data,
@@ -168,7 +168,7 @@ observed non-EM catch share discards, one must exclude the physical onobard obse
 data from EM vessels since this would duplicate records.
 
 
-```{r em-rates}
+```r
 em_out <- do_discard_bootstrap(
   dir = here::here(),
   data = em_catch_data,
@@ -183,7 +183,7 @@ em_out <- do_discard_bootstrap(
 The discard rates from the catch share vessels with onboard observers and EM 
 observation can be then combined:
 
-```{r combine}
+```r
 combine_cs_discards(
   cs_data = ob_out$cs,
   em_data = em_out$em,
@@ -200,7 +200,7 @@ shares.  This information could be used to better inform how the rates between t
 groups could be combined for use in an assessment (e.g., are the majority of catches
 occurring by catch share vessels?).
 
-```{r gemm}
+```r
 calc_prop_gemm_catch(
   dir = here::here(),
   species = "Sablefish")
@@ -209,7 +209,7 @@ calc_prop_gemm_catch(
 Visualize the discard length or ages by gear type or catch share vs. non-catch
 shares:
 
-```{r bio-plot}
+```r 
 plot_wcgop_bio(
   data = biological_data,
   species = "Sablefish",
