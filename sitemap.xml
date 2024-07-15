@@ -1,0 +1,21 @@
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/articles/nwfscDiscard.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/reference/boostrap_discard.html</loc></url>
+<url><loc>/reference/calc_comps.html</loc></url>
+<url><loc>/reference/calc_cs_discards.html</loc></url>
+<url><loc>/reference/calc_prop_gemm_catch.html</loc></url>
+<url><loc>/reference/check_confidential.html</loc></url>
+<url><loc>/reference/combine_cs_discards.html</loc></url>
+<url><loc>/reference/create_groups.html</loc></url>
+<url><loc>/reference/do_bootstrap.html</loc></url>
+<url><loc>/reference/do_discard_bootstrap.html</loc></url>
+<url><loc>/reference/get_biological_data.html</loc></url>
+<url><loc>/reference/get_mean_weights.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/plot_wcgop_bio.html</loc></url>
+</urlset>
+
