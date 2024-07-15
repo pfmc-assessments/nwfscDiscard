@@ -37,6 +37,7 @@ get_biological_data <- function(
   colnames(data)[which(colnames(data) == "gear")] <- "gear_to_use"
   colnames(data) <- tolower(colnames(data))
   data$year <- data$ryear
+  data$r_state <- data$r_state.x
   data <- data[which(data$common_name == species & data$catch_disposition == "D"), ]
 
   # Assign gear and fleet groups
