@@ -53,12 +53,12 @@ and areas. The gear and area grouping are passed to all of the processing functi
 
 ```r
 # Gears to keep and how they should be grouped within a list:
-gear_groups = list(c("Bottom Trawl", "Midwater Trawl", "Shrimp Trawl"), c("Hook & Line", "Pot"))
-gear_names = c("trawl", "fixed gear")
+gear_groups <- list(c("Bottom Trawl", "Midwater Trawl", "Shrimp Trawl"), c("Hook & Line", "Pot"))
+gear_names <- c("trawl", "fixed gear")
 
 # Fleet areas:
-fleet_groups = list(c("WA", "OR", "CA"))
-fleet_names = c("coastwide")
+fleet_groups <- list(c("WA", "OR", "CA"))
+fleet_names <- c("coastwide")
 ```
 
 where the above code groups the data into two coastwide fleets based upon gear
@@ -85,13 +85,14 @@ grouping, not just the observations of a particular species.
 
 ```r
 check_confidential(
-    dir = here::here(),
-    data = catch,
-    gear_groups = gear_groups,
-    gear_names = gear_names,
-    fleet_colname = "r_state",
-    fleet_groups = fleet_groups,
-    fleet_names = fleet_names)
+  dir = here::here(),
+  data = catch,
+  gear_groups = gear_groups,
+  gear_names = gear_names,
+  fleet_colname = "r_state",
+  fleet_groups = fleet_groups,
+  fleet_names = fleet_names
+)
 ```
 
 ### Biological Data
@@ -101,16 +102,17 @@ in assessment.
 
 ```r
 get_biological_data(
-    dir = here::here(),
-    data = biological_data,
-    species = "Sablefish",
-    len_bins = seq(20, 90, 2),
-    age_bins = 1:50,
-    gear_groups = gear_groups,
-    gear_names = gear_names,
-    fleet_colname = "r_state",
-    fleet_groups = fleet_groups,
-    fleet_names = fleet_names)
+  dir = here::here(),
+  data = biological_data,
+  species = "Sablefish",
+  len_bins = seq(20, 90, 2),
+  age_bins = 1:50,
+  gear_groups = gear_groups,
+  gear_names = gear_names,
+  fleet_colname = "r_state",
+  fleet_groups = fleet_groups,
+  fleet_names = fleet_names
+)
 ```
 
 where the species name, length, and age bins need to be provided.
@@ -120,14 +122,15 @@ assessment:
 
 ```r
 get_mean_weights(
-    dir = here::here(),
-    data = catch_data,
-    species = "Sablefish",
-    gear_groups = gear_groups,
-    gear_names = gear_names,
-    fleet_colname = "r_state",
-    fleet_groups = fleet_groups,
-    fleet_names = fleet_names)
+  dir = here::here(),
+  data = catch_data,
+  species = "Sablefish",
+  gear_groups = gear_groups,
+  gear_names = gear_names,
+  fleet_colname = "r_state",
+  fleet_groups = fleet_groups,
+  fleet_names = fleet_names
+)
 ```
 
 ### Discard Rates and Total Observed Discards
@@ -152,7 +155,8 @@ ob_out <- do_discard_bootstrap(
   fleet_groups = fleet_groups,
   fleet_names = fleet_names,
   seed_number = 1,
-  rm_em_data = TRUE)
+  rm_em_data = TRUE
+)
 ```
 
 Additionally, a subset of catch share vessels use electronic monitoring (EM) rather
@@ -177,7 +181,8 @@ em_out <- do_discard_bootstrap(
   gear_names = gear_names,
   fleet_colname = fleet_colname,
   fleet_groups = fleet_groups,
-  fleet_names = fleet_names)
+  fleet_names = fleet_names
+)
 ```
 
 The discard rates from the catch share vessels with onboard observers and EM 
@@ -187,7 +192,8 @@ observation can be then combined:
 combine_cs_discards(
   cs_data = ob_out$cs,
   em_data = em_out$em,
-  dir = here::here)
+  dir = here::here
+)
 ```
 
 ### Visualizing the Data
@@ -203,7 +209,8 @@ occurring by catch share vessels?).
 ```r
 calc_prop_gemm_catch(
   dir = here::here(),
-  species = "Sablefish")
+  species = "Sablefish"
+)
 ```
 
 Visualize the discard length or ages by gear type or catch share vs. non-catch
@@ -214,7 +221,8 @@ plot_wcgop_bio(
   data = biological_data,
   species = "Sablefish",
   plot = 1:2,
-  column = "length")
+  column = "length"
+)
 ```
 
 

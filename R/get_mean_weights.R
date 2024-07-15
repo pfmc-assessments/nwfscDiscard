@@ -23,8 +23,7 @@ get_mean_weights <- function(
     gear_names,
     fleet_colname,
     fleet_groups,
-    fleet_names){
-
+    fleet_names) {
   # Remove duplicate columns
   data <- data[, which(!colnames(data) %in% c("MT", "SPGRFTOB1", "SCIENTIFIC_NAME"))]
   colnames(data)[which(colnames(data) == "gear")] <- "gear_to_use"
@@ -49,16 +48,17 @@ get_mean_weights <- function(
     gear_names = gear_names,
     fleet_colname = fleet_colname,
     fleet_groups = fleet_groups,
-    fleet_names = fleet_names)
+    fleet_names = fleet_names
+  )
 
-  if (sum(is.na(data$exp_sp_wt)) > 0 ){
+  if (sum(is.na(data$exp_sp_wt)) > 0) {
     data$exp_sp_wt[is.na(data$exp_sp_wt)] <- 0
   }
-  if (sum(is.na(data$exp_sp_wt)) > 0 ){
+  if (sum(is.na(data$exp_sp_wt)) > 0) {
     data$exp_sp_wt[is.na(data$exp_sp_wt)] <- 0
-    data$exp_sp_ct[is.na(ob$exp_sp_wt)]  <- 1
+    data$exp_sp_ct[is.na(ob$exp_sp_wt)] <- 1
   }
-  if (sum(is.na(data$species_number)) > 0 ){
+  if (sum(is.na(data$species_number)) > 0) {
     data <- data[!is.na(data$species_number), ]
   }
 
@@ -84,11 +84,12 @@ get_mean_weights <- function(
     fleet = apply(mean_weights[, c("gear_groups", "fleet_groups")], 1, paste, collapse = "-"),
     partition = 2,
     obs = mean_weights[, "weighted_ave_w"],
-    cv = mean_weights[, "weighted_ave_w_cv"])
+    cv = mean_weights[, "weighted_ave_w_cv"]
+  )
 
   colnames(mean_bodyweight)[5:6] <- c("obs", "cv")
   write.csv(mean_bodyweight,
-            file = file.path(dir, paste0(tolower(species), "_wcgop_mean_bodyweights.csv")),
-            row.names = FALSE)
-
+    file = file.path(dir, paste0(tolower(species), "_wcgop_mean_bodyweights.csv")),
+    row.names = FALSE
+  )
 }

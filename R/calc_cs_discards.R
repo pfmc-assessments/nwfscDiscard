@@ -8,10 +8,9 @@
 #' @export
 #'
 calc_cs_discards <- function(
-  dir = NULL,
-  data,
-  conf_data_check) {
-
+    dir = NULL,
+    data,
+    conf_data_check) {
   if (any(data$catch_shares == FALSE)) {
     data <- data[data$catch_shares == TRUE, ]
   }
@@ -35,7 +34,8 @@ calc_cs_discards <- function(
   out <- dplyr::left_join(
     x = conf_data_check,
     y = discards,
-    by = c("fleet", "year"))
+    by = c("fleet", "year")
+  )
 
   if (!is.null(dir)) {
     species <- tolower(unique(data[, "species"]))
@@ -44,16 +44,17 @@ calc_cs_discards <- function(
       out_redacted <- out
       out_redacted[remove, c("observed_discard_mt", "observed_retained_mt", "discard_rate")] <- "confidential"
       write.csv(out_redacted,
-                file = file.path(dir, paste0(tolower(species), add_name, "_catch_share_discards_redacted.csv")),
-                row.names = FALSE)
+        file = file.path(dir, paste0(tolower(species), add_name, "_catch_share_discards_redacted.csv")),
+        row.names = FALSE
+      )
     }
 
     write.csv(out,
-              file = file.path(dir, paste0(tolower(species), add_name, "_catch_share_discards.csv")),
-              row.names = FALSE)
+      file = file.path(dir, paste0(tolower(species), add_name, "_catch_share_discards.csv")),
+      row.names = FALSE
+    )
   } else {
     warning("No directory provided. Catch share discard rates not saved.")
   }
   return(out)
 }
-

@@ -20,18 +20,17 @@
 #'
 #
 do_discard_bootstrap <- function(
-  dir = NULL,
-  data,
-  species,
-  boot_number,
-  gear_groups,
-  gear_names,
-  fleet_colname,
-  fleet_groups,
-  fleet_names,
-  seed_number = 1,
-  rm_em_data = FALSE) {
-
+    dir = NULL,
+    data,
+    species,
+    boot_number,
+    gear_groups,
+    gear_names,
+    fleet_colname,
+    fleet_groups,
+    fleet_names,
+    seed_number = 1,
+    rm_em_data = FALSE) {
   if (!species %in% data[, "species"]) {
     stop(glue::glue("{species} not found in the data."))
   }
@@ -61,7 +60,8 @@ do_discard_bootstrap <- function(
     gear_names = gear_names,
     fleet_colname = fleet_colname,
     fleet_groups = fleet_groups,
-    fleet_names = fleet_names)
+    fleet_names = fleet_names
+  )
 
   data_conf_check <- check_confidential(
     dir = dir,
@@ -71,7 +71,8 @@ do_discard_bootstrap <- function(
     gear_names = gear_names,
     fleet_colname = fleet_colname,
     fleet_groups = fleet_groups,
-    fleet_names = fleet_names)
+    fleet_names = fleet_names
+  )
 
   data <- data[which(data$species == species), ]
 
@@ -83,7 +84,7 @@ do_discard_bootstrap <- function(
     # should still include these vessels since the the discard rates from EM and non-EM catch share
     # vessels would likely be combined external to the data processing.
     remove <- which(data[, "sector"] == "Catch Shares EM")
-    if (length(remove) > 0 ) {
+    if (length(remove) > 0) {
       data <- data[-remove, ]
     }
   }
@@ -94,7 +95,8 @@ do_discard_bootstrap <- function(
     em_data_out <- calc_cs_discards(
       dir = dir,
       data = data,
-      conf_data_check = conf_data_check)
+      conf_data_check = conf_data_check
+    )
   }
 
   if (sum(colnames(data) == "trip_id") == 1) {
@@ -103,44 +105,44 @@ do_discard_bootstrap <- function(
     ncs_data <- data[-ind, ]
 
     # calculate catch shares discard quantities
-    if(nrow(cs_data) > 0) {
+    if (nrow(cs_data) > 0) {
       conf_data_check <- data_conf_check[[2]]
       conf_data_check <- conf_data_check[conf_data_check$catch_shares == TRUE, ]
       cs_data_out <- calc_cs_discards(
         dir = dir,
         data = cs_data,
-        conf_data_check = conf_data_check)
-
+        conf_data_check = conf_data_check
+      )
     } else {
       message("No catch share records found in the data.")
     }
 
-    if(nrow(ncs_data) > 0) { #calculate catch shares discard quantities
+    if (nrow(ncs_data) > 0) { # calculate catch shares discard quantities
       ncs_data_out <- boostrap_discard(
         dir = dir,
         data = ncs_data,
         boot_number = boot_number,
         boot_variable = "r_port_group",
-        seed_number = seed_number)
+        seed_number = seed_number
+      )
     } else {
       message("No noncatch share records found in the data.")
     }
   }
 
-  if (!is.null(em_data_out)){
+  if (!is.null(em_data_out)) {
     em <- em_data_out
-    if (!is.null(dir)){
+    if (!is.null(dir)) {
       save(em, file = file.path(dir, paste0(tolower(species), "_discards_em.rdata")))
     }
     return(list(em = em))
   } else {
-    if (!is.null(dir)){
+    if (!is.null(dir)) {
       ncs <- ncs_data_out
       cs <- cs_data_out
       save(ncs, file = file.path(dir, paste0(tolower(species), "_discards_noncatch_shares.rdata")))
-      save(cs,  file = file.path(dir, paste0(tolower(species), "_discards_catch_shares.rdata")))
+      save(cs, file = file.path(dir, paste0(tolower(species), "_discards_catch_shares.rdata")))
     }
     return(list(cs = cs_data_out, ncs = ncs_data_out))
   }
-
 }

@@ -15,12 +15,11 @@
 #'
 #'
 plot_wcgop_bio <- function(
-  data,
-  species,
-  dir = NULL,
-  plot = 1:2,
-  column = "length"){
-
+    data,
+    species,
+    dir = NULL,
+    plot = 1:2,
+    column = "length") {
   data <- data[, which(colnames(data) != "SCIENTIFIC_NAME")]
   colnames(data)[which(colnames(data) == "gear")] <- "gear_to_use"
   colnames(data) <- tolower(colnames(data))
@@ -38,42 +37,45 @@ plot_wcgop_bio <- function(
   get_name <- unique(data$species)
 
   data$bio_plot <- data[, column]
-  if(column == "length"){
-  	y_lab = "Lenghth (cm)"
+  if (column == "length") {
+    y_lab <- "Lenghth (cm)"
   } else {
-  	y_lab = "Age"
+    y_lab <- "Age"
   }
 
   data$catch_shares <- "non_catch_shares"
   data$catch_shares[
-  	data$sector %in% c("Catch Shares", "Catch Shares EM", "Midwater Hake", "LE CA Halibut") &
-  	data$year > 2011] <- "catch_shares"
+    data$sector %in% c("Catch Shares", "Catch Shares EM", "Midwater Hake", "LE CA Halibut") &
+      data$year > 2011
+  ] <- "catch_shares"
 
   igroup <- 1
   if (igroup %in% plot) {
     p1 <- ggplot2::ggplot(data, ggplot2::aes(y = bio_plot, x = year, group = year)) +
       ggplot2::geom_boxplot() +
-      ggplot2::xlab("Year") + ggplot2::ylab(y_lab) +
+      ggplot2::xlab("Year") +
+      ggplot2::ylab(y_lab) +
       ggplot2::facet_wrap(facets = c("gear_to_use")) +
       ggplot2::scale_fill_viridis_d()
 
-    if (!is.null(dir)){
+    if (!is.null(dir)) {
       ggplot2::ggsave(
         filename = file.path(dir, paste0(species, "length_by_year_gear.png")),
         plot = p1,
         width = 14,
-        height = 7)
+        height = 7
+      )
     } else {
       p1
     }
-
   }
 
   igroup <- 2
   if (igroup %in% plot) {
     p2 <- ggplot2::ggplot(data, ggplot2::aes(y = bio_plot, x = year, group = year)) +
       ggplot2::geom_boxplot() +
-      ggplot2::xlab("Year") + ggplot2::ylab(y_lab) +
+      ggplot2::xlab("Year") +
+      ggplot2::ylab(y_lab) +
       ggplot2::facet_wrap(facets = c("catch_shares")) +
       ggplot2::scale_fill_viridis_d()
 
@@ -81,8 +83,9 @@ plot_wcgop_bio <- function(
       ggplot2::ggsave(
         filename = file.path(dir, paste0(species, "length_by_year_catch_share.png")),
         plot = p2,
-	      width = 14,
-        height = 7)
+        width = 14,
+        height = 7
+      )
     } else {
       p2
     }

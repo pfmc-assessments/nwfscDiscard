@@ -15,15 +15,14 @@
 #'
 #'
 check_confidential <- function(
-  dir = NULL,
-  data,
-  species,
-  gear_groups,
-  gear_names,
-  fleet_colname,
-  fleet_groups,
-  fleet_names){
-
+    dir = NULL,
+    data,
+    species,
+    gear_groups,
+    gear_names,
+    fleet_colname,
+    fleet_groups,
+    fleet_names) {
   if (sum(colnames(data) == "emtrip_id") == 1) {
     data$trip_id <- data$emtrip_id
     add_name <- "_em"
@@ -32,7 +31,7 @@ check_confidential <- function(
   }
 
   if (length(c("fleet_groups", "gear_groups") %in% colnames(data)) != 2) {
-    if (sum(colnames(data) == "trip_id") == 1){
+    if (sum(colnames(data) == "trip_id") == 1) {
       # Remove duplicate columns
       data <- data[, which(!colnames(data) %in% c("MT", "SPGRFTOB1", "SCIENTIFIC_NAME"))]
     }
@@ -52,16 +51,17 @@ check_confidential <- function(
       gear_names = gear_names,
       fleet_colname = fleet_colname,
       fleet_groups = fleet_groups,
-      fleet_names = fleet_names)
+      fleet_names = fleet_names
+    )
   }
 
   vessels_by_year_cs <- data |>
-  	dplyr::group_by(year, gear_groups, fleet_groups, fleet, catch_shares) |>
-  	dplyr::reframe(
-  	  n_obs = dplyr::n(),
-  	  n_hauls = length(unique(haul_id)),
-  	  n_trips = length(unique(trip_id)),
-  	  n_vessels = length(unique(drvid))
+    dplyr::group_by(year, gear_groups, fleet_groups, fleet, catch_shares) |>
+    dplyr::reframe(
+      n_obs = dplyr::n(),
+      n_hauls = length(unique(haul_id)),
+      n_trips = length(unique(trip_id)),
+      n_vessels = length(unique(drvid))
     ) |>
     dplyr::ungroup()
 
@@ -84,13 +84,14 @@ check_confidential <- function(
   }
 
   if (!is.null(dir)) {
-
     write.csv(vessels_by_year,
-              file = file.path(dir, paste0(tolower(species), "_confidentiality", add_name, ".csv")),
-              row.names = FALSE)
+      file = file.path(dir, paste0(tolower(species), "_confidentiality", add_name, ".csv")),
+      row.names = FALSE
+    )
     write.csv(vessels_by_year_cs,
-              file = file.path(dir, paste0(tolower(species), "_catch_share_confidentiality",  add_name, ".csv")),
-              row.names = FALSE)
+      file = file.path(dir, paste0(tolower(species), "_catch_share_confidentiality", add_name, ".csv")),
+      row.names = FALSE
+    )
   }
 
   conf_check <- list(

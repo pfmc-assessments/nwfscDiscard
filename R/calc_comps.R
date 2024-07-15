@@ -14,9 +14,7 @@ calc_comps <- function(
     dir,
     data,
     comp_bins,
-    comp_column = "length"
-    ){
-
+    comp_column = "length") {
   # Calculate the discard length frequencies
   comp_data <- data[!is.na(data[, comp_column]), ]
   # Perhaps add a check for lengths being available
@@ -29,7 +27,7 @@ calc_comps <- function(
     dplyr::summarise(
       n = dplyr::n(),
       weighted = sum(wghtd_freq),
-      .groups = 'drop'
+      .groups = "drop"
     ) |>
     dplyr::ungroup()
 
@@ -38,7 +36,8 @@ calc_comps <- function(
       year, gear_groups, fleet_groups, bin,
       fill = list(
         n = 0,
-        weighted = 0)
+        weighted = 0
+      )
     )
 
   all_weights <- filled_count |>
@@ -74,8 +73,8 @@ calc_comps <- function(
   sample_size$nsamp <- round(ifelse(
     sample_size$fish / sample_size$trips < 44,
     sample_size$trips + 0.138 * sample_size$fish,
-    7.06 * sample_size$hauls), 0
-  )
+    7.06 * sample_size$hauls
+  ), 0)
 
   fleet <- apply(comps[, c("gear_groups", "fleet_groups")], 1, paste, collapse = "-")
 
@@ -90,7 +89,7 @@ calc_comps <- function(
   )
   colnames(comps_out)[c(2, 4, 5, 6)] <- c("month", "sex", "partition", "nsamp")
 
-  if(comp_column == "age") {
+  if (comp_column == "age") {
     comps_out <- cbind(
       comps_out[, 1:5],
       "age_error",
@@ -118,11 +117,12 @@ calc_comps <- function(
   # }
 
   write.csv(sample_size,
-            file = file.path(dir, paste0(tolower(species), "_wcgop_sample_sizes_", comp_column, ".csv")),
-            row.names = FALSE)
+    file = file.path(dir, paste0(tolower(species), "_wcgop_sample_sizes_", comp_column, ".csv")),
+    row.names = FALSE
+  )
 
   write.csv(comps_out,
-            file = file.path(dir, paste0(tolower(species), "_wcgop_discard_", comp_column, "s.csv")),
-            row.names = FALSE)
-
+    file = file.path(dir, paste0(tolower(species), "_wcgop_discard_", comp_column, "s.csv")),
+    row.names = FALSE
+  )
 }
