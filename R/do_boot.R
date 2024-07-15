@@ -12,13 +12,12 @@
 #'
 #
 do_bootstrap <- function(
-  data,
-  boot_number) {
-
+    data,
+    boot_number) {
   boot_retain <- boot_discard <- rep(0, boot_number)
   for (i in 1:length(data)) {
-    n_vessels <- unique(data[[i]][,"drvid"])
-    for(b in 1:boot_number) {
+    n_vessels <- unique(data[[i]][, "drvid"])
+    for (b in 1:boot_number) {
       sampled_vessels <- sample(n_vessels, size = length(n_vessels), replace = TRUE)
       ind <- NULL
       for (j in 1:length(sampled_vessels)) {
@@ -31,5 +30,6 @@ do_bootstrap <- function(
 
   return(list(
     boot_retain = boot_retain,
-    boot_discard = boot_discard))
+    boot_discard = boot_discard
+  ))
 }
