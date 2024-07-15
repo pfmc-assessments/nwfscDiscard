@@ -1,19 +1,44 @@
+#' Visualize biological discard data
+#'
+#' @param dir Directory location to save files.
+#' @param data A data frame of WCGOP biological data
+#' @param species Species that you want composition data for.
+#' @param plot A vector of integers to specify which plots you would like. The
+#'   default is to print or save both figures, i.e., `plot = 1:2`. Integers
+#'   correspond to the following figures:
+#'   1. Boxplot of discard length/age by gear group and year.
+#'   2. Boxplot of discard length/age by catch share and non-catch share by year.
+#' @param column Column in the data to plot (e.g. "LENGTH").
+#'
+#' @author Chantel Wetzel
+#' @export
+#'
+#'
+plot_wcgop_bio <- function(
+  data,
+  species,
+  dir = NULL,
+  plot = 1:2,
+  column = "length"){
 
+  data <- data[, which(colnames(data) != "SCIENTIFIC_NAME")]
+  colnames(data)[which(colnames(data) == "gear")] <- "gear_to_use"
+  colnames(data) <- tolower(colnames(data))
+  data$year <- data$ryear
+  data$r_state <- data$r_state.x
+  data <- data[which(data$common_name == species & data$catch_disposition == "D"), ]
 
-plot_wcgop_bio <- function(dir, data, column = "LENGTH"){
+  if (grepl("/", species)) {
+    species_name_mod <- gsub("/", " ", species)
+    replace <- which(data[, "species"] == species)
+    data[replace, "species"] <- species_name_mod
+    species <- species_name_mod
+  }
 
-  get_name <- unique(data$COMMON_NAME)
-  species <- gsub(" ", "_", get_name)
-
-  samples_by_year <- data %>%
-  	group_by(gear, RYEAR) %>%
-  	reframe(
-  	  n_lengths = length(!is.na(LENGTH))
-    )
-  samples_by_year <- as.data.frame(samples_by_year)
+  get_name <- unique(data$species)
 
   data$bio_plot <- data[, column]
-  if(column == "LENGTH"){
+  if(column == "length"){
   	y_lab = "Lenghth (cm)"
   } else {
   	y_lab = "Age"
@@ -21,28 +46,58 @@ plot_wcgop_bio <- function(dir, data, column = "LENGTH"){
 
   data$catch_shares <- "non_catch_shares"
   data$catch_shares[
-  	data$sector %in% c("Catch Shares", "Catch Shares EM", "Midwater Hake", "LE CA Halibut") & 
-  	data$RYEAR > 2011] <- "catch_shares"
+  	data$sector %in% c("Catch Shares", "Catch Shares EM", "Midwater Hake", "LE CA Halibut") &
+  	data$year > 2011] <- "catch_shares"
 
-  ggplot(data, aes(y = LENGTH, x = RYEAR, group = RYEAR)) + 
-	geom_boxplot() + 
-    xlab("Year") + ylab(y_lab) +
-    facet_wrap(facets = c("gear")) +
-    scale_fill_viridis_d()
+  igroup <- 1
+  if (igroup %in% plot) {
+    p1 <- ggplot2::ggplot(data, ggplot2::aes(y = bio_plot, x = year, group = year)) +
+      ggplot2::geom_boxplot() +
+      ggplot2::xlab("Year") + ggplot2::ylab(y_lab) +
+      ggplot2::facet_wrap(facets = c("gear_to_use")) +
+      ggplot2::scale_fill_viridis_d()
 
-  ggsave(filename = file.path(dir, paste0(species, "length_by_year_gear.png")),
-	width = 14, height = 7)
+    if (!is.null(dir)){
+      ggplot2::ggsave(
+        filename = file.path(dir, paste0(species, "length_by_year_gear.png")),
+        plot = p1,
+        width = 14,
+        height = 7)
+    } else {
+      p1
+    }
 
-  ggplot(data, aes(y = LENGTH, x = RYEAR, group = RYEAR)) + 
-	geom_boxplot() + 
-    xlab("Year") + ylab(y_lab) +
-    facet_wrap(facets = c("catch_shares")) +
-    scale_fill_viridis_d()
+  }
 
-  ggsave(filename = file.path(dir, paste0(species, "length_by_year_catch_share.png")),
-	width = 14, height = 7)	
+  igroup <- 2
+  if (igroup %in% plot) {
+    p2 <- ggplot2::ggplot(data, ggplot2::aes(y = bio_plot, x = year, group = year)) +
+      ggplot2::geom_boxplot() +
+      ggplot2::xlab("Year") + ggplot2::ylab(y_lab) +
+      ggplot2::facet_wrap(facets = c("catch_shares")) +
+      ggplot2::scale_fill_viridis_d()
 
-  save(samples_by_year, file = file.path(dir, "samples_by_year.Rdata"))
+    if (!is.null(dir)) {
+      ggplot2::ggsave(
+        filename = file.path(dir, paste0(species, "length_by_year_catch_share.png")),
+        plot = p2,
+	      width = 14,
+        height = 7)
+    } else {
+      p2
+    }
+  }
+
+  samples_by_year <- data |>
+    dplyr::group_by(gear_to_use, catch_shares, year) |>
+    dplyr::reframe(
+      n_lengths = length(!is.na(length))
+    )
+  samples_by_year <- as.data.frame(samples_by_year)
+
+  if (!is.null(dir)) {
+    save(samples_by_year, file = file.path(dir, "samples_by_year.Rdata"))
+  }
 
   return(samples_by_year)
 }
