@@ -20,6 +20,21 @@ create_groups <- function(
     fleet_colname,
     fleet_groups,
     fleet_names) {
+
+  check <- colnames(data)[which(colnames(data) == "gear_to_use")]
+  if (length(check) != 1) {
+    # Format the observer catch data column names
+    data <- data[, which(!colnames(data) %in% c("MT", "SPGRFTOB1", "SCIENTIFIC_NAME"))]
+    colnames(data)[which(colnames(data) == "gear")] <- "gear_to_use"
+    colnames(data) <- tolower(colnames(data))
+    if ("ryear" %in% colnames(data)) {
+      data$year <- data$ryear
+    }
+    if ("r_state.x" %in% colnames(data)) {
+      data$r_state <- data$r_state.x
+    }
+  }
+
   data$catch_shares <- "FALSE"
   catch_shares <- c(
     "Catch Shares", "Catch Shares EM", "LE CA Halibut", "Midwater Hake", "Midwater Rockfish",
@@ -39,7 +54,7 @@ create_groups <- function(
   if (sum(is.na(data[, "gear_groups"])) > 0) {
     ind <- which(is.na(data[, "gear_groups"]))
     gear <- unique(data[ind, "gear_to_use"])
-    glue::glue("The following gears are not included in the gear groupings and will be omitted: {gear}.")
+    print(paste("The following gears are not included in the gear groupings and will be omitted:", gear))
     data <- data[!is.na(data$gear_groups), ]
   }
   data$fleet_groups <- NA
@@ -50,7 +65,7 @@ create_groups <- function(
   if (sum(is.na(data$fleet_groups)) > 0) {
     ind <- which(is.na(data$fleet_groups))
     fleet <- unique(data[ind, fleet_colname])
-    glue::glue("The following state/areas are not included in the fleet groupings and will be omitted: {fleet}.")
+    print(paste("The following state/areas are not included in the fleet groupings and will be omitted:", fleet))
     data <- data[!is.na(data$fleet_groups), ]
   }
 
