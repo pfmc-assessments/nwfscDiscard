@@ -3,7 +3,7 @@ Package: nwfscDiscard
 Title: Northwest Fisheries Science Center
 Version: 2.0
 Date: 2018-04-13
-Authors@R:c(
+Authors@R: c(
     person(c("Chantel", "R."), "Wetzel", , "chantel.wetzel@noaa.gov", role = c("aut", "cre")),
     person(c("Allan", "C."), "Hicks", role = "aut")
   )
