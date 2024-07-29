@@ -60,7 +60,7 @@ plot_wcgop_bio <- function(
 
     if (!is.null(dir)) {
       ggplot2::ggsave(
-        filename = file.path(dir, paste0(species, "length_by_year_gear.png")),
+        filename = file.path(dir, paste0(species, "_length_by_year_gear.png")),
         plot = p1,
         width = 14,
         height = 7
@@ -81,7 +81,7 @@ plot_wcgop_bio <- function(
 
     if (!is.null(dir)) {
       ggplot2::ggsave(
-        filename = file.path(dir, paste0(species, "length_by_year_catch_share.png")),
+        filename = file.path(dir, paste0(species, "_length_by_year_catch_share.png")),
         plot = p2,
         width = 14,
         height = 7
