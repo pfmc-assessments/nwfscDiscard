@@ -62,7 +62,7 @@
                         <h4 data-toc-skip class="author">Chantel
 Wetzel</h4>
             
-            <h4 data-toc-skip class="date">2024-07-15</h4>
+            <h4 data-toc-skip class="date">2024-07-29</h4>
       
 
       <div class="hidden name"><code>nwfscDiscard.Rmd</code></div>
@@ -139,7 +139,7 @@ data within the specified grouping, not just the observations of a
 particular species.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/check_confidential.html">check_confidential</a></span><span class="op">(</span></span>
-<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu"><a href="https://here.r-lib.org//reference/here.html" class="external-link">here</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu">here</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">catch</span>,</span>
 <span>  gear_groups <span class="op">=</span> <span class="va">gear_groups</span>,</span>
 <span>  gear_names <span class="op">=</span> <span class="va">gear_names</span>,</span>
@@ -155,7 +155,7 @@ particular species.</p>
 processed for use in assessment.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_biological_data.html">get_biological_data</a></span><span class="op">(</span></span>
-<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu"><a href="https://here.r-lib.org//reference/here.html" class="external-link">here</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu">here</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">biological_data</span>,</span>
 <span>  species <span class="op">=</span> <span class="st">"Sablefish"</span>,</span>
 <span>  len_bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">90</span>, <span class="fl">2</span><span class="op">)</span>,</span>
@@ -171,7 +171,7 @@ processed for use in assessment.</p>
 using in an assessment:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_mean_weights.html">get_mean_weights</a></span><span class="op">(</span></span>
-<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu"><a href="https://here.r-lib.org//reference/here.html" class="external-link">here</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu">here</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">catch_data</span>,</span>
 <span>  species <span class="op">=</span> <span class="st">"Sablefish"</span>,</span>
 <span>  gear_groups <span class="op">=</span> <span class="va">gear_groups</span>,</span>
@@ -194,7 +194,7 @@ discard rates are based on the observed trips. These trips are then
 bootstrap to estimate uncertainty around the discard rates.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ob_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_discard_bootstrap.html">do_discard_bootstrap</a></span><span class="op">(</span></span>
-<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu"><a href="https://here.r-lib.org//reference/here.html" class="external-link">here</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu">here</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">catch_data</span>,</span>
 <span>  species <span class="op">=</span> <span class="st">"Sablefish"</span>,</span>
 <span>  boot_number <span class="op">=</span> <span class="fl">10000</span>,</span>
@@ -221,7 +221,7 @@ physical onobard observer data from EM vessels since this would
 duplicate records.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">em_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_discard_bootstrap.html">do_discard_bootstrap</a></span><span class="op">(</span></span>
-<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu"><a href="https://here.r-lib.org//reference/here.html" class="external-link">here</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu">here</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">em_catch_data</span>,</span>
 <span>  species <span class="op">=</span> <span class="st">"Sablefish"</span>,</span>
 <span>  gear_groups <span class="op">=</span> <span class="va">gear_groups</span>,</span>
@@ -236,7 +236,7 @@ and EM observation can be then combined:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/combine_cs_discards.html">combine_cs_discards</a></span><span class="op">(</span></span>
 <span>  cs_data <span class="op">=</span> <span class="va">ob_out</span><span class="op">$</span><span class="va">cs</span>,</span>
 <span>  em_data <span class="op">=</span> <span class="va">em_out</span><span class="op">$</span><span class="va">em</span>,</span>
-<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="va"><a href="https://here.r-lib.org//reference/here.html" class="external-link">here</a></span></span>
+<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="va">here</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -252,7 +252,7 @@ combined for use in an assessment (e.g., are the majority of catches
 occurring by catch share vessels?).</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/calc_prop_gemm_catch.html">calc_prop_gemm_catch</a></span><span class="op">(</span></span>
-<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu"><a href="https://here.r-lib.org//reference/here.html" class="external-link">here</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu">here</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  species <span class="op">=</span> <span class="st">"Sablefish"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Visualize the discard length or ages by gear type or catch share
