@@ -5,7 +5,7 @@
 \title{Calculate mean weights for discarded fish}
 \usage{
 get_mean_weights(
-  dir,
+  dir = NULL,
   data,
   species,
   gear_groups,

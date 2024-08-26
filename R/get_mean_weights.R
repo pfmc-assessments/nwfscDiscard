@@ -114,8 +114,8 @@ get_mean_weights <- function(
   colnames(mean_bodyweight)[5:6] <- c("obs", "cv")
   if (!is.null(dir)) {
     write.csv(mean_bodyweight,
-              file = file.path(dir, paste0(tolower(species), "_wcgop_mean_body_weights.csv")),
-              row.names = FALSE
+      file = file.path(dir, paste0(tolower(species), "_wcgop_mean_body_weights.csv")),
+      row.names = FALSE
     )
   }
   return(mean_bodyweight)

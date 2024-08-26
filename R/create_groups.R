@@ -20,7 +20,6 @@ create_groups <- function(
     fleet_colname,
     fleet_groups,
     fleet_names) {
-
   check <- colnames(data)[which(colnames(data) == "gear_to_use")]
   if (length(check) != 1) {
     # Format the observer catch data column names

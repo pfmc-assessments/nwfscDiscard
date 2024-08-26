@@ -4,7 +4,7 @@
 \alias{calc_comps}
 \title{Calculate expanded discard composition}
 \usage{
-calc_comps(dir, data, comp_bins, comp_column = "length")
+calc_comps(dir = NULL, data, comp_bins, comp_column = "length")
 }
 \arguments{
 \item{dir}{Directory location to save files.}
