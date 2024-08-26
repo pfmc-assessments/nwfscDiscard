@@ -4,7 +4,7 @@
 \alias{plot_wcgop_bio}
 \title{Visualize biological discard data}
 \usage{
-plot_wcgop_bio(data, species, dir = NULL, plot = 1:2, column = "length")
+plot_wcgop_bio(data, species, dir = NULL, plot = 1:2, comp_column = "length")
 }
 \arguments{
 \item{data}{A data frame of WCGOP biological data}
@@ -19,7 +19,7 @@ correspond to the following figures:
 1. Boxplot of discard length/age by gear group and year.
 2. Boxplot of discard length/age by catch share and non-catch share by year.}
 
-\item{column}{Column in the data to plot (e.g. "LENGTH").}
+\item{comp_column}{Column in the data to plot (e.g. "LENGTH").}
 }
 \description{
 Visualize biological discard data

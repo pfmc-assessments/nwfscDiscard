@@ -31,7 +31,6 @@ do_discard_bootstrap <- function(
     fleet_names,
     seed_number = 1,
     rm_em_data = FALSE) {
-
   if (!species %in% data[, "species"]) {
     stop(glue::glue("{species} not found in the data."))
   }
