@@ -5,7 +5,7 @@
 \title{Calculate expanded discard composition}
 \usage{
 get_biological_data(
-  dir,
+  dir = NULL,
   data,
   species,
   len_bins,
