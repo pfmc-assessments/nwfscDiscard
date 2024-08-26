@@ -30,13 +30,6 @@ get_mean_weights <- function(
   colnames(data) <- tolower(colnames(data))
   data$year <- data$ryear
 
-  if (species %in% data[, "species"]) {
-    data <- data[data$species == species & data$catch_disposition == "D", ]
-  } else {
-    stop(print(paste(species, "not found in the data.")))
-  }
-
-
   if (fleet_colname == "r_state.x") {
     fleet_colname <- "r_state"
   }
@@ -74,6 +67,12 @@ get_mean_weights <- function(
     print(paste("The following number of records due to not meeting confidentiality:", length(remove)))
   }
 
+  if (species %in% data[, "species"]) {
+    data <- data[data$species == species & data$catch_disposition == "D", ]
+  } else {
+    stop(print(paste(species, "not found in the data.")))
+  }
+
   if (sum(is.na(data$exp_sp_wt)) > 0) {
     data$exp_sp_wt[is.na(data$exp_sp_wt)] <- 0
   }
@@ -93,13 +92,15 @@ get_mean_weights <- function(
   mean_weights <- data |>
     dplyr::group_by(year, gear_groups, fleet_groups) |>
     dplyr::summarise(
+      n = n(),
       weighted_ave_w = (sum(exp_average_weight)) / sum(exp_sp_ct),
       v = sum(exp_sp_ct * (average_weight - weighted_average)^2) / sum(exp_sp_ct),
       max_count = max(exp_sp_ct),
       total_count = sum(exp_sp_ct),
       weighted_ave_w_sd = sqrt(v / ((total_count / max_count) - 1)),
       weighted_ave_w_cv = weighted_ave_w_sd / weighted_ave_w
-    )
+    ) |>
+    dplyr::filter(n >= 30)
 
   mean_bodyweight <- data.frame(
     year = mean_weights[, "year"],

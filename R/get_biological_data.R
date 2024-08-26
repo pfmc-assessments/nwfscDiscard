@@ -37,7 +37,6 @@ get_biological_data <- function(
   colnames(data) <- tolower(colnames(data))
   data$year <- data$ryear
   data$r_state <- data$r_state.x
-  data <- data[which(data$common_name == species & data$catch_disposition == "D"), ]
 
   # Assign gear and fleet groups
   data <- create_groups(
@@ -71,6 +70,8 @@ get_biological_data <- function(
     data <- data[-remove, ]
     print(paste("The following number of records due to not meeting confidentiality:", length(remove)))
   }
+
+  data <- data[which(data$common_name == species & data$catch_disposition == "D"), ]
 
   # Calculate weighting
   data$exp1 <- data[, "species_number"] / data[, "bio_specimen_count"]
