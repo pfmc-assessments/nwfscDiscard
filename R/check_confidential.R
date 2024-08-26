@@ -84,12 +84,17 @@ check_confidential <- function(
   }
 
   if (!is.null(dir)) {
+    if ("length" %in% colnames(data)) {
+      bio_catch <- "_biological_"
+    } else {
+      bio_catch <- "_catch_"
+    }
     write.csv(vessels_by_year,
-      file = file.path(dir, paste0(tolower(species), "_confidentiality", add_name, ".csv")),
+      file = file.path(dir, paste0(tolower(species), "_confidentiality", bio_catch, add_name, ".csv")),
       row.names = FALSE
     )
     write.csv(vessels_by_year_cs,
-      file = file.path(dir, paste0(tolower(species), "_catch_share_confidentiality", add_name, ".csv")),
+      file = file.path(dir, paste0(tolower(species), "_catch_share_confidentiality", bio_catch, add_name, ".csv")),
       row.names = FALSE
     )
   }
