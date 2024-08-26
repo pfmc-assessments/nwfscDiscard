@@ -8,7 +8,7 @@
 #'   correspond to the following figures:
 #'   1. Boxplot of discard length/age by gear group and year.
 #'   2. Boxplot of discard length/age by catch share and non-catch share by year.
-#' @param column Column in the data to plot (e.g. "LENGTH").
+#' @param comp_column Column in the data to plot (e.g. "LENGTH").
 #'
 #' @author Chantel Wetzel
 #' @export
@@ -19,7 +19,7 @@ plot_wcgop_bio <- function(
     species,
     dir = NULL,
     plot = 1:2,
-    column = "length") {
+    comp_column = "length") {
   data <- data[, which(colnames(data) != "SCIENTIFIC_NAME")]
   colnames(data)[which(colnames(data) == "gear")] <- "gear_to_use"
   colnames(data) <- tolower(colnames(data))
@@ -36,9 +36,9 @@ plot_wcgop_bio <- function(
 
   get_name <- unique(data$species)
 
-  data$bio_plot <- data[, column]
-  if (column == "length") {
-    y_lab <- "Lenghth (cm)"
+  data$bio_plot <- data[, comp_column]
+  if (comp_column == "length") {
+    y_lab <- "Length (cm)"
   } else {
     y_lab <- "Age"
   }
@@ -97,10 +97,6 @@ plot_wcgop_bio <- function(
       n_lengths = length(!is.na(length))
     )
   samples_by_year <- as.data.frame(samples_by_year)
-
-  if (!is.null(dir)) {
-    save(samples_by_year, file = file.path(dir, "samples_by_year.Rdata"))
-  }
 
   return(samples_by_year)
 }
