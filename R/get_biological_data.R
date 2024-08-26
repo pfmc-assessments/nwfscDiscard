@@ -17,7 +17,7 @@
 #'
 #'
 get_biological_data <- function(
-    dir,
+    dir = NULL,
     data,
     species,
     len_bins,
@@ -49,6 +49,28 @@ get_biological_data <- function(
     fleet_names = fleet_names
   )
 
+  # Check confidentiality
+  ci_check <- check_confidential(
+    dir = dir,
+    data = data,
+    species = species,
+    gear_groups = gear_groups,
+    gear_names = gear_names,
+    fleet_colname = fleet_colname,
+    fleet_groups = fleet_groups,
+    fleet_names = fleet_names
+  )$vessels_by_year
+
+  # Remove years where there are < 3 vessels
+  ci_not_met <- ci_check[ci_check$n_vessels < 3, ]
+  if (dim(ci_not_met)[1] > 0) {
+    remove <- NULL
+    for (f in unique(ci_not_met$fleet)) {
+      remove <- c(remove, which(data$fleet == f & data$year %in% ci_not_met[ci_not_met$fleet == f, "year"]))
+    }
+    data <- data[-remove, ]
+    print(paste("The following number of records due to not meeting confidentiality:", length(remove)))
+  }
 
   # Calculate weighting
   data$exp1 <- data[, "species_number"] / data[, "bio_specimen_count"]
@@ -61,11 +83,11 @@ get_biological_data <- function(
   data$wghtd_freq <- data$frequency * data$exp1 * data$exp2
 
   NA_wgts <- sum(is.na(data$wghtd_freq))
-  glue::glue("Converting {NA_wgts} weighted frequency out of {nrow(data)} to zero for arithmetic.")
+  print(paste("Converting", NA_wgts, "weighted frequency out of", nrow(data), "to zero for arithmetic."))
   data$wghtd_freq[is.na(data$wghtd_freq)] <- 0
 
   if (sum(!is.na(data[, "length"])) > 0) {
-    calc_comps(
+    comp <- calc_comps(
       dir = dir,
       data = data,
       comp_bins = len_bins,
@@ -74,11 +96,12 @@ get_biological_data <- function(
   }
 
   if (sum(!is.na(data[, "age"])) > 0) {
-    calc_comps(
+    comps <- calc_comps(
       dir = dir,
       data = data,
       comp_bins = age_bins,
       comp_column = "age"
     )
   }
+  return(comps)
 }

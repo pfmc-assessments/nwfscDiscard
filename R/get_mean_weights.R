@@ -16,7 +16,7 @@
 #'
 #'
 get_mean_weights <- function(
-    dir,
+    dir = NULL,
     data,
     species,
     gear_groups,
@@ -33,7 +33,7 @@ get_mean_weights <- function(
   if (species %in% data[, "species"]) {
     data <- data[data$species == species & data$catch_disposition == "D", ]
   } else {
-    stop(glue::glue("{species} not found in the data."))
+    stop(print(paste(species, "not found in the data.")))
   }
 
 
@@ -50,6 +50,29 @@ get_mean_weights <- function(
     fleet_groups = fleet_groups,
     fleet_names = fleet_names
   )
+
+  # Check confidentiality
+  ci_check <- check_confidential(
+    dir = dir,
+    data = data,
+    species = species,
+    gear_groups = gear_groups,
+    gear_names = gear_names,
+    fleet_colname = fleet_colname,
+    fleet_groups = fleet_groups,
+    fleet_names = fleet_names
+  )$vessels_by_year
+
+  # Remove years where there are < 3 vessels
+  ci_not_met <- ci_check[ci_check$n_vessels < 3, ]
+  if (dim(ci_not_met)[1] > 0) {
+    remove <- NULL
+    for (f in unique(ci_not_met$fleet)) {
+      remove <- c(remove, which(data$fleet == f & data$year %in% ci_not_met[ci_not_met$fleet == f, "year"]))
+    }
+    data <- data[-remove, ]
+    print(paste("The following number of records due to not meeting confidentiality:", length(remove)))
+  }
 
   if (sum(is.na(data$exp_sp_wt)) > 0) {
     data$exp_sp_wt[is.na(data$exp_sp_wt)] <- 0
@@ -88,8 +111,11 @@ get_mean_weights <- function(
   )
 
   colnames(mean_bodyweight)[5:6] <- c("obs", "cv")
-  write.csv(mean_bodyweight,
-    file = file.path(dir, paste0(tolower(species), "_wcgop_mean_bodyweights.csv")),
-    row.names = FALSE
-  )
+  if (!is.null(dir)) {
+    write.csv(mean_bodyweight,
+              file = file.path(dir, paste0(tolower(species), "_wcgop_mean_body_weights.csv")),
+              row.names = FALSE
+    )
+  }
+  return(mean_bodyweight)
 }
