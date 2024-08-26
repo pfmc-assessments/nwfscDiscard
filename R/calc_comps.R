@@ -11,7 +11,7 @@
 #'
 #'
 calc_comps <- function(
-    dir,
+    dir = NULL,
     data,
     comp_bins,
     comp_column = "length") {
@@ -59,7 +59,6 @@ calc_comps <- function(
       values_from = prop_weighted
     )
 
-
   # Calculate based on all the observations rather than the ones filtered down to non-NA length or age alone.
   sample_size <- data |>
     dplyr::group_by(year, gear_groups, fleet_groups) |>
@@ -87,7 +86,14 @@ calc_comps <- function(
     sample_size$nsamp,
     comps[, 5:ncol(comps)]
   )
-  colnames(comps_out)[c(2, 4, 5, 6)] <- c("month", "sex", "partition", "nsamp")
+  colnames(comps_out)[c(2, 4, 5, 6)] <- c("month", "sex", "partition", "input_n")
+
+  if (comp_column == "length") {
+    remove <- which(is.na(apply(comps_out[, 7:ncol(comps_out)], 1, sum)))
+    if (length(remove) > 0) {
+      comps_out <- comps_out[-remove, ]
+    }
+  }
 
   if (comp_column == "age") {
     comps_out <- cbind(
@@ -99,30 +105,22 @@ calc_comps <- function(
       comps[, 5:ncol(comps)]
     )
     colnames(comps_out)[6:9] <- c("age_error", "age_low", "age_high", "nsamp")
+    remove <- which(is.na(apply(comps_out[, 10:ncol(comps_out)], 1, sum)))
+    if (length(remove) > 0) {
+      comps_out <- comps_out[-remove, ]
+    }
   }
 
-  # first_col <- ifelse(comp_column == "length", 7, 10)
-  # missing <- comp_bins[which(!comp_bins %in% colnames(comps_out))]
-  # add_loc <- which(!comp_bins %in% as.numeric(colnames(comps_out[first_col:ncol(comps_out)]))) + first_col
-  # mod_comps <- comps_out
-  # ind <- 1
-  # for(a in add_loc){
-  #   end <- ifelse((a + first_col) != ncol(mod_comps), TRUE, FALSE)
-  #   mod_comps <- cbind(mod_comps[, 1:first_col-1], mod_comps[, first_col:a], 0)
-  #   if(end){
-  #     mod_comps <- cbind(mod_comps, mod_comps[,(a + 2):ncol(mod_comps)])
-  #   }
-  #   colnames(mod_comps)[a+1] <- missing[ind]
-  #   ind <- ind + 1
-  # }
+  if (!is.null(dir)) {
+    write.csv(sample_size,
+      file = file.path(dir, paste0(tolower(species), "_wcgop_biological_sample_sizes_", comp_column, ".csv")),
+      row.names = FALSE
+    )
 
-  write.csv(sample_size,
-    file = file.path(dir, paste0(tolower(species), "_wcgop_sample_sizes_", comp_column, ".csv")),
-    row.names = FALSE
-  )
-
-  write.csv(comps_out,
-    file = file.path(dir, paste0(tolower(species), "_wcgop_discard_", comp_column, "s.csv")),
-    row.names = FALSE
-  )
+    write.csv(comps_out,
+      file = file.path(dir, paste0(tolower(species), "_wcgop_discard_", comp_column, "s.csv")),
+      row.names = FALSE
+    )
+  }
+  return(comps_out)
 }
