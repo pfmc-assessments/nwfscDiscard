@@ -31,6 +31,7 @@ do_discard_bootstrap <- function(
     fleet_names,
     seed_number = 1,
     rm_em_data = FALSE) {
+
   if (!species %in% data[, "species"]) {
     stop(glue::glue("{species} not found in the data."))
   }
@@ -101,8 +102,14 @@ do_discard_bootstrap <- function(
 
   if (sum(colnames(data) == "trip_id") == 1) {
     ind <- which(data$catch_shares == TRUE)
-    cs_data <- data[ind, ]
-    ncs_data <- data[-ind, ]
+    if (length(ind) > 0) {
+      cs_data <- data[ind, ]
+      ncs_data <- data[-ind, ]
+    } else {
+      cs_data <- data[ind, ]
+      ncs_data <- data
+    }
+
 
     # calculate catch shares discard quantities
     if (nrow(cs_data) > 0) {
