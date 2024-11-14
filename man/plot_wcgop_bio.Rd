@@ -4,12 +4,18 @@
 \alias{plot_wcgop_bio}
 \title{Visualize biological discard data}
 \usage{
-plot_wcgop_bio(data, species, dir = NULL, plot = 1:2, comp_column = "length")
+plot_wcgop_bio(
+  data,
+  species_name,
+  dir = NULL,
+  plot = 1:2,
+  comp_column = "length"
+)
 }
 \arguments{
 \item{data}{A data frame of WCGOP biological data}
 
-\item{species}{Species that you want composition data for.}
+\item{species_name}{Species that you want composition data for.}
 
 \item{dir}{Directory location to save files.}
 

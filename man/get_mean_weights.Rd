@@ -7,7 +7,7 @@
 get_mean_weights(
   dir = NULL,
   data,
-  species,
+  species_name,
   gear_groups,
   gear_names,
   fleet_colname,
@@ -20,7 +20,7 @@ get_mean_weights(
 
 \item{data}{A data frame of WCGOP catch data}
 
-\item{species}{Species that you want composition data for.}
+\item{species_name}{Species that you want composition data for.}
 
 \item{gear_groups}{List of gear types to group together
 (example: list(c("Bottom Trawl", "Midwater Trawl"), c("Hook & Line", "Pot", "Shrimp Trawl"))).}

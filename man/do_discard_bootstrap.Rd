@@ -6,7 +6,7 @@
 \usage{
 do_discard_bootstrap(
   data,
-  species,
+  species_name,
   boot_number,
   gear_groups,
   gear_names,
@@ -21,7 +21,7 @@ do_discard_bootstrap(
 \arguments{
 \item{data}{A data frame of WCGOP catch data}
 
-\item{species}{species name that should match the name in the ob data file, can be single species or multiple names (e.g. c("Gopher Rockfish", "Black and Yellow Rockfish"))}
+\item{species_name}{species name that should match the name in the ob data file, can be single species or multiple names (e.g. c("Gopher Rockfish", "Black and Yellow Rockfish"))}
 
 \item{boot_number}{The number of bootstraps to conduct}
 

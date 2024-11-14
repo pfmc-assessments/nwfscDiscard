@@ -4,14 +4,14 @@
 \alias{calc_cs_discards}
 \title{Function that calculates discards for the catch share vessels}
 \usage{
-calc_cs_discards(dir = NULL, data, conf_data_check)
+calc_cs_discards(data, conf_data_check, dir = NULL)
 }
 \arguments{
-\item{dir}{Directory location to save files.}
-
 \item{data}{A data frame of WCGOP catch data filtered down to only catch share data}
 
 \item{conf_data_check}{Dataframe with the number of observations, trips, and vessels by fleet.}
+
+\item{dir}{Directory location to save files.}
 }
 \description{
 Function that calculates discards for the catch share vessels

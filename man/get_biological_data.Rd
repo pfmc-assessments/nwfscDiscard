@@ -8,7 +8,7 @@ get_biological_data(
   dir = NULL,
   data,
   catch_data,
-  species,
+  species_name,
   len_bins,
   age_bins,
   gear_groups,
@@ -26,7 +26,7 @@ get_biological_data(
 \item{catch_data}{A data frame of WCGOP catch data that includes all species.
 This data frame will be used to check confidentiality.}
 
-\item{species}{Species that you want composition data for.}
+\item{species_name}{Species that you want composition data for.}
 
 \item{len_bins}{Length composition bins (example: seq(20, 90, 2)).}
 
