@@ -113,12 +113,12 @@ calc_comps <- function(
 
   if (!is.null(dir)) {
     write.csv(sample_size,
-      file = file.path(dir, paste0(tolower(species), "_wcgop_biological_sample_sizes_", comp_column, ".csv")),
+      file = file.path(dir, paste0("wcgop_biological_sample_sizes_", comp_column, ".csv")),
       row.names = FALSE
     )
 
     write.csv(comps_out,
-      file = file.path(dir, paste0(tolower(species), "_wcgop_discard_", comp_column, "s.csv")),
+      file = file.path(dir, paste0("wcgop_discard_", comp_column, "s.csv")),
       row.names = FALSE
     )
   }

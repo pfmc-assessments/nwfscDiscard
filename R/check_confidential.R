@@ -33,10 +33,14 @@ check_confidential <- function(
   if (sum(c("fleet_groups", "gear_groups") %in% colnames(data)) != 2) {
     if (sum(colnames(data) == "TRIP_ID") == 1) {
       # Remove duplicate columns
-      data <- data[, which(!colnames(data) %in% c("MT", "SPGRFTOB1", "SCIENTIFIC_NAME"))]
+      data <- data |> dplyr::select(-MT, -SPGRFTOB1, -SCIENTIFIC_NAME)
     }
-    colnames(data)[which(colnames(data) == "gear")] <- "gear_to_use"
-    colnames(data) <- tolower(colnames(data))
+    data <- data |>
+      dplyr::rename(
+        gear_to_use = gear
+      ) |>
+      dplyr::rename_with(tolower)
+
     if ("ryear" %in% colnames(data)) {
       data[, "year"] <- data[, "ryear"]
     }
@@ -76,9 +80,8 @@ check_confidential <- function(
   vessels_by_year <- as.data.frame(vessels_by_year)
 
   if (any(vessels_by_year_cs[, "n_vessels"] < 3)) {
-    bad <- which(vessels_by_year_cs[, "n_vessels"] < 3)
-    bad_fleet_group <- vessels_by_year_cs[bad, c("fleet")]
-    bad_year <- vessels_by_year_cs[bad, c("year")]
+    bad_fleet_group <- vessels_by_year_cs[which(vessels_by_year_cs[, "n_vessels"] < 3), "fleet"]
+    bad_year <- vessels_by_year_cs[bad, "year"]
     warn <- paste0(bad_year, "-", bad_fleet_group)
     glue::glue("The fleet grouping does not meet confidentiality for {warn}.")
   }
@@ -98,6 +101,5 @@ check_confidential <- function(
     vessels_by_year = vessels_by_year,
     vessels_by_year_cs = vessels_by_year_cs
   )
-
   return(conf_check)
 }

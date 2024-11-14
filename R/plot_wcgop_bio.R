@@ -2,7 +2,7 @@
 #'
 #' @param dir Directory location to save files.
 #' @param data A data frame of WCGOP biological data
-#' @param species Species that you want composition data for.
+#' @param species_name Species that you want composition data for.
 #' @param plot A vector of integers to specify which plots you would like. The
 #'   default is to print or save both figures, i.e., `plot = 1:2`. Integers
 #'   correspond to the following figures:
@@ -16,26 +16,22 @@
 #'
 plot_wcgop_bio <- function(
     data,
-    species,
+    species_name,
     dir = NULL,
     plot = 1:2,
     comp_column = "length") {
   nwfscSurvey::check_dir(dir = dir)
-  data <- data[, which(colnames(data) != "SCIENTIFIC_NAME")]
-  colnames(data)[which(colnames(data) == "gear")] <- "gear_to_use"
-  colnames(data) <- tolower(colnames(data))
-  data$year <- data$ryear
-  data$r_state <- data$r_state.x
-  data <- data[which(data$species == species & data$catch_disposition == "D"), ]
+  data <- data |>
+    dplyr::select(-SCIENTIFIC_NAME) |>
+    dplyr::rename(gear_to_use = gear) |>
+    dplyr::rename_with(tolower) |>
+    dplyr::rename(year = ryear, r_state = r_state.x) |>
+    dplyr::filter(species == species_name, catch_disposition == "D")
 
-  if (grepl("/", species)) {
-    species_name_mod <- gsub("/", " ", species)
-    replace <- which(data[, "species"] == species)
-    data[replace, "species"] <- species_name_mod
-    species <- species_name_mod
+  if (grepl("/", species_name)) {
+    species_name_mod <- gsub("/", " ", species_name)
+    data[which(data[, "species"] == species_name), "species"] <- species_name_mod
   }
-
-  get_name <- gsub(" ", "_", tolower(unique(data$species)))
 
   data[, "bio_plot"] <- data[, comp_column]
   if (comp_column == "length") {
@@ -49,7 +45,6 @@ plot_wcgop_bio <- function(
     dplyr::mutate(
       catch_shares = "non_catch_shares"
     )
-  data[, "catch_shares"] <-
   data$catch_shares[
     data$sector %in% c("Catch Shares", "Catch Shares EM", "Midwater Hake", "LE CA Halibut") &
       data$year >= 2011
@@ -66,7 +61,7 @@ plot_wcgop_bio <- function(
 
     if (!is.null(dir)) {
       ggplot2::ggsave(
-        filename = file.path(dir, paste0(get_name, "_length_by_year_gear.png")),
+        filename = file.path(dir, "length_by_year_gear.png"),
         plot = p1,
         width = 14,
         height = 7
@@ -87,7 +82,7 @@ plot_wcgop_bio <- function(
 
     if (!is.null(dir)) {
       ggplot2::ggsave(
-        filename = file.path(dir, paste0(get_name, "_length_by_year_catch_share.png")),
+        filename = file.path(dir, "length_by_year_catch_share.png"),
         plot = p2,
         width = 14,
         height = 7
@@ -103,6 +98,5 @@ plot_wcgop_bio <- function(
       n_lengths = length(!is.na(length))
     )
   samples_by_year <- as.data.frame(samples_by_year)
-
   return(samples_by_year)
 }

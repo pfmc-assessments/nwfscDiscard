@@ -196,23 +196,18 @@ calc_prop_gemm_catch <- function(
 
 
   if (!is.null(dir)) {
-    species_to_save <- tolower(species)
-    if (grepl("/", species)) {
-      species_to_save <- tolower(gsub("/", " ", species))
-    }
     write.csv(catch_by_catch_share_gear,
-      file = file.path(dir, paste0(species_to_save, "_gemm_catch_by_cs_gear.csv")),
+      file = file.path(dir, "gemm_catch_by_cs_gear.csv"),
       row.names = FALSE
     )
     cowplot::plot_grid(c1, c2, c3, ncol = 1, nrow = 3)
-    ggplot2::ggsave(file.path(dir, paste0(species_to_save, "_gemm_catch.png")),
+    ggplot2::ggsave(file.path(dir, "gemm_catch.png"),
       height = 12, width = 12
     )
     cowplot::plot_grid(p1, p2, p3, ncol = 1, nrow = 3)
-    ggplot2::ggsave(file.path(dir, paste0(species_to_save, "_gemm_proportions.png")),
+    ggplot2::ggsave(file.path(dir, "gemm_proportions.png"),
       height = 12, width = 12
     )
   }
-
   return(catch_by_catch_share_gear)
 }

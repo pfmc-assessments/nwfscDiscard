@@ -2,7 +2,7 @@
 #'
 #' @param dir Directory location to save files.
 #' @param data A data frame of WCGOP catch data
-#' @param species species name that should match the name in the ob data file, can be single species or multiple names (e.g. c("Gopher Rockfish", "Black and Yellow Rockfish"))
+#' @param species_name species name that should match the name in the ob data file, can be single species or multiple names (e.g. c("Gopher Rockfish", "Black and Yellow Rockfish"))
 #' @param boot_number The number of bootstraps to conduct
 #' @param gear_groups List of gear types to group together
 #' (example: list(c("Bottom Trawl", "Midwater Trawl"), c("Hook & Line", "Pot", "Shrimp Trawl"))).
@@ -21,7 +21,7 @@
 #
 do_discard_bootstrap <- function(
     data,
-    species,
+    species_name,
     boot_number,
     gear_groups,
     gear_names,
@@ -32,26 +32,31 @@ do_discard_bootstrap <- function(
     seed_number = 1,
     rm_em_data = FALSE) {
   nwfscSurvey::check_dir(dir = dir)
-  if (!species %in% data[, "species"]) {
-    cli::cli_abort("{species} not found in the data.")
+  if (!species_name %in% data[, "species"]) {
+    cli::cli_abort("{species_name} not found in the data.")
   }
 
-  if (grepl("/", species)) {
-    species_name_mod <- gsub("/", " ", species)
-    replace <- which(data[, "species"] == species)
-    data[replace, "species"] <- species_name_mod
-    species <- species_name_mod
+  if (grepl("/", species_name)) {
+    species_name_mod <- gsub("/", " ", species_name)
+    data[which(data[, "species"] == species_name), "species"] <- species_name_mod
+    species_name <- species_name_mod
   }
 
   # Format the observer catch data column names
   if (sum(colnames(data) == "TRIP_ID") == 1) {
-    data <- data[, which(!colnames(data) %in% c("MT", "SPGRFTOB1", "SCIENTIFIC_NAME"))]
+    data <- data |> dplyr::select(-MT, -SPGRFTOB1, -SCIENTIFIC_NAME)
   }
 
-  colnames(data)[which(colnames(data) == "gear")] <- "gear_to_use"
-  colnames(data) <- tolower(colnames(data))
+  data <- data |>
+    dplyr::rename(
+      gear_to_use = gear
+    ) |>
+    dplyr::rename_with(
+      tolower
+    )
+  # This column is not in the EM data, hence the need for a check:
   if ("ryear" %in% colnames(data)) {
-    data$year <- data$ryear
+    data[, "year"] <- data[, "ryear"]
   }
 
   # Add the gear and area groupings to the data
@@ -74,8 +79,7 @@ do_discard_bootstrap <- function(
     fleet_names = fleet_names
   )
 
-  data <- data[which(data$species == species), ]
-
+  data <- data |> dplyr::filter(species == species_name)
   ncs_data_out <- cs_data_out <- em_data_out <- NULL
 
   if (rm_em_data & sum(colnames(data) == "trip_id") == 1) {
@@ -83,15 +87,12 @@ do_discard_bootstrap <- function(
     # Doing this after the confidentiality check since if they are removed the confidentiality check
     # should still include these vessels since the the discard rates from EM and non-EM catch share
     # vessels would likely be combined external to the data processing.
-    remove <- which(data[, "sector"] == "Catch Shares EM")
-    if (length(remove) > 0) {
-      data <- data[-remove, ]
-    }
+    data <- data |> dplyr::filter(sector == "Catch Shares EM")
   }
 
   if (sum(colnames(data) == "emtrip_id") == 1) {
     conf_data_check <- data_conf_check[[2]]
-    conf_data_check <- conf_data_check[conf_data_check$catch_shares == TRUE, ]
+    conf_data_check <- conf_data_check |> dplyr::filter(catch_shares == TRUE)
     em_data_out <- calc_cs_discards(
       dir = dir,
       data = data,
@@ -100,27 +101,20 @@ do_discard_bootstrap <- function(
   }
 
   if (sum(colnames(data) == "trip_id") == 1) {
-    ind <- which(data$catch_shares == TRUE)
-    if (length(ind) > 0) {
-      cs_data <- data[ind, ]
-      ncs_data <- data[-ind, ]
-    } else {
-      cs_data <- data[ind, ]
-      ncs_data <- data
-    }
-
+    cs_data <- data |> dplyr::filter(catch_shares == TRUE)
+    ncs_data <- data |> dplyr::filter(catch_shares == FALSE)
 
     # calculate catch shares discard quantities
     if (nrow(cs_data) > 0) {
       conf_data_check <- data_conf_check[[2]]
-      conf_data_check <- conf_data_check[conf_data_check$catch_shares == TRUE, ]
+      conf_data_check <- conf_data_check |> dplyr::filter(catch_shares == TRUE)
       cs_data_out <- calc_cs_discards(
         dir = dir,
         data = cs_data,
         conf_data_check = conf_data_check
       )
     } else {
-      message("No catch share records found in the data.")
+      cli::cli_inform("No catch share records found in the data.")
     }
 
     if (nrow(ncs_data) > 0) { # calculate catch shares discard quantities
@@ -139,15 +133,15 @@ do_discard_bootstrap <- function(
   if (!is.null(em_data_out)) {
     em <- em_data_out
     if (!is.null(dir)) {
-      save(em, file = file.path(dir, paste0(tolower(species), "_discards_em.rdata")))
+      save(em, file = file.path(dir, "discards_em.rdata"))
     }
     return(list(em = em))
   } else {
     if (!is.null(dir)) {
       ncs <- ncs_data_out
       cs <- cs_data_out
-      save(ncs, file = file.path(dir, paste0(tolower(species), "_discards_noncatch_shares.rdata")))
-      save(cs, file = file.path(dir, paste0(tolower(species), "_discards_catch_shares.rdata")))
+      save(ncs, file = file.path(dir, "discards_noncatch_shares.rdata"))
+      save(cs, file = file.path(dir, "discards_catch_shares.rdata"))
     }
     return(list(cs = cs_data_out, ncs = ncs_data_out))
   }

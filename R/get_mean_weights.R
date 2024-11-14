@@ -3,7 +3,7 @@
 #'
 #' @param dir Directory location to save files.
 #' @param data A data frame of WCGOP catch data
-#' @param species Species that you want composition data for.
+#' @param species_name Species that you want composition data for.
 #' @param gear_groups List of gear types to group together
 #' (example: list(c("Bottom Trawl", "Midwater Trawl"), c("Hook & Line", "Pot", "Shrimp Trawl"))).
 #' @param gear_names Vector of gear group names (example: c("trawl", "fixed gear")).
@@ -18,18 +18,21 @@
 get_mean_weights <- function(
     dir = NULL,
     data,
-    species,
+    species_name,
     gear_groups,
     gear_names,
     fleet_colname,
     fleet_groups,
     fleet_names) {
   nwfscSurvey::check_dir(dir = dir)
+  if (!species_name %in% data[, "species"]) {
+    cli::cli_abort("{species_name} not found in the data.")
+  }
   # Remove duplicate columns
-  data <- data[, which(!colnames(data) %in% c("MT", "SPGRFTOB1", "SCIENTIFIC_NAME"))]
-  colnames(data)[which(colnames(data) == "gear")] <- "gear_to_use"
-  colnames(data) <- tolower(colnames(data))
-  data$year <- data$ryear
+  data <- data |>
+    dplyr::select(-MT, -SPGRFTOB1, -SCIENTIFIC_NAME, -YEAR) |>
+    dplyr::rename(gear_to_use = gear, year = RYEAR) |>
+    dplyr::rename_with(tolower)
 
   if (fleet_colname == "r_state.x") {
     fleet_colname <- "r_state"
@@ -69,11 +72,8 @@ get_mean_weights <- function(
     )
   }
 
-  if (species %in% data[, "species"]) {
-    data <- data[data$species == species & data$catch_disposition == "D", ]
-  } else {
-    cli::cli_abort("{species} not found in the data.")
-  }
+  data <- data |> dplyr::filter(
+    species == species_name, catch_disposition == "D")
 
   if (sum(is.na(data$exp_sp_wt)) > 0) {
     data$exp_sp_wt[is.na(data$exp_sp_wt)] <- 0
@@ -116,7 +116,7 @@ get_mean_weights <- function(
   colnames(mean_bodyweight)[5:6] <- c("obs", "cv")
   if (!is.null(dir)) {
     write.csv(mean_bodyweight,
-      file = file.path(dir, paste0(tolower(species), "_wcgop_mean_body_weights.csv")),
+      file = file.path(dir, "wcgop_mean_body_weights.csv"),
       row.names = FALSE
     )
   }

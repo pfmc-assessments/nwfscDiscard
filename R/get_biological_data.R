@@ -4,7 +4,7 @@
 #' @param data A data frame of WCGOP biological data that includes all species.
 #' @param catch_data A data frame of WCGOP catch data that includes all species.
 #'   This data frame will be used to check confidentiality.
-#' @param species Species that you want composition data for.
+#' @param species_name Species that you want composition data for.
 #' @param len_bins Length composition bins (example: seq(20, 90, 2)).
 #' @param age_bins Age composition bins (example: 1:50).
 #' @param gear_groups List of gear types to group together
@@ -22,7 +22,7 @@ get_biological_data <- function(
     dir = NULL,
     data,
     catch_data,
-    species,
+    species_name,
     len_bins,
     age_bins,
     gear_groups,
@@ -35,11 +35,11 @@ get_biological_data <- function(
   }
 
   # Remove duplicate columns
-  data <- data[, which(colnames(data) != "SCIENTIFIC_NAME")]
-  colnames(data)[which(colnames(data) == "gear")] <- "gear_to_use"
-  colnames(data) <- tolower(colnames(data))
-  data[, "year"] <- data[, "ryear"]
-  data[, "r_state"] <- data[, "r_state.x"]
+  data <- data |>
+    dplyr::select(-SCIENTIFIC_NAME) |>
+    dplyr::rename(gear_to_use = gear) |>
+    dplyr::rename_with(tolower) |>
+    dplyr::rename(year = ryear, r_state = r_state.x)
 
   # Assign gear and fleet groups
   data <- create_groups(
@@ -84,7 +84,10 @@ get_biological_data <- function(
     )
   }
 
-  data <- data[which(data$common_name == species & data$catch_disposition == "D"), ]
+  data <- data |>
+    dplyr::filter(
+      species == species_name,
+      catch_disposition == "D")
 
   # Calculate weighting
   data$exp1 <- data[, "species_number"] / data[, "bio_specimen_count"]
