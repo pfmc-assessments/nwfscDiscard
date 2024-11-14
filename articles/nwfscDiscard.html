@@ -138,12 +138,11 @@ the grouping can meet confidentiality rules. This check based on all the
 data within the specified grouping, not just the observations of a
 particular species.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/check_confidential.html">check_confidential</a></span><span class="op">(</span></span>
-<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu">here</span><span class="op">(</span><span class="op">)</span>,</span>
+<code class="sourceCode R"><span><span class="va">ci</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/check_confidential.html">check_confidential</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">catch</span>,</span>
 <span>  gear_groups <span class="op">=</span> <span class="va">gear_groups</span>,</span>
 <span>  gear_names <span class="op">=</span> <span class="va">gear_names</span>,</span>
-<span>  fleet_colname <span class="op">=</span> <span class="st">"r_state"</span>,</span>
+<span>  fleet_colname <span class="op">=</span> <span class="va">fleet_colname</span>,</span>
 <span>  fleet_groups <span class="op">=</span> <span class="va">fleet_groups</span>,</span>
 <span>  fleet_names <span class="op">=</span> <span class="va">fleet_names</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -154,15 +153,15 @@ particular species.</p>
 <p>The length and or age compositions of discarded fish can be the
 processed for use in assessment.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_biological_data.html">get_biological_data</a></span><span class="op">(</span></span>
-<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu">here</span><span class="op">(</span><span class="op">)</span>,</span>
+<code class="sourceCode R"><span><span class="va">bio_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_biological_data.html">get_biological_data</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">biological_data</span>,</span>
+<span>  catch_data <span class="op">=</span> <span class="va">catch_data</span>,</span>
 <span>  species <span class="op">=</span> <span class="st">"Sablefish"</span>,</span>
 <span>  len_bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">90</span>, <span class="fl">2</span><span class="op">)</span>,</span>
 <span>  age_bins <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">50</span>,</span>
 <span>  gear_groups <span class="op">=</span> <span class="va">gear_groups</span>,</span>
 <span>  gear_names <span class="op">=</span> <span class="va">gear_names</span>,</span>
-<span>  fleet_colname <span class="op">=</span> <span class="st">"r_state"</span>,</span>
+<span>  fleet_colname <span class="op">=</span> <span class="va">fleet_colname</span>,</span>
 <span>  fleet_groups <span class="op">=</span> <span class="va">fleet_groups</span>,</span>
 <span>  fleet_names <span class="op">=</span> <span class="va">fleet_names</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -170,13 +169,12 @@ processed for use in assessment.</p>
 <p>The mean weight of the discarded fish can also be calculated for
 using in an assessment:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_mean_weights.html">get_mean_weights</a></span><span class="op">(</span></span>
-<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu">here</span><span class="op">(</span><span class="op">)</span>,</span>
+<code class="sourceCode R"><span><span class="va">mean_weight</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_mean_weights.html">get_mean_weights</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">catch_data</span>,</span>
 <span>  species <span class="op">=</span> <span class="st">"Sablefish"</span>,</span>
 <span>  gear_groups <span class="op">=</span> <span class="va">gear_groups</span>,</span>
 <span>  gear_names <span class="op">=</span> <span class="va">gear_names</span>,</span>
-<span>  fleet_colname <span class="op">=</span> <span class="st">"r_state"</span>,</span>
+<span>  fleet_colname <span class="op">=</span> <span class="va">fleet_colname</span>,</span>
 <span>  fleet_groups <span class="op">=</span> <span class="va">fleet_groups</span>,</span>
 <span>  fleet_names <span class="op">=</span> <span class="va">fleet_names</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -194,7 +192,6 @@ discard rates are based on the observed trips. These trips are then
 bootstrap to estimate uncertainty around the discard rates.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ob_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_discard_bootstrap.html">do_discard_bootstrap</a></span><span class="op">(</span></span>
-<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu">here</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">catch_data</span>,</span>
 <span>  species <span class="op">=</span> <span class="st">"Sablefish"</span>,</span>
 <span>  boot_number <span class="op">=</span> <span class="fl">10000</span>,</span>
@@ -235,8 +232,7 @@ and EM observation can be then combined:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/combine_cs_discards.html">combine_cs_discards</a></span><span class="op">(</span></span>
 <span>  cs_data <span class="op">=</span> <span class="va">ob_out</span><span class="op">$</span><span class="va">cs</span>,</span>
-<span>  em_data <span class="op">=</span> <span class="va">em_out</span><span class="op">$</span><span class="va">em</span>,</span>
-<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="va">here</span></span>
+<span>  em_data <span class="op">=</span> <span class="va">em_out</span><span class="op">$</span><span class="va">em</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -251,18 +247,19 @@ could be used to better inform how the rates between the groups could be
 combined for use in an assessment (e.g., are the majority of catches
 occurring by catch share vessels?).</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/calc_prop_gemm_catch.html">calc_prop_gemm_catch</a></span><span class="op">(</span></span>
-<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu">here</span><span class="op">(</span><span class="op">)</span>,</span>
+<code class="sourceCode R"><span><span class="va">gemm</span> <span class="op">&lt;-</span> <span class="fu">nwfscSurvey</span><span class="op">(</span>common_name <span class="op">=</span> <span class="st">"Sablefish"</span><span class="op">)</span></span>
+<span><span class="va">gemm_check</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_prop_gemm_catch.html">calc_prop_gemm_catch</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">gemm</span>,</span>
 <span>  species <span class="op">=</span> <span class="st">"Sablefish"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Visualize the discard length or ages by gear type or catch share
 vs. non-catch shares:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_wcgop_bio.html">plot_wcgop_bio</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">wcgop_bio</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_wcgop_bio.html">plot_wcgop_bio</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">biological_data</span>,</span>
 <span>  species <span class="op">=</span> <span class="st">"Sablefish"</span>,</span>
 <span>  plot <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,</span>
-<span>  column <span class="op">=</span> <span class="st">"length"</span></span>
+<span>  comp_column <span class="op">=</span> <span class="st">"length"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
