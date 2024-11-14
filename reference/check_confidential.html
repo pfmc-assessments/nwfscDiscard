@@ -48,14 +48,13 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_confidential</span><span class="op">(</span></span>
-<span>  dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">data</span>,</span>
-<span>  <span class="va">species</span>,</span>
 <span>  <span class="va">gear_groups</span>,</span>
 <span>  <span class="va">gear_names</span>,</span>
 <span>  <span class="va">fleet_colname</span>,</span>
 <span>  <span class="va">fleet_groups</span>,</span>
-<span>  <span class="va">fleet_names</span></span>
+<span>  <span class="va">fleet_names</span>,</span>
+<span>  dir <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -63,17 +62,17 @@
     <h2>Arguments</h2>
 
 
-<dl><dt id="arg-dir">dir<a class="anchor" aria-label="anchor" href="#arg-dir"></a></dt>
-<dd><p>Directory location to save files.</p></dd>
-
-
-<dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
+<dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
 <dd><p>A data frame of WCGOP catch data</p></dd>
 
 
 <dt id="arg-gear-groups">gear_groups<a class="anchor" aria-label="anchor" href="#arg-gear-groups"></a></dt>
 <dd><p>List of gear types to group together
 (example: list(c("Bottom Trawl", "Midwater Trawl"), c("Hook &amp; Line", "Pot", "Shrimp Trawl"))).</p></dd>
+
+
+<dt id="arg-gear-names">gear_names<a class="anchor" aria-label="anchor" href="#arg-gear-names"></a></dt>
+<dd><p>Vector of gear group names (example: c("trawl", "fixed gear")).</p></dd>
 
 
 <dt id="arg-fleet-colname">fleet_colname<a class="anchor" aria-label="anchor" href="#arg-fleet-colname"></a></dt>
@@ -88,8 +87,8 @@
 <dd><p>Vector of fleet names (example: c("coastwide")).</p></dd>
 
 
-<dt id="arg-gear-name">gear_name<a class="anchor" aria-label="anchor" href="#arg-gear-name"></a></dt>
-<dd><p>Vector of gear group names (example: c("trawl", "fixed gear")).</p></dd>
+<dt id="arg-dir">dir<a class="anchor" aria-label="anchor" href="#arg-dir"></a></dt>
+<dd><p>Directory location to save files.</p></dd>
 
 </dl></div>
     <div id="author">

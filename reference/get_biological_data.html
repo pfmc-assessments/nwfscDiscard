@@ -50,6 +50,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_biological_data</span><span class="op">(</span></span>
 <span>  dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">data</span>,</span>
+<span>  <span class="va">catch_data</span>,</span>
 <span>  <span class="va">species</span>,</span>
 <span>  <span class="va">len_bins</span>,</span>
 <span>  <span class="va">age_bins</span>,</span>
@@ -70,7 +71,12 @@
 
 
 <dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A data frame of WCGOP biological data</p></dd>
+<dd><p>A data frame of WCGOP biological data that includes all species.</p></dd>
+
+
+<dt id="arg-catch-data">catch_data<a class="anchor" aria-label="anchor" href="#arg-catch-data"></a></dt>
+<dd><p>A data frame of WCGOP catch data that includes all species.
+This data frame will be used to check confidentiality.</p></dd>
 
 
 <dt id="arg-species">species<a class="anchor" aria-label="anchor" href="#arg-species"></a></dt>
@@ -90,6 +96,10 @@
 (example: list(c("Bottom Trawl", "Midwater Trawl"), c("Hook &amp; Line", "Pot", "Shrimp Trawl"))).</p></dd>
 
 
+<dt id="arg-gear-names">gear_names<a class="anchor" aria-label="anchor" href="#arg-gear-names"></a></dt>
+<dd><p>Vector of gear group names (example: c("trawl", "fixed gear")).</p></dd>
+
+
 <dt id="arg-fleet-colname">fleet_colname<a class="anchor" aria-label="anchor" href="#arg-fleet-colname"></a></dt>
 <dd><p>Column to use to determine areas for fleets (example: "r_state.x")</p></dd>
 
@@ -100,10 +110,6 @@
 
 <dt id="arg-fleet-names">fleet_names<a class="anchor" aria-label="anchor" href="#arg-fleet-names"></a></dt>
 <dd><p>Vector of fleet names (example: c("coastwide")).</p></dd>
-
-
-<dt id="arg-gear-name">gear_name<a class="anchor" aria-label="anchor" href="#arg-gear-name"></a></dt>
-<dd><p>Vector of gear group names (example: c("trawl", "fixed gear")).</p></dd>
 
 </dl></div>
     <div id="author">
