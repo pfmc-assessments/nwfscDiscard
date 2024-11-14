@@ -1,26 +1,30 @@
 #' Calculate the discards, landings, and catch by gear type and catch share fleet
 #' and the proportions by year using GEMM data.
 #'
+#' @param data Data frame of gemm data pulled using [nwfscSurvey::pull_gemm()]
 #' @param dir Directory location to save files.
-#' @param species species name to be used to pull catch from [nwfscSurvey::pull_gemm()]
-#'
 #'
 #' @author Chantel Wetzel
 #' @export
 #'
 #
 calc_prop_gemm_catch <- function(
-    dir = NULL,
-    species = species) {
-  catch <- nwfscSurvey::pull_gemm(common_name = species)
+    data,
+    dir = NULL) {
+  nwfscSurvey::check_dir(dir = dir)
+  species <- unique(data[, "species"])
 
   # Remove research catch because it only appears in the
   # total_discard_with_mort_rates_applied_and_landings_mt which
   # results in the the catch != dead discards + landings for
   # the non-catch share trawl group.
-  catch <- catch[which(catch$sector != "Research"), ]
+  data <- data |>
+    dplyr::filter(sector != "Research") |>
+    dplyr::mutate(
+      catch_shares = "Non-Catch Shares",
+      gear = NA
+    )
 
-  catch$catch_shares <- "Non-Catch Shares"
   catch_shares <- c(
     "At-Sea Hake CP",
     "At-Sea Hake MSCV",
@@ -35,12 +39,11 @@ calc_prop_gemm_catch <- function(
     "Midwater Rockfish",
     "Midwater Rockfish EM"
   )
-  find <- which(catch$sector %in% catch_shares & catch$year >= 2011)
+  find <- which(data[, "sector"] %in% catch_shares & data[, "year"] >= 2011)
   if (length(find) > 0) {
-    catch$catch_shares[find] <- "Catch Shares"
+    data[find, "catch_shares"] <- "Catch Shares"
   }
 
-  catch$gear <- NA
   fixed_gear <- c(
     "Combined LE & OA CA Halibut",
     "CS - Hook & Line",
@@ -83,13 +86,13 @@ calc_prop_gemm_catch <- function(
     "California Recreational"
   )
 
-  catch$gear[which(catch$sector %in% fixed_gear)] <- "Fixed Gear"
-  catch$gear[which(catch$sector %in% c(hake, trawl))] <- "Trawl"
-  catch$gear[which(catch$sector %in% rec)] <- "Recreational"
+  data[which(data[, "sector"] %in% fixed_gear), "gear"] <- "Fixed Gear"
+  data[which(data[, "sector"] %in% c(hake, trawl)), "gear"] <- "Trawl"
+  data[which(data[, "sector"] %in% rec), "gear"] <- "Recreational"
 
-  catch$Group <- apply(catch[, c("catch_shares", "gear")], 1, paste, collapse = "-")
+  data[, "Group"] <- apply(data[, c("catch_shares", "gear")], 1, paste, collapse = "-")
 
-  catch_totals <- catch |>
+  catch_totals <- data |>
     dplyr::group_by(year) |>
     dplyr::mutate(
       landed_mt_by_year = sum(total_landings_mt),
@@ -162,7 +165,7 @@ calc_prop_gemm_catch <- function(
       legend.text = ggplot2::element_text(size = 14)
     ) +
     ggplot2::xlab("Year") +
-    ggplot2::ylab("Catch (mt, GEMM)") +
+    ggplot2::ylab("Catch (mt) Source: GEMM") +
     ggplot2::scale_fill_viridis_d()
   c2 <- ggplot2::ggplot(catch_by_catch_share_gear, ggplot2::aes(x = year, y = landed_mt, fill = Group)) +
     ggplot2::geom_bar(stat = "identity") +
@@ -175,12 +178,12 @@ calc_prop_gemm_catch <- function(
       legend.text = ggplot2::element_text(size = 14)
     ) +
     ggplot2::xlab("Year") +
-    ggplot2::ylab("Landings (mt, GEMM)") +
+    ggplot2::ylab("Landings (mt) Source: GEMM") +
     ggplot2::scale_fill_viridis_d()
   c3 <- ggplot2::ggplot(catch_by_catch_share_gear, ggplot2::aes(x = year, y = discard_mt, fill = Group)) +
     ggplot2::geom_bar(stat = "identity") +
     ggplot2::xlab("Year") +
-    ggplot2::ylab("Discards (mt, GEMM)") +
+    ggplot2::ylab("Discards (mt) Source: GEMM") +
     ggplot2::ylim(as.numeric(ylim[1]), as.numeric(ylim[2])) +
     ggplot2::theme_bw() +
     ggplot2::theme(
