@@ -5,12 +5,12 @@
 \title{Calculate the discards, landings, and catch by gear type and catch share fleet
 and the proportions by year using GEMM data.}
 \usage{
-calc_prop_gemm_catch(dir = NULL, species = species)
+calc_prop_gemm_catch(data, dir = NULL)
 }
 \arguments{
-\item{dir}{Directory location to save files.}
+\item{data}{Data frame of gemm data pulled using [nwfscSurvey::pull_gemm()]}
 
-\item{species}{species name to be used to pull catch from [nwfscSurvey::pull_gemm()]}
+\item{dir}{Directory location to save files.}
 }
 \description{
 Calculate the discards, landings, and catch by gear type and catch share fleet

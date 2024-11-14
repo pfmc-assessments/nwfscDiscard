@@ -19,13 +19,13 @@ create_groups(
 \item{gear_groups}{List of gear types to group together
 (example: list(c("Bottom Trawl", "Midwater Trawl"), c("Hook & Line", "Pot", "Shrimp Trawl"))).}
 
+\item{gear_names}{Vector of gear group names (example: c("trawl", "fixed gear")).}
+
 \item{fleet_colname}{Column to use to determine areas for fleets (example: "r_state.x")}
 
 \item{fleet_groups}{List of fleet groups to use (example: list(c("WA", "OR", "CA"))).}
 
 \item{fleet_names}{Vector of fleet names (example: c("coastwide")).}
-
-\item{gear_name}{Vector of gear group names (example: c("trawl", "fixed gear")).}
 }
 \description{
 Create gear and fleet groups

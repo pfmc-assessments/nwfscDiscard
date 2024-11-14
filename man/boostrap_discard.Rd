@@ -21,9 +21,7 @@ boostrap_discard(
 
 \item{boot_variable}{The column name to do the inner sampling across.}
 
-\item{seed}{The seed number.}
-
-\item{redact}{Switch to remove any confidential data records from output.}
+\item{seed_number}{The seed number.}
 }
 \description{
 Bootstrap non-catch share data

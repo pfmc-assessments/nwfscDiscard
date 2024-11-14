@@ -7,6 +7,7 @@
 get_biological_data(
   dir = NULL,
   data,
+  catch_data,
   species,
   len_bins,
   age_bins,
@@ -20,7 +21,10 @@ get_biological_data(
 \arguments{
 \item{dir}{Directory location to save files.}
 
-\item{data}{A data frame of WCGOP biological data}
+\item{data}{A data frame of WCGOP biological data that includes all species.}
+
+\item{catch_data}{A data frame of WCGOP catch data that includes all species.
+This data frame will be used to check confidentiality.}
 
 \item{species}{Species that you want composition data for.}
 
@@ -31,13 +35,13 @@ get_biological_data(
 \item{gear_groups}{List of gear types to group together
 (example: list(c("Bottom Trawl", "Midwater Trawl"), c("Hook & Line", "Pot", "Shrimp Trawl"))).}
 
+\item{gear_names}{Vector of gear group names (example: c("trawl", "fixed gear")).}
+
 \item{fleet_colname}{Column to use to determine areas for fleets (example: "r_state.x")}
 
 \item{fleet_groups}{List of fleet groups to use (example: list(c("WA", "OR", "CA"))).}
 
 \item{fleet_names}{Vector of fleet names (example: c("coastwide")).}
-
-\item{gear_name}{Vector of gear group names (example: c("trawl", "fixed gear")).}
 }
 \description{
 Calculate expanded discard composition

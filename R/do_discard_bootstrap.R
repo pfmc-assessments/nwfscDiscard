@@ -6,7 +6,7 @@
 #' @param boot_number The number of bootstraps to conduct
 #' @param gear_groups List of gear types to group together
 #' (example: list(c("Bottom Trawl", "Midwater Trawl"), c("Hook & Line", "Pot", "Shrimp Trawl"))).
-#' @param gear_name Vector of gear group names (example: c("trawl", "fixed gear")).
+#' @param gear_names Vector of gear group names (example: c("trawl", "fixed gear")).
 #' @param fleet_colname Column to use to determine areas for fleets (example: "r_state.x")
 #' @param fleet_groups List of fleet groups to use (example: list(c("WA", "OR", "CA"))).
 #' @param fleet_names Vector of fleet names (example: c("coastwide")).

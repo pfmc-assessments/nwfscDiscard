@@ -6,8 +6,7 @@
 #' @param data A data frame of WCGOP catch data filtered down to non-catch share data.
 #' @param boot_number The number of bootstraps to conduct
 #' @param boot_variable The column name to do the inner sampling across.
-#' @param seed The seed number.
-#' @param redact Switch to remove any confidential data records from output.
+#' @param seed_number The seed number.
 #'
 #'
 #' @author Chantel Wetzel, Allan Hicks, and Jason Jannot

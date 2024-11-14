@@ -5,7 +5,6 @@
 \title{Bootstrap uncertainty and summarize WCGOP discard data}
 \usage{
 do_discard_bootstrap(
-  dir = NULL,
   data,
   species,
   boot_number,
@@ -14,13 +13,12 @@ do_discard_bootstrap(
   fleet_colname,
   fleet_groups,
   fleet_names,
+  dir = NULL,
   seed_number = 1,
   rm_em_data = FALSE
 )
 }
 \arguments{
-\item{dir}{Directory location to save files.}
-
 \item{data}{A data frame of WCGOP catch data}
 
 \item{species}{species name that should match the name in the ob data file, can be single species or multiple names (e.g. c("Gopher Rockfish", "Black and Yellow Rockfish"))}
@@ -30,18 +28,20 @@ do_discard_bootstrap(
 \item{gear_groups}{List of gear types to group together
 (example: list(c("Bottom Trawl", "Midwater Trawl"), c("Hook & Line", "Pot", "Shrimp Trawl"))).}
 
+\item{gear_names}{Vector of gear group names (example: c("trawl", "fixed gear")).}
+
 \item{fleet_colname}{Column to use to determine areas for fleets (example: "r_state.x")}
 
 \item{fleet_groups}{List of fleet groups to use (example: list(c("WA", "OR", "CA"))).}
 
 \item{fleet_names}{Vector of fleet names (example: c("coastwide")).}
 
+\item{dir}{Directory location to save files.}
+
 \item{seed_number}{The seed number.}
 
 \item{rm_em_data}{Logical indicating whether EM records should be removed from the observer
 catch records (OBCatch) data file.}
-
-\item{gear_name}{Vector of gear group names (example: c("trawl", "fixed gear")).}
 }
 \description{
 Bootstrap uncertainty and summarize WCGOP discard data

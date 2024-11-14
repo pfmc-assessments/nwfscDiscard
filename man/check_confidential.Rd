@@ -5,23 +5,22 @@
 \title{Check confidentiality using the catch data}
 \usage{
 check_confidential(
-  dir = NULL,
   data,
-  species,
   gear_groups,
   gear_names,
   fleet_colname,
   fleet_groups,
-  fleet_names
+  fleet_names,
+  dir = NULL
 )
 }
 \arguments{
-\item{dir}{Directory location to save files.}
-
 \item{data}{A data frame of WCGOP catch data}
 
 \item{gear_groups}{List of gear types to group together
 (example: list(c("Bottom Trawl", "Midwater Trawl"), c("Hook & Line", "Pot", "Shrimp Trawl"))).}
+
+\item{gear_names}{Vector of gear group names (example: c("trawl", "fixed gear")).}
 
 \item{fleet_colname}{Column to use to determine areas for fleets (example: "r_state.x")}
 
@@ -29,7 +28,7 @@ check_confidential(
 
 \item{fleet_names}{Vector of fleet names (example: c("coastwide")).}
 
-\item{gear_name}{Vector of gear group names (example: c("trawl", "fixed gear")).}
+\item{dir}{Directory location to save files.}
 }
 \description{
 Check confidentiality using the catch data
