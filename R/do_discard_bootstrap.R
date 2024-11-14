@@ -20,7 +20,6 @@
 #'
 #
 do_discard_bootstrap <- function(
-    dir = NULL,
     data,
     species,
     boot_number,
@@ -29,10 +28,12 @@ do_discard_bootstrap <- function(
     fleet_colname,
     fleet_groups,
     fleet_names,
+    dir = NULL,
     seed_number = 1,
     rm_em_data = FALSE) {
+  nwfscSurvey::check_dir(dir = dir)
   if (!species %in% data[, "species"]) {
-    stop(glue::glue("{species} not found in the data."))
+    cli::cli_abort("{species} not found in the data.")
   }
 
   if (grepl("/", species)) {
@@ -66,7 +67,6 @@ do_discard_bootstrap <- function(
   data_conf_check <- check_confidential(
     dir = dir,
     data = data,
-    species = species,
     gear_groups = gear_groups,
     gear_names = gear_names,
     fleet_colname = fleet_colname,
@@ -132,7 +132,7 @@ do_discard_bootstrap <- function(
         seed_number = seed_number
       )
     } else {
-      message("No noncatch share records found in the data.")
+      cli::cli_inform("No non-catch share records found in the data.")
     }
   }
 

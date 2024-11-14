@@ -15,30 +15,30 @@
 #'
 #'
 check_confidential <- function(
-    dir = NULL,
     data,
-    species,
     gear_groups,
     gear_names,
     fleet_colname,
     fleet_groups,
-    fleet_names) {
+    fleet_names,
+    dir = NULL) {
+  nwfscSurvey::check_dir(dir = dir)
   if (sum(colnames(data) == "emtrip_id") == 1) {
-    data$trip_id <- data$emtrip_id
+    data[, "trip_id"] <- data[, "emtrip_id"]
     add_name <- "_em"
   } else {
-    add_name <- NULL
+    add_name <- ""
   }
 
-  if (length(c("fleet_groups", "gear_groups") %in% colnames(data)) != 2) {
-    if (sum(colnames(data) == "trip_id") == 1) {
+  if (sum(c("fleet_groups", "gear_groups") %in% colnames(data)) != 2) {
+    if (sum(colnames(data) == "TRIP_ID") == 1) {
       # Remove duplicate columns
       data <- data[, which(!colnames(data) %in% c("MT", "SPGRFTOB1", "SCIENTIFIC_NAME"))]
     }
     colnames(data)[which(colnames(data) == "gear")] <- "gear_to_use"
     colnames(data) <- tolower(colnames(data))
     if ("ryear" %in% colnames(data)) {
-      data$year <- data$ryear
+      data[, "year"] <- data[, "ryear"]
     }
 
     if (fleet_colname == "r_state.x") {
@@ -84,17 +84,12 @@ check_confidential <- function(
   }
 
   if (!is.null(dir)) {
-    if ("length" %in% colnames(data)) {
-      bio_catch <- "_biological_"
-    } else {
-      bio_catch <- "_catch_"
-    }
     write.csv(vessels_by_year,
-      file = file.path(dir, paste0(tolower(species), "_confidentiality", bio_catch, add_name, ".csv")),
+      file = file.path(dir, paste0("confidentiality", add_name, ".csv")),
       row.names = FALSE
     )
     write.csv(vessels_by_year_cs,
-      file = file.path(dir, paste0(tolower(species), "_catch_share_confidentiality", bio_catch, add_name, ".csv")),
+      file = file.path(dir, paste0("catch_share_confidentiality", add_name, ".csv")),
       row.names = FALSE
     )
   }

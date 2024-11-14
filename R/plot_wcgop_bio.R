@@ -20,12 +20,13 @@ plot_wcgop_bio <- function(
     dir = NULL,
     plot = 1:2,
     comp_column = "length") {
+  nwfscSurvey::check_dir(dir = dir)
   data <- data[, which(colnames(data) != "SCIENTIFIC_NAME")]
   colnames(data)[which(colnames(data) == "gear")] <- "gear_to_use"
   colnames(data) <- tolower(colnames(data))
   data$year <- data$ryear
   data$r_state <- data$r_state.x
-  data <- data[which(data$common_name == species & data$catch_disposition == "D"), ]
+  data <- data[which(data$species == species & data$catch_disposition == "D"), ]
 
   if (grepl("/", species)) {
     species_name_mod <- gsub("/", " ", species)
@@ -34,19 +35,24 @@ plot_wcgop_bio <- function(
     species <- species_name_mod
   }
 
-  get_name <- unique(data$species)
+  get_name <- gsub(" ", "_", tolower(unique(data$species)))
 
-  data$bio_plot <- data[, comp_column]
+  data[, "bio_plot"] <- data[, comp_column]
   if (comp_column == "length") {
     y_lab <- "Length (cm)"
   } else {
     y_lab <- "Age"
   }
 
-  data$catch_shares <- "non_catch_shares"
+  data <- data |>
+    dplyr::filter(!is.na(bio_plot)) |>
+    dplyr::mutate(
+      catch_shares = "non_catch_shares"
+    )
+  data[, "catch_shares"] <-
   data$catch_shares[
     data$sector %in% c("Catch Shares", "Catch Shares EM", "Midwater Hake", "LE CA Halibut") &
-      data$year > 2011
+      data$year >= 2011
   ] <- "catch_shares"
 
   igroup <- 1
@@ -60,7 +66,7 @@ plot_wcgop_bio <- function(
 
     if (!is.null(dir)) {
       ggplot2::ggsave(
-        filename = file.path(dir, paste0(species, "_length_by_year_gear.png")),
+        filename = file.path(dir, paste0(get_name, "_length_by_year_gear.png")),
         plot = p1,
         width = 14,
         height = 7
@@ -81,7 +87,7 @@ plot_wcgop_bio <- function(
 
     if (!is.null(dir)) {
       ggplot2::ggsave(
-        filename = file.path(dir, paste0(species, "_length_by_year_catch_share.png")),
+        filename = file.path(dir, paste0(get_name, "_length_by_year_catch_share.png")),
         plot = p2,
         width = 14,
         height = 7

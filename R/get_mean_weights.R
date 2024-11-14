@@ -24,6 +24,7 @@ get_mean_weights <- function(
     fleet_colname,
     fleet_groups,
     fleet_names) {
+  nwfscSurvey::check_dir(dir = dir)
   # Remove duplicate columns
   data <- data[, which(!colnames(data) %in% c("MT", "SPGRFTOB1", "SCIENTIFIC_NAME"))]
   colnames(data)[which(colnames(data) == "gear")] <- "gear_to_use"
@@ -48,7 +49,6 @@ get_mean_weights <- function(
   ci_check <- check_confidential(
     dir = dir,
     data = data,
-    species = species,
     gear_groups = gear_groups,
     gear_names = gear_names,
     fleet_colname = fleet_colname,
@@ -64,13 +64,15 @@ get_mean_weights <- function(
       remove <- c(remove, which(data$fleet == f & data$year %in% ci_not_met[ci_not_met$fleet == f, "year"]))
     }
     data <- data[-remove, ]
-    print(paste("The following number of records due to not meeting confidentiality:", length(remove)))
+    cli::cli_inform(
+      "The following number of records due to not meeting confidentiality: {length(remove)}"
+    )
   }
 
   if (species %in% data[, "species"]) {
     data <- data[data$species == species & data$catch_disposition == "D", ]
   } else {
-    stop(print(paste(species, "not found in the data.")))
+    cli::cli_abort("{species} not found in the data.")
   }
 
   if (sum(is.na(data$exp_sp_wt)) > 0) {
