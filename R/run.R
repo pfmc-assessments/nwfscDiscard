@@ -82,7 +82,7 @@ run <- function(
     dir = save_loc,
     data = catch_data,
     species_name = species_name,
-    boot_number = 10000,
+    boot_number = n_boot,
     gear_groups = gear_groups,
     gear_names = gear_names,
     fleet_colname = fleet_colname,
