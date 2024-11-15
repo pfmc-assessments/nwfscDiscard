@@ -96,7 +96,13 @@ plot_wcgop_bio <- function(
     dplyr::group_by(gear_to_use, catch_shares, year) |>
     dplyr::reframe(
       n_lengths = length(!is.na(length))
-    )
-  samples_by_year <- as.data.frame(samples_by_year)
+    ) |>
+    data.frame()
+  if (!is.null(dir)) {
+    write.csv(
+      samples_by_year,
+      file = file.path(dir, "biological_samples_by_year_gear.csv"),
+      row.names = FALSE)
+  }
   return(samples_by_year)
 }
