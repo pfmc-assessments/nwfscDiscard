@@ -40,17 +40,6 @@ run <- function(
   fleet_names <- data_grouping[[4]]
   fleet_colname <- data_grouping[[5]]
 
-  # Check data confidentiality give the gear and fleet areas:
-  conf <- check_confidential(
-    dir = save_loc,
-    data = catch_data,
-    gear_groups = gear_groups,
-    gear_names = gear_names,
-    fleet_colname = fleet_colname,
-    fleet_groups = fleet_groups,
-    fleet_names = fleet_names
-  )
-
   # Process the biological data
   comps <- get_biological_data(
     dir = save_loc,
