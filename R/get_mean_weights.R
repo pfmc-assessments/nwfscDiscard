@@ -108,7 +108,8 @@ get_mean_weights <- function(
     year = mean_weights[, "year"],
     month = "Month",
     fleet = apply(mean_weights[, c("gear_groups", "fleet_groups")], 1, paste, collapse = "-"),
-    partition = 2,
+    partition = 1,
+    type = 2,
     obs = mean_weights[, "weighted_ave_w"],
     cv = mean_weights[, "weighted_ave_w_cv"]
   )
