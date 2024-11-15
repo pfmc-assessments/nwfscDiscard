@@ -102,7 +102,8 @@ plot_wcgop_bio <- function(
     write.csv(
       samples_by_year,
       file = file.path(dir, "biological_samples_by_year_gear.csv"),
-      row.names = FALSE)
+      row.names = FALSE
+    )
   }
   return(samples_by_year)
 }

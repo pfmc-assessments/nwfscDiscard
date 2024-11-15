@@ -87,7 +87,8 @@ get_biological_data <- function(
   data <- data |>
     dplyr::filter(
       species == species_name,
-      catch_disposition == "D")
+      catch_disposition == "D"
+    )
 
   # Calculate weighting
   data$exp1 <- data[, "species_number"] / data[, "bio_specimen_count"]
