@@ -84,32 +84,31 @@ get_biological_data <- function(
     )
   }
 
-  data <- data |>
+  expansions <- data |>
     dplyr::filter(
       species == species_name,
       catch_disposition == "D"
+    ) |>
+    dplyr::mutate(
+      sex = nwfscSurvey::codify_sex(sex)
+    ) |>
+    dplyr::mutate(
+      exp1 = dplyr::case_when(
+        !is.na(species_number) | !is.na(bio_specimen_count) ~ species_number / bio_specimen_count,
+        .default = 0),
+      exp_weight = dplyr::case_when(
+        is.na(exp_sp_wt) ~ (species_weight / hooks_sampled) * total_hooks,
+        .default = exp_sp_wt),
+      exp2 = dplyr::case_when(
+        !is.na(species_weight) ~ exp_weight / species_weight,
+        .default = 0),
+      wghtd_freq = frequency * exp1 * exp2
     )
 
-  # Calculate weighting
-  data$exp1 <- data[, "species_number"] / data[, "bio_specimen_count"]
-  data$exp_sp_wt[is.na(data$exp_sp_wt)] <-
-    (data$species_weight[is.na(data$exp_sp_wt)] /
-      data$hooks_sampled[is.na(data$exp_sp_wt)]) *
-      data$total_hooks[is.na(data$exp_sp_wt)]
-
-  data$exp2 <- data$exp_sp_wt / data$species_weight
-  data$wghtd_freq <- data$frequency * data$exp1 * data$exp2
-
-  NA_wgts <- sum(is.na(data$wghtd_freq))
-  cli::cli_inform(
-    "Converting {NA_wgts} weighted frequency out of {nrow(data)} to zero for arithmetic."
-  )
-  data$wghtd_freq[is.na(data$wghtd_freq)] <- 0
-
-  if (sum(!is.na(data[, "length"])) > 0) {
+  if (sum(!is.na(expansions[, "length"])) > 0) {
     comps <- calc_comps(
       dir = dir,
-      data = data,
+      data = expansions,
       comp_bins = len_bins,
       comp_column = "length"
     )
@@ -118,7 +117,7 @@ get_biological_data <- function(
   if (sum(!is.na(data[, "age"])) > 0) {
     comps <- calc_comps(
       dir = dir,
-      data = data,
+      data = expansions,
       comp_bins = age_bins,
       comp_column = "age"
     )
