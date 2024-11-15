@@ -73,7 +73,8 @@ get_mean_weights <- function(
   }
 
   data <- data |> dplyr::filter(
-    species == species_name, catch_disposition == "D")
+    species == species_name, catch_disposition == "D"
+  )
 
   if (sum(is.na(data$exp_sp_wt)) > 0) {
     data$exp_sp_wt[is.na(data$exp_sp_wt)] <- 0
