@@ -175,10 +175,13 @@ calc_comps <- function(
     data.frame()
 
   if (!is.null(dir)) {
-    write.csv(sample_size,
-      file = file.path(dir, paste0("biological_sample_sizes_", comp_column, ".csv")),
-      row.names = FALSE
-    )
+    if (dim(sample_size)[1] > 0 ) {
+      write.csv(sample_size,
+                file = file.path(dir, paste0("biological_sample_sizes_", comp_column, ".csv")),
+                row.names = FALSE
+      )
+    }
+
     if (!is.null(comps_out_sexed)) {
       write.csv(comps_out_sexed,
                 file = file.path(dir, paste0("biological_discard_", comp_column, "s_sexed.csv")),
