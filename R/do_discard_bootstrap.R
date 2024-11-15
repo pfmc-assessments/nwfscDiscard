@@ -36,12 +36,6 @@ do_discard_bootstrap <- function(
     cli::cli_abort("{species_name} not found in the data.")
   }
 
-  if (grepl("/", species_name)) {
-    species_name_mod <- gsub("/", " ", species_name)
-    data[which(data[, "species"] == species_name), "species"] <- species_name_mod
-    species_name <- species_name_mod
-  }
-
   # Format the observer catch data column names
   if (sum(colnames(data) == "TRIP_ID") == 1) {
     data <- data |> dplyr::select(-MT, -SPGRFTOB1, -SCIENTIFIC_NAME)
@@ -87,7 +81,7 @@ do_discard_bootstrap <- function(
     # Doing this after the confidentiality check since if they are removed the confidentiality check
     # should still include these vessels since the the discard rates from EM and non-EM catch share
     # vessels would likely be combined external to the data processing.
-    data <- data |> dplyr::filter(sector == "Catch Shares EM")
+    data <- data |> dplyr::filter(sector != "Catch Shares EM")
   }
 
   if (sum(colnames(data) == "emtrip_id") == 1) {
