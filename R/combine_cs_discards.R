@@ -29,12 +29,8 @@ combine_cs_discards <- function(
     )
 
   if (!is.null(dir)) {
-    species_to_save <- tolower(species)
-    if (grepl("/", species)) {
-      species_to_save <- tolower(gsub("/", " ", species))
-    }
     write.csv(combined_data,
-      file = file.path(dir, paste0(species_to_save, "_combined_cs_rates.csv")),
+      file = file.path(dir, "discard_rates_combined_catch_share.csv"),
       row.names = FALSE
     )
   }

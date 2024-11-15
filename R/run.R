@@ -9,7 +9,7 @@
 #' @param catch_data A data frame of WCGOP catch data that includes all species.
 #'   This data frame will be used to check confidentiality.
 #' @param biological_data A data frame of WCGOP biological data that includes all species.
-#' @param em_data A data frame of WCGOP EM catch data that includes all species.
+#' @param em_catch_data A data frame of WCGOP EM catch data that includes all species.
 #' @param save_loc Directory location to save files.
 #' @param n_boot Number of bootstraps to run.
 #'
@@ -24,7 +24,7 @@ run <- function(
     age_bins = 1:30,
     catch_data,
     biological_data,
-    em_data = NULL,
+    em_catch_data = NULL,
     save_loc = NULL,
     n_boot = 10000
     ) {

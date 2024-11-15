@@ -111,7 +111,7 @@ boostrap_discard <- function(
 
   if (!is.null(dir)) {
     write.csv(all_boot_data |> dplyr::filter(n_vessels >= 3),
-      file = file.path(dir, "noncatch_share_discards.csv"),
+      file = file.path(dir, "discard_rates_noncatch_share.csv"),
       row.names = FALSE
     )
   } else {

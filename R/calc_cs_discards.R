@@ -37,7 +37,7 @@ calc_cs_discards <- function(
   if (!is.null(dir)) {
     write.csv(
       x = out |> dplyr::filter(n_vessels >= 3),
-      file = file.path(dir, paste0(add_name, "catch_share_discards.csv")),
+      file = file.path(dir, paste0("discards_rates_", add_name, "catch_share_.csv")),
       row.names = FALSE
     )
   } else {

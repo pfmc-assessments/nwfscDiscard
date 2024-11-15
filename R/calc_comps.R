@@ -176,18 +176,18 @@ calc_comps <- function(
 
   if (!is.null(dir)) {
     write.csv(sample_size,
-      file = file.path(dir, paste0("wcgop_biological_sample_sizes_", comp_column, ".csv")),
+      file = file.path(dir, paste0("biological_sample_sizes_", comp_column, ".csv")),
       row.names = FALSE
     )
     if (!is.null(comps_out_sexed)) {
       write.csv(comps_out_sexed,
-                file = file.path(dir, paste0("wcgop_discard_sexed_", comp_column, "s.csv")),
+                file = file.path(dir, paste0("biological_discard_", comp_column, "s_sexed.csv")),
                 row.names = FALSE
       )
     }
     if (!is.null(comps_out_unsexed)) {
       write.csv(comps_out_unsexed,
-                file = file.path(dir, paste0("wcgop_discard_unsexed_", comp_column, "s.csv")),
+                file = file.path(dir, paste0("biological_discard_", comp_column, "s_unsexed.csv")),
                 row.names = FALSE
       )
     }

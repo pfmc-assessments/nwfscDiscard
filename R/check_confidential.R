@@ -92,7 +92,7 @@ check_confidential <- function(
       row.names = FALSE
     )
     write.csv(vessels_by_year_cs,
-      file = file.path(dir, paste0("catch_share_confidentiality", add_name, ".csv")),
+      file = file.path(dir, paste0("confidentiality", add_name, "_catch_share.csv")),
       row.names = FALSE
     )
   }
