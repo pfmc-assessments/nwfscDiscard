@@ -28,7 +28,7 @@ run <- function(
     save_loc = NULL,
     n_boot = 10000
     ) {
-  if(!is.null(em_data)) {
+  if(!is.null(em_catch_data)) {
     do_em <- TRUE
   } else {
     do_em <- FALSE
@@ -93,7 +93,8 @@ run <- function(
       fleet_names = fleet_names
     )
 
-    combine_cs_discards(
+    cs_out <- combine_cs_discards(
+      dir = save_loc,
       cs_data = ob_out$cs,
       em_data = em_out$em
     )
