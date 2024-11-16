@@ -90,8 +90,8 @@ calc_comps <- function(
       0,
       1,
       sample_size[, "nsamp"],
-      filter_comps[filter_comps$sex == "U", 5:ncol(comps)],
-      0 * filter_comps[filter_comps$sex == "U", 5:ncol(comps)]
+      filter_comps[filter_comps$sex == "U", 6:ncol(comps)],
+      0 * filter_comps[filter_comps$sex == "U", 6:ncol(comps)]
     )
     colnames(comps_out_unsexed)[1:6] <- c("year", "month", "fleet", "sex", "partition", "input_n")
     out$unsexed <- comps_out_unsexed
