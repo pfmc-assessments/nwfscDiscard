@@ -90,7 +90,8 @@ calc_comps <- function(
       0,
       1,
       sample_size[, "nsamp"],
-      filter_comps[filter_comps$sex == "U", 5:ncol(comps)]
+      filter_comps[filter_comps$sex == "U", 5:ncol(comps)],
+      0 * filter_comps[filter_comps$sex == "U", 5:ncol(comps)]
     )
     colnames(comps_out_unsexed)[1:6] <- c("year", "month", "fleet", "sex", "partition", "input_n")
     out$unsexed <- comps_out_unsexed
@@ -140,7 +141,8 @@ calc_comps <- function(
         -1,
         -1,
         comps_out_unsexed[, "input_n"],
-        comps_out_unsexed[, 7:ncol(comps_out_unsexed)]
+        comps_out_unsexed[, 7:ncol(comps_out_unsexed)],
+        0 * comps_out_unsexed[, 7:ncol(comps_out_unsexed)]
       )
       colnames(comps_out_unsexed)[6:9] <- c("age_error", "age_low", "age_high", "input_n")
       out$unsexed <- comps_out_unsexed
