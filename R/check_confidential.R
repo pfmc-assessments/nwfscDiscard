@@ -71,14 +71,6 @@ check_confidential <- function(
 
   vessels_by_year_cs <- as.data.frame(vessels_by_year_cs)
 
-  vessels_by_year <- vessels_by_year_cs |>
-    dplyr::group_by(year, gear_groups, fleet_groups, fleet) |>
-    dplyr::reframe(
-      n_vessels = sum(n_vessels)
-    ) |>
-    dplyr::ungroup()
-  vessels_by_year <- as.data.frame(vessels_by_year)
-
   if (any(vessels_by_year_cs[, "n_vessels"] < 3)) {
     bad_fleet_group <- vessels_by_year_cs[which(vessels_by_year_cs[, "n_vessels"] < 3), "fleet"]
     bad_year <- vessels_by_year_cs[bad, "year"]
@@ -87,19 +79,11 @@ check_confidential <- function(
   }
 
   if (!is.null(dir)) {
-    write.csv(vessels_by_year,
-      file = file.path(dir, paste0("confidentiality", add_name, ".csv")),
-      row.names = FALSE
-    )
     write.csv(vessels_by_year_cs,
-      file = file.path(dir, paste0("confidentiality", add_name, "_catch_share.csv")),
+      file = file.path(dir, paste0("confidentiality", add_name, "_by_catch_share.csv")),
       row.names = FALSE
     )
   }
-
-  conf_check <- list(
-    vessels_by_year = vessels_by_year,
-    vessels_by_year_cs = vessels_by_year_cs
-  )
+  conf_check <- vessels_by_year_cs
   return(conf_check)
 }
