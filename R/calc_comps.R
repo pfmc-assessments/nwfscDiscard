@@ -60,7 +60,7 @@ calc_comps <- function(
       values_from = prop_weighted
     )
 
-  comps_out_sexed <- comps_out_unsexed <- NULL
+  comps_out_sexed <- comps_out_unsexed <- all_comps <- NULL
   out <- list()
   if (any(comps[,"sex"] == "U")) {
     sub <- comps[comps$sex == "U", ]
@@ -160,6 +160,7 @@ calc_comps <- function(
       out$sexed <- comps_out_sexed
     }
   }
+  all_comps <- rbind(comps_out_sexed, comps_out_unsexed)
 
   sample_size <- comp_data |>
     dplyr::group_by(year, gear_groups, fleet_groups) |>
@@ -184,18 +185,12 @@ calc_comps <- function(
       )
     }
 
-    if (!is.null(comps_out_sexed)) {
-      write.csv(comps_out_sexed,
-                file = file.path(dir, paste0("biological_discard_", comp_column, "s_sexed.csv")),
-                row.names = FALSE
-      )
-    }
-    if (!is.null(comps_out_unsexed)) {
-      write.csv(comps_out_unsexed,
-                file = file.path(dir, paste0("biological_discard_", comp_column, "s_unsexed.csv")),
+    if (!is.null(all_comps)) {
+      write.csv(all_comps,
+                file = file.path(dir, paste0("biological_discard_", comp_column, "s.csv")),
                 row.names = FALSE
       )
     }
   }
-  return(out)
+  return(all_comps)
 }
