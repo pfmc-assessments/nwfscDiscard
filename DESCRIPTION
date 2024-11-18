@@ -8,7 +8,7 @@ Authors@R: c(
       given = c("Chantel", "R."), 
       family = "Wetzel", , 
       email = "chantel.wetzel@noaa.gov", 
-      role = c("aut"),
+      role = c("aut", "cre"),
       comment = c(ORCID = "0000-0002-7573-8240")
     )
     )
@@ -18,7 +18,6 @@ Description: Northwest Fisheries Science Center WCGOP data processing for use in
   confidentiality. 
 License: GPL (>=3)
 Depends:
-    dplyr,
     R (>= 4.2)
 Imports:
     cli,
