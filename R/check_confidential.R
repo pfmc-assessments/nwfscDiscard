@@ -84,6 +84,6 @@ check_confidential <- function(
       row.names = FALSE
     )
   }
-  conf_check <- vessels_by_year_cs
-  return(conf_check)
+  vessels_by_year_cs
+  return(vessels_by_year_cs)
 }

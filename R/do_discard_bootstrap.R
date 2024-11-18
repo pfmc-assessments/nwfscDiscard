@@ -85,8 +85,7 @@ do_discard_bootstrap <- function(
   }
 
   if (sum(colnames(data) == "emtrip_id") == 1) {
-    conf_data_check <- data_conf_check[[2]]
-    conf_data_check <- conf_data_check |> dplyr::filter(catch_shares == TRUE)
+    conf_data_check <- data_conf_check |> dplyr::filter(catch_shares == TRUE)
     em_data_out <- calc_cs_discards(
       dir = dir,
       data = data,
@@ -100,7 +99,7 @@ do_discard_bootstrap <- function(
 
     # calculate catch shares discard quantities
     if (nrow(cs_data) > 0) {
-      conf_data_check <- conf_data_check |> dplyr::filter(catch_shares == TRUE)
+      conf_data_check <- data_conf_check |> dplyr::filter(catch_shares == TRUE)
       cs_data_out <- calc_cs_discards(
         dir = dir,
         data = cs_data,

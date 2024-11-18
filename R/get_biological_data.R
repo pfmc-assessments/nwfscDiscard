@@ -69,7 +69,7 @@ get_biological_data <- function(
     fleet_colname = fleet_colname,
     fleet_groups = fleet_groups,
     fleet_names = fleet_names
-  )$vessels_by_year
+  )
 
   # Remove years where there are < 3 vessels observed:
   ci_not_met <- ci_check |> dplyr::filter(n_vessels < 3, )

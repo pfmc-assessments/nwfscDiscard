@@ -57,7 +57,7 @@ get_mean_weights <- function(
     fleet_colname = fleet_colname,
     fleet_groups = fleet_groups,
     fleet_names = fleet_names
-  )$vessels_by_year
+  )
 
   # Remove years where there are < 3 vessels
   ci_not_met <- ci_check[ci_check$n_vessels < 3, ]
