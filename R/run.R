@@ -26,9 +26,8 @@ run <- function(
     biological_data,
     em_catch_data = NULL,
     save_loc = NULL,
-    n_boot = 10000
-    ) {
-  if(!is.null(em_catch_data)) {
+    n_boot = 10000) {
+  if (!is.null(em_catch_data)) {
     do_em <- TRUE
   } else {
     do_em <- FALSE
