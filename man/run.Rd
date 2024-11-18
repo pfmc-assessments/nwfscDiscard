@@ -11,7 +11,7 @@ run(
   age_bins = 1:30,
   catch_data,
   biological_data,
-  em_data = NULL,
+  em_catch_data = NULL,
   save_loc = NULL,
   n_boot = 10000
 )
@@ -32,7 +32,7 @@ This data frame will be used to check confidentiality.}
 
 \item{biological_data}{A data frame of WCGOP biological data that includes all species.}
 
-\item{em_data}{A data frame of WCGOP EM catch data that includes all species.}
+\item{em_catch_data}{A data frame of WCGOP EM catch data that includes all species.}
 
 \item{save_loc}{Directory location to save files.}
 
