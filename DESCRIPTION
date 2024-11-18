@@ -4,23 +4,38 @@ Title: Northwest Fisheries Science Center
 Version: 2.0
 Date: 2018-04-13
 Authors@R: c(
-    person(c("Chantel", "R."), "Wetzel", , "chantel.wetzel@noaa.gov", role = c("aut", "cre")),
-    person(c("Allan", "C."), "Hicks", role = "aut")
-  )
-Maintainer: chantel.wetzel <chantel.wetzel@noaa.gov>
-Description: Northwest Fisheries Science Center WCGOP data processing.
+    person(
+      given = c("Chantel", "R."), 
+      family = "Wetzel", , 
+      email = "chantel.wetzel@noaa.gov", 
+      role = c("aut"),
+      comment = c(ORCID = "0000-0002-7573-8240")
+    )
+    )
+Description: Northwest Fisheries Science Center WCGOP data processing for use in
+  West Coast groundfish assessments. All scripts to process the available data are 
+  publicly available but the data are stored in a private location to maintain 
+  confidentiality. 
 License: GPL (>=3)
 Depends:
-    dplyr (>= 1.0.0),
-    R (>= 4.0)
+    dplyr,
+    R (>= 4.2)
 Imports:
+    cli,
+    cowplot,
     dplyr,
     ggplot2,
-    glue
+    glue,
+    nwfscSurvey,
+    tidyr
 Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: 
     knitr
+Remotes:
+    github::pfmc-assessments/nwfscSurvey
 Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2

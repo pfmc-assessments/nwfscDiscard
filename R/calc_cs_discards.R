@@ -27,17 +27,16 @@ calc_cs_discards <- function(
     dplyr::ungroup()
 
   # Merge the confidential data check with the discard rates
-  out <- dplyr::left_join(
+  out <- dplyr::right_join(
     x = conf_data_check,
     y = discards,
     by = c("fleet", "year")
   ) |> dplyr::select(-gear_groups, -fleet_groups)
 
-
   if (!is.null(dir)) {
     write.csv(
       x = out |> dplyr::filter(n_vessels >= 3),
-      file = file.path(dir, paste0(add_name, "catch_share_discards.csv")),
+      file = file.path(dir, paste0("discards_rates_", add_name, "catch_share.csv")),
       row.names = FALSE
     )
   } else {

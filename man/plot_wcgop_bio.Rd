@@ -20,10 +20,12 @@ plot_wcgop_bio(
 \item{dir}{Directory location to save files.}
 
 \item{plot}{A vector of integers to specify which plots you would like. The
-default is to print or save both figures, i.e., `plot = 1:2`. Integers
+default is to print or save both figures, i.e., \code{plot = 1:2}. Integers
 correspond to the following figures:
-1. Boxplot of discard length/age by gear group and year.
-2. Boxplot of discard length/age by catch share and non-catch share by year.}
+\enumerate{
+\item Boxplot of discard length/age by gear group and year.
+\item Boxplot of discard length/age by catch share and non-catch share by year.
+}}
 
 \item{comp_column}{Column in the data to plot (e.g. "LENGTH").}
 }

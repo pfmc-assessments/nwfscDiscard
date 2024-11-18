@@ -8,7 +8,7 @@ and the proportions by year using GEMM data.}
 calc_prop_gemm_catch(data, dir = NULL)
 }
 \arguments{
-\item{data}{Data frame of gemm data pulled using [nwfscSurvey::pull_gemm()]}
+\item{data}{Data frame of gemm data pulled using \code{\link[nwfscSurvey:pull_gemm]{nwfscSurvey::pull_gemm()}}}
 
 \item{dir}{Directory location to save files.}
 }

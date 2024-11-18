@@ -57,7 +57,7 @@ get_mean_weights <- function(
     fleet_colname = fleet_colname,
     fleet_groups = fleet_groups,
     fleet_names = fleet_names
-  )$vessels_by_year
+  )
 
   # Remove years where there are < 3 vessels
   ci_not_met <- ci_check[ci_check$n_vessels < 3, ]
@@ -115,10 +115,10 @@ get_mean_weights <- function(
     cv = mean_weights[, "weighted_ave_w_cv"]
   )
 
-  colnames(mean_bodyweight)[5:6] <- c("obs", "cv")
+  colnames(mean_bodyweight)[(ncol(mean_bodyweight) - 1):ncol(mean_bodyweight)] <- c("obs", "cv")
   if (!is.null(dir)) {
     write.csv(mean_bodyweight,
-      file = file.path(dir, "wcgop_mean_body_weights.csv"),
+      file = file.path(dir, "discard_mean_body_weights.csv"),
       row.names = FALSE
     )
   }

@@ -19,11 +19,11 @@ calc_comps <- function(
   comp_data <- data[!is.na(data[, comp_column]), ]
   # Perhaps add a check for lengths being available
   bins <- c(comp_bins, Inf)
-  comp_data$bin <- bins[findInterval(comp_data[, comp_column], comp_bins, all.inside = TRUE)]
-  comp_data$bin <- factor(comp_data$bin, levels = comp_bins)
+  comp_data[, "bin"] <- bins[findInterval(comp_data[, comp_column], comp_bins, all.inside = TRUE)]
+  comp_data[, "bin"] <- factor(comp_data[, "bin"], levels = comp_bins)
 
   init_count <- comp_data |>
-    dplyr::group_by(year, gear_groups, fleet_groups, bin) |>
+    dplyr::group_by(year, gear_groups, fleet_groups, sex, bin) |>
     dplyr::summarise(
       n = dplyr::n(),
       weighted = sum(wghtd_freq),
@@ -33,7 +33,7 @@ calc_comps <- function(
 
   filled_count <- init_count |>
     tidyr::complete(
-      year, gear_groups, fleet_groups, bin,
+      year, gear_groups, fleet_groups, sex, bin,
       fill = list(
         n = 0,
         weighted = 0
@@ -47,80 +47,150 @@ calc_comps <- function(
       w_by_year = sum(weighted)
     ) |>
     dplyr::ungroup() |>
-    dplyr::filter(n_by_year != 0)
-
-  all_weights$prop_numbers <- 100 * all_weights$n / all_weights$n_by_year
-  all_weights$prop_weighted <- 100 * all_weights$weighted / all_weights$w_by_year
+    dplyr::filter(n_by_year != 0) |>
+    dplyr::mutate(
+      prop_numbers = 100 * n/n_by_year,
+      prop_weighted = 100 * weighted / w_by_year
+    )
 
   # Format the composition data for SS3
-  comps <- all_weights[, c("year", "gear_groups", "fleet_groups", "bin", "n_by_year", "prop_weighted")] |>
+  comps <- all_weights[, c("year", "gear_groups", "fleet_groups", "sex", "bin", "n_by_year", "prop_weighted")] |>
     tidyr::pivot_wider(
       names_from = bin,
       values_from = prop_weighted
     )
 
-  # Calculate based on all the observations rather than the ones filtered down to non-NA length or age alone.
-  sample_size <- data |>
+  comps_out_sexed <- comps_out_unsexed <- all_comps <- NULL
+  out <- list()
+  if (any(comps[,"sex"] == "U")) {
+    sub <- comps[comps$sex == "U", ]
+    keep <- which(apply(sub[, 6:ncol(sub)], 1, sum) != 0)
+    filter_comps <- sub[keep, ]
+
+    sample_size <- comp_data |>
+      dplyr::filter(sex == "U") |>
+      dplyr::group_by(year, gear_groups, fleet_groups) |>
+      dplyr::summarise(
+        fish = sum(frequency),
+        hauls = length(unique(haul_id)),
+        trips = length(unique(trip_id)),
+        vessels = length(unique(drvid)),
+        ratio = fish / trips,
+        nsamp = round(dplyr::case_when(
+          ratio < 44 ~ trips + 0.138 * fish, .default = 7.06 * hauls
+        ), 0),
+        fleet = paste0(unique(gear_groups), "-", unique(fleet_groups))
+      ) |>
+      data.frame()
+
+    comps_out_unsexed <- cbind(
+      sample_size[, "year"],
+      "Month",
+      sample_size[, "fleet"],
+      0,
+      1,
+      sample_size[, "nsamp"],
+      filter_comps[filter_comps$sex == "U", 6:ncol(comps)],
+      0 * filter_comps[filter_comps$sex == "U", 6:ncol(comps)]
+    )
+    colnames(comps_out_unsexed)[1:6] <- c("year", "month", "fleet", "sex", "partition", "input_n")
+    out$unsexed <- comps_out_unsexed
+  }
+
+  if ((sum(comps$sex == "F") + sum(comps$sex == "M")) > 0) {
+    sample_size <- comp_data |>
+      dplyr::filter(sex != "U") |>
+      dplyr::group_by(year, gear_groups, fleet_groups) |>
+      dplyr::summarise(
+        fish = sum(frequency),
+        hauls = length(unique(haul_id)),
+        trips = length(unique(trip_id)),
+        vessels = length(unique(drvid)),
+        ratio = fish / trips,
+        nsamp = round(dplyr::case_when(
+          ratio < 44 ~ trips + 0.138 * fish, .default = 7.06 * hauls
+        ), 0),
+        fleet = paste0(unique(gear_groups), "-", unique(fleet_groups))
+      ) |>
+      data.frame()
+
+    comps_sexed <-  cbind(
+      comps[comps$sex == "F", 6:ncol(comps)],
+      comps[comps$sex == "M", 6:ncol(comps)])
+    remove <- which(apply(comps_sexed, 1, sum) == 0)
+    filter_comps <- comps_sexed[-remove, ]
+
+    comps_out_sexed <- cbind(
+      sample_size[, "year"],
+      "Month",
+      sample_size[, "fleet"],
+      3,
+      1,
+      sample_size[, "nsamp"],
+      filter_comps
+    )
+    colnames(comps_out_sexed)[1:6] <- c("year", "month", "fleet", "sex", "partition", "input_n")
+    out$sexed <- comps_out_sexed
+  }
+
+  if (comp_column == "age") {
+    if (!is.null(comps_out_unsexed)){
+      comps_out_unsexed <- cbind(
+        comps_out_unsexed[, 1:5],
+        "age_error",
+        -1,
+        -1,
+        comps_out_unsexed[, "input_n"],
+        comps_out_unsexed[, 7:ncol(comps_out_unsexed)],
+        0 * comps_out_unsexed[, 7:ncol(comps_out_unsexed)]
+      )
+      colnames(comps_out_unsexed)[6:9] <- c("age_error", "age_low", "age_high", "input_n")
+      out$unsexed <- comps_out_unsexed
+    }
+    if (!is.null(comps_out_sexed)){
+      comps_out_sexed <- cbind(
+        comps_out_sexed[, 1:5],
+        "age_error",
+        -1,
+        -1,
+        comps_out_sexed[, "input_n"],
+        comps_out_sexed[, 7:ncol(comps_out_sexed)]
+      )
+      colnames(comps_out_sexed)[6:9] <- c("age_error", "age_low", "age_high", "input_n")
+      out$sexed <- comps_out_sexed
+    }
+  }
+  all_comps <- rbind(comps_out_sexed, comps_out_unsexed)
+
+  sample_size <- comp_data |>
     dplyr::group_by(year, gear_groups, fleet_groups) |>
     dplyr::summarise(
       fish = sum(frequency),
       hauls = length(unique(haul_id)),
       trips = length(unique(trip_id)),
       vessels = length(unique(drvid)),
-    )
-
-  sample_size$nsamp <- round(ifelse(
-    sample_size$fish / sample_size$trips < 44,
-    sample_size$trips + 0.138 * sample_size$fish,
-    7.06 * sample_size$hauls
-  ), 0)
-
-  fleet <- apply(comps[, c("gear_groups", "fleet_groups")], 1, paste, collapse = "-")
-
-  comps_out <- cbind(
-    comps[, "year"],
-    "Month",
-    fleet,
-    0,
-    1,
-    sample_size$nsamp,
-    comps[, 5:ncol(comps)]
-  )
-  colnames(comps_out)[c(2, 4, 5, 6)] <- c("month", "sex", "partition", "input_n")
-
-  if (comp_column == "length") {
-    remove <- which(is.na(apply(comps_out[, 7:ncol(comps_out)], 1, sum)))
-    if (length(remove) > 0) {
-      comps_out <- comps_out[-remove, ]
-    }
-  }
-
-  if (comp_column == "age") {
-    comps_out <- cbind(
-      comps_out[, 1:5],
-      "age_error",
-      -1,
-      -1,
-      sample_size$nsamp,
-      comps[, 5:ncol(comps)]
-    )
-    colnames(comps_out)[6:9] <- c("age_error", "age_low", "age_high", "nsamp")
-    remove <- which(is.na(apply(comps_out[, 10:ncol(comps_out)], 1, sum)))
-    if (length(remove) > 0) {
-      comps_out <- comps_out[-remove, ]
-    }
-  }
+      ratio = fish / trips,
+      nsamp = round(dplyr::case_when(
+        ratio < 44 ~ trips + 0.138 * fish, .default = 7.06 * hauls
+      ), 0)
+    ) |>
+    dplyr::select(-ratio) |>
+    data.frame()
 
   if (!is.null(dir)) {
-    write.csv(sample_size,
-      file = file.path(dir, paste0("wcgop_biological_sample_sizes_", comp_column, ".csv")),
-      row.names = FALSE
-    )
+    if (dim(sample_size)[1] > 0 ) {
+      write.csv(sample_size,
+                file = file.path(dir, paste0("biological_sample_sizes_", comp_column, ".csv")),
+                row.names = FALSE
+      )
+    }
 
-    write.csv(comps_out,
-      file = file.path(dir, paste0("wcgop_discard_", comp_column, "s.csv")),
-      row.names = FALSE
-    )
+    if (!is.null(all_comps)) {
+      write.csv(all_comps,
+                file = file.path(dir, paste0("biological_discard_", comp_column, "s.csv")),
+                row.names = FALSE
+      )
+    }
   }
-  return(comps_out)
+  return(all_comps)
 }

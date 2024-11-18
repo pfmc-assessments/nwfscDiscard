@@ -107,11 +107,16 @@ boostrap_discard <- function(
     ) |>
     dplyr::ungroup()
 
-  all_boot_data <- dplyr::left_join(cf_data, boot_out) |> data.frame()
+  all_boot_data <- dplyr::left_join(
+    y = boot_out,
+    x = cf_data,
+    by = c("fleet", "year")) |>
+    dplyr::filter(n_vessels >= 3) |>
+    data.frame()
 
   if (!is.null(dir)) {
-    write.csv(all_boot_data |> dplyr::filter(n_vessels >= 3),
-      file = file.path(dir, "noncatch_share_discards.csv"),
+    write.csv(all_boot_data,
+      file = file.path(dir, "discard_rates_noncatch_share.csv"),
       row.names = FALSE
     )
   } else {

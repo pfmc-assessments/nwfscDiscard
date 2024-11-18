@@ -36,12 +36,6 @@ do_discard_bootstrap <- function(
     cli::cli_abort("{species_name} not found in the data.")
   }
 
-  if (grepl("/", species_name)) {
-    species_name_mod <- gsub("/", " ", species_name)
-    data[which(data[, "species"] == species_name), "species"] <- species_name_mod
-    species_name <- species_name_mod
-  }
-
   # Format the observer catch data column names
   if (sum(colnames(data) == "TRIP_ID") == 1) {
     data <- data |> dplyr::select(-MT, -SPGRFTOB1, -SCIENTIFIC_NAME)
@@ -87,12 +81,11 @@ do_discard_bootstrap <- function(
     # Doing this after the confidentiality check since if they are removed the confidentiality check
     # should still include these vessels since the the discard rates from EM and non-EM catch share
     # vessels would likely be combined external to the data processing.
-    data <- data |> dplyr::filter(sector == "Catch Shares EM")
+    data <- data |> dplyr::filter(sector != "Catch Shares EM")
   }
 
   if (sum(colnames(data) == "emtrip_id") == 1) {
-    conf_data_check <- data_conf_check[[2]]
-    conf_data_check <- conf_data_check |> dplyr::filter(catch_shares == TRUE)
+    conf_data_check <- data_conf_check |> dplyr::filter(catch_shares == TRUE)
     em_data_out <- calc_cs_discards(
       dir = dir,
       data = data,
@@ -106,12 +99,11 @@ do_discard_bootstrap <- function(
 
     # calculate catch shares discard quantities
     if (nrow(cs_data) > 0) {
-      conf_data_check <- data_conf_check[[2]]
-      conf_data_check <- conf_data_check |> dplyr::filter(catch_shares == TRUE)
+      conf_data_check <- data_conf_check |> dplyr::filter(catch_shares == TRUE)
       cs_data_out <- calc_cs_discards(
         dir = dir,
         data = cs_data,
-        conf_data_check = conf_data_check
+        conf_data_check = data_conf_check
       )
     } else {
       cli::cli_inform("No catch share records found in the data.")

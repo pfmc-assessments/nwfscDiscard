@@ -117,7 +117,7 @@ grouping, not just the observations of a particular species.
 
 ```r
 ci <- check_confidential(
-  data = catch,
+  data = catch_data,
   gear_groups = gear_groups,
   gear_names = gear_names,
   fleet_colname = fleet_colname,
