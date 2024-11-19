@@ -33,6 +33,21 @@ get_biological_data <- function(
   if (length(gear_names) != length(gear_groups)) {
     cli::cli_abort("The gear groups and names are not of the same length.")
   }
+  if (any(!"LENGTH" %in% colnames(data))) {
+    cli::cli_abort("The LENGTH/length column is not present in the data.")
+  }
+  if (any(!"AGE" %in% colnames(data))) {
+    cli::cli_abort("The AGE/age column is not present in the data.")
+  }
+  present_data <- data |>
+    dplyr::filter(species == species_name) |>
+    dplyr::summarise(
+      do_lengths = sum(!is.na(LENGTH)),
+      do_ages = sum(!is.na(AGE))
+    )
+  if (sum(present_data) == 0) {
+    cli::cli_abort("There are no length or age samples in the data for {species_name}.")
+  }
 
   # Remove duplicate columns
   data <- data |>
@@ -75,8 +90,12 @@ get_biological_data <- function(
   ci_not_met <- ci_check |> dplyr::filter(n_vessels < 3, )
   if (dim(ci_not_met)[1] > 0) {
     remove <- NULL
-    for (f in unique(ci_not_met[, "fleet"])) {
-      remove <- c(remove, which(data$fleet == f & data$year %in% ci_not_met[ci_not_met$fleet == f, "year"]))
+    for (f in 1:dim(ci_not_met)[1]) {
+      remove <- c(remove,
+        which(
+          data[, "fleet"] == ci_not_met[f, "fleet"] &
+          data[, "year"] == ci_not_met[f, "year"] &
+          data[, "catch_shares"] == ci_not_met[f, "catch_shares"] ))
     }
     data <- data[-remove, ]
     cli::cli_inform(
