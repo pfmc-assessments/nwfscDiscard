@@ -110,7 +110,8 @@ boostrap_discard <- function(
   all_boot_data <- dplyr::left_join(
     y = boot_out,
     x = cf_data,
-    by = c("fleet", "year")) |>
+    by = c("fleet", "year")
+  ) |>
     dplyr::filter(n_vessels >= 3) |>
     data.frame()
 

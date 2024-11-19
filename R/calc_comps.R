@@ -49,7 +49,7 @@ calc_comps <- function(
     dplyr::ungroup() |>
     dplyr::filter(n_by_year != 0) |>
     dplyr::mutate(
-      prop_numbers = 100 * n/n_by_year,
+      prop_numbers = 100 * n / n_by_year,
       prop_weighted = 100 * weighted / w_by_year
     )
 
@@ -62,7 +62,7 @@ calc_comps <- function(
 
   comps_out_sexed <- comps_out_unsexed <- all_comps <- NULL
   out <- list()
-  if (any(comps[,"sex"] == "U")) {
+  if (any(comps[, "sex"] == "U")) {
     sub <- comps[comps$sex == "U", ]
     keep <- which(apply(sub[, 6:ncol(sub)], 1, sum) != 0)
     filter_comps <- sub[keep, ]
@@ -77,7 +77,8 @@ calc_comps <- function(
         vessels = length(unique(drvid)),
         ratio = fish / trips,
         nsamp = round(dplyr::case_when(
-          ratio < 44 ~ trips + 0.138 * fish, .default = 7.06 * hauls
+          ratio < 44 ~ trips + 0.138 * fish,
+          .default = 7.06 * hauls
         ), 0),
         fleet = paste0(unique(gear_groups), "-", unique(fleet_groups))
       ) |>
@@ -108,15 +109,17 @@ calc_comps <- function(
         vessels = length(unique(drvid)),
         ratio = fish / trips,
         nsamp = round(dplyr::case_when(
-          ratio < 44 ~ trips + 0.138 * fish, .default = 7.06 * hauls
+          ratio < 44 ~ trips + 0.138 * fish,
+          .default = 7.06 * hauls
         ), 0),
         fleet = paste0(unique(gear_groups), "-", unique(fleet_groups))
       ) |>
       data.frame()
 
-    comps_sexed <-  cbind(
+    comps_sexed <- cbind(
       comps[comps$sex == "F", 6:ncol(comps)],
-      comps[comps$sex == "M", 6:ncol(comps)])
+      comps[comps$sex == "M", 6:ncol(comps)]
+    )
     remove <- which(apply(comps_sexed, 1, sum) == 0)
     filter_comps <- comps_sexed[-remove, ]
 
@@ -134,7 +137,7 @@ calc_comps <- function(
   }
 
   if (comp_column == "age") {
-    if (!is.null(comps_out_unsexed)){
+    if (!is.null(comps_out_unsexed)) {
       comps_out_unsexed <- cbind(
         comps_out_unsexed[, 1:5],
         "age_error",
@@ -147,7 +150,7 @@ calc_comps <- function(
       colnames(comps_out_unsexed)[6:9] <- c("age_error", "age_low", "age_high", "input_n")
       out$unsexed <- comps_out_unsexed
     }
-    if (!is.null(comps_out_sexed)){
+    if (!is.null(comps_out_sexed)) {
       comps_out_sexed <- cbind(
         comps_out_sexed[, 1:5],
         "age_error",
@@ -171,24 +174,25 @@ calc_comps <- function(
       vessels = length(unique(drvid)),
       ratio = fish / trips,
       nsamp = round(dplyr::case_when(
-        ratio < 44 ~ trips + 0.138 * fish, .default = 7.06 * hauls
+        ratio < 44 ~ trips + 0.138 * fish,
+        .default = 7.06 * hauls
       ), 0)
     ) |>
     dplyr::select(-ratio) |>
     data.frame()
 
   if (!is.null(dir)) {
-    if (dim(sample_size)[1] > 0 ) {
+    if (dim(sample_size)[1] > 0) {
       write.csv(sample_size,
-                file = file.path(dir, paste0("biological_sample_sizes_", comp_column, ".csv")),
-                row.names = FALSE
+        file = file.path(dir, paste0("biological_sample_sizes_", comp_column, ".csv")),
+        row.names = FALSE
       )
     }
 
     if (!is.null(all_comps)) {
       write.csv(all_comps,
-                file = file.path(dir, paste0("biological_discard_", comp_column, "s.csv")),
-                row.names = FALSE
+        file = file.path(dir, paste0("biological_discard_", comp_column, "s.csv")),
+        row.names = FALSE
       )
     }
   }

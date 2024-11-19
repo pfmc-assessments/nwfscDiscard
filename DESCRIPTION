@@ -3,19 +3,13 @@ Package: nwfscDiscard
 Title: Northwest Fisheries Science Center
 Version: 2.0
 Date: 2018-04-13
-Authors@R: c(
-    person(
-      given = c("Chantel", "R."), 
-      family = "Wetzel", , 
-      email = "chantel.wetzel@noaa.gov", 
-      role = c("aut", "cre"),
-      comment = c(ORCID = "0000-0002-7573-8240")
-    )
-    )
-Description: Northwest Fisheries Science Center WCGOP data processing for use in
-  West Coast groundfish assessments. All scripts to process the available data are 
-  publicly available but the data are stored in a private location to maintain 
-  confidentiality. 
+Authors@R: 
+    person(c("Chantel", "R."), "Wetzel", , "chantel.wetzel@noaa.gov", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-7573-8240"))
+Description: Northwest Fisheries Science Center WCGOP data processing for
+    use in West Coast groundfish assessments. All scripts to process the
+    available data are publicly available but the data are stored in a
+    private location to maintain confidentiality.
 License: GPL (>=3)
 Depends:
     R (>= 4.2)
