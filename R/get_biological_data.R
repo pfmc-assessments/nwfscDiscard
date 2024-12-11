@@ -91,11 +91,14 @@ get_biological_data <- function(
   if (dim(ci_not_met)[1] > 0) {
     remove <- NULL
     for (f in 1:dim(ci_not_met)[1]) {
-      remove <- c(remove,
+      remove <- c(
+        remove,
         which(
           data[, "fleet"] == ci_not_met[f, "fleet"] &
-          data[, "year"] == ci_not_met[f, "year"] &
-          data[, "catch_shares"] == ci_not_met[f, "catch_shares"] ))
+            data[, "year"] == ci_not_met[f, "year"] &
+            data[, "catch_shares"] == ci_not_met[f, "catch_shares"]
+        )
+      )
     }
     data <- data[-remove, ]
     cli::cli_inform(
