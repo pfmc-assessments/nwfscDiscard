@@ -62,7 +62,7 @@
                         <h4 data-toc-skip class="author">Chantel
 Wetzel</h4>
             
-            <h4 data-toc-skip class="date">2024-11-19</h4>
+            <h4 data-toc-skip class="date">2024-12-11</h4>
       
 
       <div class="hidden name"><code>nwfscDiscard.Rmd</code></div>
@@ -249,7 +249,7 @@ physical onobard observer data from EM vessels since this would
 duplicate records.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">em_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_discard_bootstrap.html">do_discard_bootstrap</a></span><span class="op">(</span></span>
-<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu"><a href="https://here.r-lib.org//reference/here.html" class="external-link">here</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu">here</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">em_catch_data</span>,</span>
 <span>  species_name <span class="op">=</span> <span class="st">"Sablefish"</span>,</span>
 <span>  gear_groups <span class="op">=</span> <span class="va">gear_groups</span>,</span>
@@ -266,6 +266,73 @@ and EM observation can be then combined:</p>
 <span>  em_data <span class="op">=</span> <span class="va">em_out</span><span class="op">$</span><span class="va">em</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
+</div>
+<div class="section level2">
+<h2 id="metadata">Metadata<a class="anchor" aria-label="anchor" href="#metadata"></a>
+</h2>
+<p>Description of data products:</p>
+<ul>
+<li>
+<p>Confidentiality Checks:</p>
+<ul>
+<li><p>confidentiality_catch_share.csv: The number of observed vessels,
+trips, hauls, and observations on non-catch and catch-share vessels of
+selected species given the request data stratification by area and gear
+type. To meet confidentiality a total of three or more vessels must be
+observed by stratification and year.</p></li>
+<li><p>confidentiality_em_catch_share.csv: The number of observed
+vessels, trips, hauls, and observations on vessels using electronic
+monitoring (EM) of selected species given the request data
+stratification by area and gear type. To meet confidentiality a total of
+three or more vessels must be observed by stratification and year. The
+confidentiality check for EM vessels is separate from the previous
+confidentiality check since the EM data are in a separate data file
+given the unique nature of the data. The EM program began in 2015 and is
+limited to catch-share vessels with participation increasing in recent
+years.</p></li>
+</ul>
+</li>
+<li>
+<p>Biological Data:</p>
+<ul>
+<li><p>biological_discard_lengths.csv and biological_discard_ages.csv:
+The length/age observations of discarded fish formatted based on
+requested stratification, data bin structure, and sex. Only select
+species include sex-specific data within WCGOP. Data are formatted for
+SS3.</p></li>
+<li><p>discard_mean_body_weights.csv: The mean body weight in kg of
+discarded fish. Only years with 30 or more observations by
+stratification are provided. Data are formatted for SS3.</p></li>
+</ul>
+</li>
+<li>
+<p>Discard Rates:</p>
+<ul>
+<li><p>discard_rates_catch_share.csv: The observed discard totals and
+rates for catch-share vessels. The catch-share fishery has full observer
+coverage, hence data are considered a census and no measure of
+uncertainty are provided.</p></li>
+<li><p>discard_rates_em_catch_share.csv: The observed discard totals and
+rates for catch-share vessels using EM. These data are considered a
+census and no measure of uncertainty are provided.</p></li>
+<li><p>discard_rates_combined_catch_share.csv: The combined discard
+totals between the catch-share vessels with onboard observers and those
+using EM. Analysts should use this file when determining how to combine
+discard rates between catch-share and non-catch share vessels for use in
+stock assessment.</p></li>
+<li><p>discard_rates_noncatch_share.csv: The observed discard totals and
+rates for non-catch share vessels. These data are bootstrapped to
+estimate median discard rates and standard deviation for use in
+assessment.</p></li>
+<li><p><strong>The discards rates bewteen catch share and non-catch
+share vessels should be combined together to create a single discard
+rate by year and fleet for use within SS3.</strong> How to combine these
+discard rates should be carefully considered by analysts depending upon
+the magnitude of total landings (not just observed landings) between
+catch share and non-catch share vessels.</p></li>
+</ul>
+</li>
+</ul>
 </div>
   </div>
 
