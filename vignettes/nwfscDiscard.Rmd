@@ -250,7 +250,6 @@ Description of data products:
 
   - discard_rates_noncatch_share.csv: The observed discard totals and rates for non-catch share vessels. These data are bootstrapped to estimate median discard rates and standard deviation for use in assessment.
   
-  - **The discards rates bewteen catch share and non-catch share vessels should be combined together to create a single discard rate by year and fleet for use within SS3.**  How to combine these discard rates should be carefully considered by analysts depending upon the magnitude of total landings (not just observed landings) between catch share and non-catch share vessels. 
 
 
 
