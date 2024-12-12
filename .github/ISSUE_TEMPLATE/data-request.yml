@@ -4,16 +4,15 @@ title: "Data request for species [replace with your species]"
 labels: ["type: request"]
 assignees:
   - chantelwetzel-noaa
-  - andi-stephens-NOAA
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for taking the time to fill out the WCGOP request form. WCGOP is collected by observers on West Coast commercial fishing vessels and is considered confidential data. Processed data that meet confidentiality guidelines can be used in to estimate discarding within an assessments. These data can only be provided in an aggregated form that meets confidentiality and aligns with the fleet structure of the model. Requesting the data in a more dissagregated form since confidentialy rules may not be met and because the data processing includes bootstrapping to provide uncertainty estimates around the discard rates and totals.    
+        Thank you for taking the time to fill out the WCGOP data request form. WCGOP data area collected by West Coast onboard observers and is considered confidential data. Processed data that meet confidentiality guidelines can be used in to estimate discarding within an groundfish stock assessments. These data can only be provided in an aggregated form that meets confidentiality and aligns with the fleet structure of the model. Requesting the data in a more dissagregated form since confidentialy rules may not be met and because the data processing includes bootstrapping to provide uncertainty estimates around the discard rates and totals.
   - type: textarea
     id: species
     attributes:
-      label: Identify the common name(s) 
+      label: Identify the common name(s)
   - type: dropdown
     id: data
     attributes:
@@ -21,17 +20,18 @@ body:
       multiple: true
       options:
         - discard totals/rates
-        - biological data
-        - discard totals/rates and biological data
+        - mean body weight
+        - composition data
+        - all data products
   - type: textarea
     id: gear
     attributes:
       label: Gear grouping
-      description: Please provide information on how you would like the data grouped by gear type. The gear groups are bottom trawl, fixed gear, hook and line, midwater trawl, pot, and shrimp trawl. The fixed gear grouping includes a range of gears from the nearshore across the coast. Not all gear types need to be included. For example, one could request data in two groupings of bottom and midwater trawl combined and hook and line, pot, and fixed gears combined. 
+      description: Please provide information on how you would like the data grouped by gear type. The gear groups are bottom trawl, fixed gear, hook and line, midwater trawl, pot, and shrimp trawl. The fixed gear grouping includes a range of gears from the nearshore across the coast. Not all gear types need to be included. For example, one could request data in two groupings of bottom and midwater trawl combined and hook and line, pot, and fixed gears combined.
   - type: textarea
     id: areas
     attributes:
-      label: Areas 
+      label: Areas
       description: Please provide information on area stratification that you would like to use. For example, if you have a coastwide commercial fleet you would likely want all data across the coast associated with that fleet processed together. In contrast, if you have fleets related to specific areas (e.g., states) please include those areas here so we can produce data for each corresponding gear area.
   - type: textarea
     id: bins
@@ -42,11 +42,11 @@ body:
     id: info
     attributes:
       label: Additional information
-      description: Is there any additional information that you would like considered in your data request? 
+      description: Is there any additional information that you would like considered in your data request?
   - type: checkboxes
     id: clearance
     attributes:
-      label: Do you you have clearance to access these data with a valid 2023 NDA form with WCGOP?
+      label: Do you you have clearance to access these data with a valid 2025 NDA form with WCGOP?
       description: By submitting this issue you agree that you have access to confidential data from WCGOP and will not share these data with those that do not have the same clearance.
       options:
         - label: I agree that I have clearance
