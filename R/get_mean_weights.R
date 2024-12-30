@@ -95,7 +95,7 @@ get_mean_weights <- function(
   mean_weights <- data |>
     dplyr::group_by(year, gear_groups, fleet_groups) |>
     dplyr::summarise(
-      n = n(),
+      n = dplyr::n(),
       weighted_ave_w = (sum(exp_average_weight)) / sum(exp_sp_ct),
       v = sum(exp_sp_ct * (average_weight - weighted_average)^2) / sum(exp_sp_ct),
       max_count = max(exp_sp_ct),
