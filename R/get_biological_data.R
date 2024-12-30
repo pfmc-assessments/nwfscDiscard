@@ -128,7 +128,8 @@ get_biological_data <- function(
         .default = 0
       ),
       wghtd_freq = frequency * exp1 * exp2
-    )
+    ) |>
+    dplyr::filter(wghtd_freq != 0)
 
   if (sum(!is.na(expansions[, "length"])) > 0) {
     comps <- calc_comps(
