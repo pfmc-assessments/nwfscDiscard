@@ -31,11 +31,13 @@ calc_cs_discards <- function(
     x = conf_data_check,
     y = discards,
     by = c("fleet", "year")
-  ) |> dplyr::select(-gear_groups, -fleet_groups)
+  ) |>
+    dplyr::fiter(n_vessels >= 3) |>
+    dplyr::select(-gear_groups, -fleet_groups)
 
   if (!is.null(dir)) {
     write.csv(
-      x = out |> dplyr::filter(n_vessels >= 3),
+      x = out,
       file = file.path(dir, paste0("discards_rates_", add_name, "catch_share.csv")),
       row.names = FALSE
     )

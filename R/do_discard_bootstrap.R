@@ -132,8 +132,8 @@ do_discard_bootstrap <- function(
     if (!is.null(dir)) {
       ncs <- ncs_data_out
       cs <- cs_data_out
-      save(ncs, file = file.path(dir, "discards_noncatch_shares.rdata"))
-      save(cs, file = file.path(dir, "discards_catch_shares.rdata"))
+      #save(ncs, file = file.path(dir, "discards_noncatch_shares.rdata"))
+      #save(cs, file = file.path(dir, "discards_catch_shares.rdata"))
     }
     return(list(cs = cs_data_out, ncs = ncs_data_out))
   }
