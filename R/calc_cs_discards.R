@@ -32,7 +32,7 @@ calc_cs_discards <- function(
     y = discards,
     by = c("fleet", "year")
   ) |>
-    dplyr::fiter(n_vessels >= 3) |>
+    dplyr::filter(n_vessels >= 3) |>
     dplyr::select(-gear_groups, -fleet_groups)
 
   if (!is.null(dir)) {
