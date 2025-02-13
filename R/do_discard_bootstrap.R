@@ -124,9 +124,9 @@ do_discard_bootstrap <- function(
 
   if (!is.null(em_data_out)) {
     em <- em_data_out
-    if (!is.null(dir)) {
-      save(em, file = file.path(dir, "discards_em.rdata"))
-    }
+    #if (!is.null(dir)) {
+      #save(em, file = file.path(dir, "discards_em.rdata"))
+    #}
     return(list(em = em))
   } else {
     if (!is.null(dir)) {
