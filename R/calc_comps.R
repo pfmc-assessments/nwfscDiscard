@@ -76,9 +76,9 @@ calc_comps <- function(
         trips = length(unique(trip_id)),
         vessels = length(unique(drvid)),
         ratio = fish / trips,
-        nsamp = round(dplyr::case_when(
+        input_n = round(dplyr::case_when(
           ratio < 44 ~ trips + 0.138 * fish,
-          .default = 7.06 * hauls
+          .default = 7.06 * trips
         ), 0),
         fleet = paste0(unique(gear_groups), "-", unique(fleet_groups))
       ) |>
@@ -90,7 +90,7 @@ calc_comps <- function(
       sample_size[, "fleet"],
       0,
       1,
-      sample_size[, "nsamp"],
+      sample_size[, "input_n"],
       filter_comps[filter_comps$sex == "U", 6:ncol(comps)],
       0 * filter_comps[filter_comps$sex == "U", 6:ncol(comps)]
     )
@@ -108,9 +108,9 @@ calc_comps <- function(
         trips = length(unique(trip_id)),
         vessels = length(unique(drvid)),
         ratio = fish / trips,
-        nsamp = round(dplyr::case_when(
+        input_n = round(dplyr::case_when(
           ratio < 44 ~ trips + 0.138 * fish,
-          .default = 7.06 * hauls
+          .default = 7.06 * trips
         ), 0),
         fleet = paste0(unique(gear_groups), "-", unique(fleet_groups))
       ) |>
@@ -129,7 +129,7 @@ calc_comps <- function(
       sample_size[, "fleet"],
       3,
       1,
-      sample_size[, "nsamp"],
+      sample_size[, "input_n"],
       filter_comps
     )
     colnames(comps_out_sexed)[1:6] <- c("year", "month", "fleet", "sex", "partition", "input_n")
@@ -173,9 +173,9 @@ calc_comps <- function(
       trips = length(unique(trip_id)),
       vessels = length(unique(drvid)),
       ratio = fish / trips,
-      nsamp = round(dplyr::case_when(
+      input_n = round(dplyr::case_when(
         ratio < 44 ~ trips + 0.138 * fish,
-        .default = 7.06 * hauls
+        .default = 7.06 * trips
       ), 0)
     ) |>
     dplyr::select(-ratio) |>
