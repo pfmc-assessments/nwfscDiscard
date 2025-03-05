@@ -124,16 +124,16 @@ do_discard_bootstrap <- function(
 
   if (!is.null(em_data_out)) {
     em <- em_data_out
-    #if (!is.null(dir)) {
-      #save(em, file = file.path(dir, "discards_em.rdata"))
-    #}
+    # if (!is.null(dir)) {
+    # save(em, file = file.path(dir, "discards_em.rdata"))
+    # }
     return(list(em = em))
   } else {
     if (!is.null(dir)) {
       ncs <- ncs_data_out
       cs <- cs_data_out
-      #save(ncs, file = file.path(dir, "discards_noncatch_shares.rdata"))
-      #save(cs, file = file.path(dir, "discards_catch_shares.rdata"))
+      # save(ncs, file = file.path(dir, "discards_noncatch_shares.rdata"))
+      # save(cs, file = file.path(dir, "discards_catch_shares.rdata"))
     }
     return(list(cs = cs_data_out, ncs = ncs_data_out))
   }
