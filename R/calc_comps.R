@@ -94,8 +94,10 @@ calc_comps <- function(
       filter_comps[filter_comps$sex == "U", 6:ncol(comps)],
       0 * filter_comps[filter_comps$sex == "U", 6:ncol(comps)]
     )
-    colnames(comps_out_unsexed) <- c("year", "month", "fleet", "sex", "partition", "input_n",
-                                     paste0("f", comp_bins), paste0("m", comp_bins))
+    colnames(comps_out_unsexed) <- c(
+      "year", "month", "fleet", "sex", "partition", "input_n",
+      paste0("f", comp_bins), paste0("m", comp_bins)
+    )
     out$unsexed <- comps_out_unsexed
   }
 
@@ -137,8 +139,10 @@ calc_comps <- function(
       sample_size[, "input_n"],
       filter_comps
     )
-    colnames(comps_out_sexed) <- c("year", "month", "fleet", "sex", "partition", "input_n",
-                                   paste0("f", comp_bins), paste0("m", comp_bins))
+    colnames(comps_out_sexed) <- c(
+      "year", "month", "fleet", "sex", "partition", "input_n",
+      paste0("f", comp_bins), paste0("m", comp_bins)
+    )
 
     out$sexed <- comps_out_sexed
   }
