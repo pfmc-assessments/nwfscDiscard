@@ -19,7 +19,7 @@ calc_comps <- function(
   comp_data <- data[!is.na(data[, comp_column]), ]
   # Perhaps add a check for lengths being available
   bins <- c(comp_bins, Inf)
-  comp_data[, "bin"] <- bins[findInterval(comp_data[, comp_column], comp_bins, all.inside = TRUE)]
+  comp_data[, "bin"] <- bins[findInterval(comp_data[, comp_column], bins, all.inside = TRUE)]
   comp_data[, "bin"] <- factor(comp_data[, "bin"], levels = comp_bins)
 
   init_count <- comp_data |>
@@ -94,7 +94,8 @@ calc_comps <- function(
       filter_comps[filter_comps$sex == "U", 6:ncol(comps)],
       0 * filter_comps[filter_comps$sex == "U", 6:ncol(comps)]
     )
-    colnames(comps_out_unsexed)[1:6] <- c("year", "month", "fleet", "sex", "partition", "input_n")
+    colnames(comps_out_unsexed) <- c("year", "month", "fleet", "sex", "partition", "input_n",
+                                     paste0("f", comp_bins), paste0("m", comp_bins))
     out$unsexed <- comps_out_unsexed
   }
 
@@ -119,10 +120,14 @@ calc_comps <- function(
     comps_sexed <- cbind(
       comps[comps$sex == "F", 6:ncol(comps)],
       comps[comps$sex == "M", 6:ncol(comps)]
-    )
-    remove <- which(apply(comps_sexed, 1, sum) == 0)
-    filter_comps <- comps_sexed[-remove, ]
-
+    ) |>
+      data.frame()
+    if (sum(apply(comps_sexed, 1, sum) == 0) > 0) {
+      remove <- which(apply(comps_sexed, 1, sum) == 0)
+      filter_comps <- comps_sexed[-remove, ]
+    } else {
+      filter_comps <- comps_sexed
+    }
     comps_out_sexed <- cbind(
       sample_size[, "year"],
       "Month",
@@ -132,20 +137,21 @@ calc_comps <- function(
       sample_size[, "input_n"],
       filter_comps
     )
-    colnames(comps_out_sexed)[1:6] <- c("year", "month", "fleet", "sex", "partition", "input_n")
+    colnames(comps_out_sexed) <- c("year", "month", "fleet", "sex", "partition", "input_n",
+                                   paste0("f", comp_bins), paste0("m", comp_bins))
+
     out$sexed <- comps_out_sexed
   }
 
   if (comp_column == "age") {
     if (!is.null(comps_out_unsexed)) {
-      comps_out_unsexed <- cbind(
+      comps_out_unsexed <- dplyr::bind_cols(
         comps_out_unsexed[, 1:5],
         "age_error",
         -1,
         -1,
         comps_out_unsexed[, "input_n"],
-        comps_out_unsexed[, 7:ncol(comps_out_unsexed)],
-        0 * comps_out_unsexed[, 7:ncol(comps_out_unsexed)]
+        comps_out_unsexed[, 7:ncol(comps_out_unsexed)]
       )
       colnames(comps_out_unsexed)[6:9] <- c("age_error", "age_low", "age_high", "input_n")
       out$unsexed <- comps_out_unsexed
@@ -163,7 +169,7 @@ calc_comps <- function(
       out$sexed <- comps_out_sexed
     }
   }
-  all_comps <- rbind(comps_out_sexed, comps_out_unsexed)
+  all_comps <- dplyr::bind_rows(comps_out_sexed, comps_out_unsexed)
 
   sample_size <- comp_data |>
     dplyr::group_by(year, gear_groups, fleet_groups) |>
