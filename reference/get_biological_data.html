@@ -58,7 +58,8 @@
 <span>  <span class="va">gear_names</span>,</span>
 <span>  <span class="va">fleet_colname</span>,</span>
 <span>  <span class="va">fleet_groups</span>,</span>
-<span>  <span class="va">fleet_names</span></span>
+<span>  <span class="va">fleet_names</span>,</span>
+<span>  expand <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -110,6 +111,12 @@ This data frame will be used to check confidentiality.</p></dd>
 
 <dt id="arg-fleet-names">fleet_names<a class="anchor" aria-label="anchor" href="#arg-fleet-names"></a></dt>
 <dd><p>Vector of fleet names (example: c("coastwide")).</p></dd>
+
+
+<dt id="arg-expand">expand<a class="anchor" aria-label="anchor" href="#arg-expand"></a></dt>
+<dd><p>Logical statement on whether to expand the compositions samples.  Default is
+TRUE. If set to FALSE, then raw samples will be returned that are filtered for
+confidentiality.</p></dd>
 
 </dl></div>
     <div id="author">
