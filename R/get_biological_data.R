@@ -8,11 +8,14 @@
 #' @param len_bins Length composition bins (example: seq(20, 90, 2)).
 #' @param age_bins Age composition bins (example: 1:50).
 #' @param gear_groups List of gear types to group together
-#' (example: list(c("Bottom Trawl", "Midwater Trawl"), c("Hook & Line", "Pot", "Shrimp Trawl"))).
+#'   (example: list(c("Bottom Trawl", "Midwater Trawl"), c("Hook & Line", "Pot", "Shrimp Trawl"))).
 #' @param gear_names Vector of gear group names (example: c("trawl", "fixed gear")).
 #' @param fleet_colname Column to use to determine areas for fleets (example: "r_state.x")
 #' @param fleet_groups List of fleet groups to use (example: list(c("WA", "OR", "CA"))).
 #' @param fleet_names Vector of fleet names (example: c("coastwide")).
+#' @param expand Logical statement on whether to expand the compositions samples.  Default is
+#'   TRUE. If set to FALSE, then raw samples will be returned that are filtered for
+#'   confidentiality.
 #'
 #' @author Chantel Wetzel
 #' @export
@@ -29,7 +32,8 @@ get_biological_data <- function(
     gear_names,
     fleet_colname,
     fleet_groups,
-    fleet_names) {
+    fleet_names,
+    expand = TRUE) {
   if (length(gear_names) != length(gear_groups)) {
     cli::cli_abort("The gear groups and names are not of the same length.")
   }
@@ -106,47 +110,63 @@ get_biological_data <- function(
     )
   }
 
-  expansions <- data |>
-    dplyr::filter(
-      species == species_name,
-      catch_disposition == "D"
-    ) |>
-    dplyr::mutate(
-      sex = nwfscSurvey::codify_sex(sex)
-    ) |>
-    dplyr::mutate(
-      exp1 = dplyr::case_when(
-        !is.na(species_number) | !is.na(bio_specimen_count) ~ species_number / bio_specimen_count,
-        .default = 0
-      ),
-      exp_weight = dplyr::case_when(
-        is.na(exp_sp_wt) ~ (species_weight / hooks_sampled) * total_hooks,
-        .default = exp_sp_wt
-      ),
-      exp2 = dplyr::case_when(
-        !is.na(species_weight) ~ exp_weight / species_weight,
-        .default = 0
-      ),
-      wghtd_freq = frequency * exp1 * exp2
-    ) |>
-    dplyr::filter(wghtd_freq != 0)
+  if (expand) {
+    expansions <- data |>
+      dplyr::filter(
+        species == species_name,
+        catch_disposition == "D"
+      ) |>
+      dplyr::mutate(
+        sex = nwfscSurvey::codify_sex(sex)
+      ) |>
+      dplyr::mutate(
+        exp1 = dplyr::case_when(
+          !is.na(species_number) | !is.na(bio_specimen_count) ~ species_number / bio_specimen_count,
+          .default = 0
+        ),
+        exp_weight = dplyr::case_when(
+          is.na(exp_sp_wt) ~ (species_weight / hooks_sampled) * total_hooks,
+          .default = exp_sp_wt
+        ),
+        exp2 = dplyr::case_when(
+          !is.na(species_weight) ~ exp_weight / species_weight,
+          .default = 0
+        ),
+        wghtd_freq = frequency * exp1 * exp2
+      ) |>
+      dplyr::filter(wghtd_freq != 0)
 
-  if (sum(!is.na(expansions[, "length"])) > 0) {
-    comps <- calc_comps(
-      dir = dir,
-      data = expansions,
-      comp_bins = len_bins,
-      comp_column = "length"
-    )
+    if (sum(!is.na(expansions[, "length"])) > 0) {
+      comps <- calc_comps(
+        dir = dir,
+        data = expansions,
+        comp_bins = len_bins,
+        comp_column = "length"
+      )
+    }
+
+    if (sum(!is.na(data[, "age"])) > 0) {
+      comps <- calc_comps(
+        dir = dir,
+        data = expansions,
+        comp_bins = age_bins,
+        comp_column = "age"
+      )
+    }
+  } else {
+    comps <- data |>
+      dplyr::filter(
+        species == species_name,
+        catch_disposition == "D"
+      ) |>
+      dplyr::mutate(
+        sex = nwfscSurvey::codify_sex(sex)
+      ) |>
+      tidyr::uncount(frequency) |>
+      dplyr::mutate(
+        frequency = 1
+      )
   }
 
-  if (sum(!is.na(data[, "age"])) > 0) {
-    comps <- calc_comps(
-      dir = dir,
-      data = expansions,
-      comp_bins = age_bins,
-      comp_column = "age"
-    )
-  }
   return(comps)
 }

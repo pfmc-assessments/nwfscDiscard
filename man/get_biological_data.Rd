@@ -15,7 +15,8 @@ get_biological_data(
   gear_names,
   fleet_colname,
   fleet_groups,
-  fleet_names
+  fleet_names,
+  expand = TRUE
 )
 }
 \arguments{
@@ -42,6 +43,10 @@ This data frame will be used to check confidentiality.}
 \item{fleet_groups}{List of fleet groups to use (example: list(c("WA", "OR", "CA"))).}
 
 \item{fleet_names}{Vector of fleet names (example: c("coastwide")).}
+
+\item{expand}{Logical statement on whether to expand the compositions samples.  Default is
+TRUE. If set to FALSE, then raw samples will be returned that are filtered for
+confidentiality.}
 }
 \description{
 Calculate expanded discard composition
