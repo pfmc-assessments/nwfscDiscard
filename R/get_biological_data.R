@@ -38,10 +38,10 @@ get_biological_data <- function(
     cli::cli_abort("The gear groups and names are not of the same length.")
   }
   if (any(!"LENGTH" %in% colnames(data))) {
-    cli::cli_abort("The LENGTH/length column is not present in the data.")
+    cli::cli_abort("The LENGTH column is not present in the data.")
   }
   if (any(!"AGE" %in% colnames(data))) {
-    cli::cli_abort("The AGE/age column is not present in the data.")
+    cli::cli_abort("The AGE column is not present in the data.")
   }
   present_data <- data |>
     dplyr::filter(species == species_name) |>
@@ -104,10 +104,12 @@ get_biological_data <- function(
         )
       )
     }
-    data <- data[-remove, ]
-    cli::cli_inform(
-      "The following number of records due to not meeting confidentiality: {length(remove)}"
-    )
+    if (length(remove) > 0) {
+      data <- data[-remove, ]
+      cli::cli_inform(
+        "The following number of records due to not meeting confidentiality: {length(remove)}"
+      )
+    }
   }
 
   if (expand) {
