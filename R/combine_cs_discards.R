@@ -10,9 +10,10 @@
 #'
 #
 combine_cs_discards <- function(
-    cs_data,
-    em_data,
-    dir = NULL) {
+  cs_data,
+  em_data,
+  dir = NULL
+) {
   data <- rbind(cs_data, em_data)
 
   combined_data <- data |>
@@ -25,11 +26,15 @@ combine_cs_discards <- function(
       n_vessels = sum(n_vessels),
       observed_discard_mt = sum(observed_discard_mt),
       observed_retained_mt = sum(observed_retained_mt),
-      discard_rate = round(observed_discard_mt / (observed_discard_mt + observed_retained_mt), 3)
+      discard_rate = round(
+        observed_discard_mt / (observed_discard_mt + observed_retained_mt),
+        3
+      )
     )
 
   if (!is.null(dir)) {
-    write.csv(combined_data,
+    write.csv(
+      combined_data,
       file = file.path(dir, "discard_rates_combined_catch_share.csv"),
       row.names = FALSE
     )

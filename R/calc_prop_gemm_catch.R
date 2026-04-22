@@ -9,8 +9,9 @@
 #'
 #
 calc_prop_gemm_catch <- function(
-    data,
-    dir = NULL) {
+  data,
+  dir = NULL
+) {
   nwfscSurvey::check_dir(dir = dir)
   species <- unique(data[, "species"])
 
@@ -90,7 +91,12 @@ calc_prop_gemm_catch <- function(
   data[which(data[, "sector"] %in% c(hake, trawl)), "gear"] <- "Trawl"
   data[which(data[, "sector"] %in% rec), "gear"] <- "Recreational"
 
-  data[, "Group"] <- apply(data[, c("catch_shares", "gear")], 1, paste, collapse = "-")
+  data[, "Group"] <- apply(
+    data[, c("catch_shares", "gear")],
+    1,
+    paste,
+    collapse = "-"
+  )
 
   catch_totals <- data |>
     dplyr::group_by(year) |>
@@ -98,7 +104,9 @@ calc_prop_gemm_catch <- function(
       landed_mt_by_year = sum(total_landings_mt),
       discard_mt_by_year = sum(total_discard_mt),
       dead_discard_mt_by_year = sum(total_discard_with_mort_rates_applied_mt),
-      catch_by_year = sum(total_discard_with_mort_rates_applied_and_landings_mt),
+      catch_by_year = sum(
+        total_discard_with_mort_rates_applied_and_landings_mt
+      ),
     )
 
   catch_by_catch_share_gear <- catch_totals |>
@@ -116,9 +124,11 @@ calc_prop_gemm_catch <- function(
     ) |>
     dplyr::ungroup()
 
-
   ylim <- c(0, max(catch_totals[, "catch_by_year"]) * 1.05)
-  p1 <- ggplot2::ggplot(catch_by_catch_share_gear, ggplot2::aes(x = year, y = prop_catch, fill = Group)) +
+  p1 <- ggplot2::ggplot(
+    catch_by_catch_share_gear,
+    ggplot2::aes(x = year, y = prop_catch, fill = Group)
+  ) +
     ggplot2::geom_bar(stat = "identity") +
     ggplot2::xlab("Year") +
     ggplot2::ylab("Proportion of Catch (GEMM)") +
@@ -130,7 +140,10 @@ calc_prop_gemm_catch <- function(
       legend.text = ggplot2::element_text(size = 14)
     ) +
     ggplot2::scale_fill_viridis_d()
-  p2 <- ggplot2::ggplot(catch_by_catch_share_gear, ggplot2::aes(x = year, y = prop_landed, fill = Group)) +
+  p2 <- ggplot2::ggplot(
+    catch_by_catch_share_gear,
+    ggplot2::aes(x = year, y = prop_landed, fill = Group)
+  ) +
     ggplot2::geom_bar(stat = "identity") +
     ggplot2::xlab("Year") +
     ggplot2::ylab("Proportion of Landings (GEMM)") +
@@ -142,7 +155,10 @@ calc_prop_gemm_catch <- function(
       legend.text = ggplot2::element_text(size = 14)
     ) +
     ggplot2::scale_fill_viridis_d()
-  p3 <- ggplot2::ggplot(catch_by_catch_share_gear, ggplot2::aes(x = year, y = prop_discard, fill = Group)) +
+  p3 <- ggplot2::ggplot(
+    catch_by_catch_share_gear,
+    ggplot2::aes(x = year, y = prop_discard, fill = Group)
+  ) +
     ggplot2::geom_bar(stat = "identity") +
     ggplot2::xlab("Year") +
     ggplot2::ylab("Proportion of Discards (GEMM)") +
@@ -154,7 +170,10 @@ calc_prop_gemm_catch <- function(
       legend.text = ggplot2::element_text(size = 14)
     ) +
     ggplot2::scale_fill_viridis_d()
-  c1 <- ggplot2::ggplot(catch_by_catch_share_gear, ggplot2::aes(x = year, y = catch, fill = Group)) +
+  c1 <- ggplot2::ggplot(
+    catch_by_catch_share_gear,
+    ggplot2::aes(x = year, y = catch, fill = Group)
+  ) +
     ggplot2::geom_bar(stat = "identity") +
     ggplot2::ylim(as.numeric(ylim[1]), as.numeric(ylim[2])) +
     ggplot2::theme_bw() +
@@ -167,7 +186,10 @@ calc_prop_gemm_catch <- function(
     ggplot2::xlab("Year") +
     ggplot2::ylab("Catch (mt) Source: GEMM") +
     ggplot2::scale_fill_viridis_d()
-  c2 <- ggplot2::ggplot(catch_by_catch_share_gear, ggplot2::aes(x = year, y = landed_mt, fill = Group)) +
+  c2 <- ggplot2::ggplot(
+    catch_by_catch_share_gear,
+    ggplot2::aes(x = year, y = landed_mt, fill = Group)
+  ) +
     ggplot2::geom_bar(stat = "identity") +
     ggplot2::ylim(as.numeric(ylim[1]), as.numeric(ylim[2])) +
     ggplot2::theme_bw() +
@@ -180,7 +202,10 @@ calc_prop_gemm_catch <- function(
     ggplot2::xlab("Year") +
     ggplot2::ylab("Landings (mt) Source: GEMM") +
     ggplot2::scale_fill_viridis_d()
-  c3 <- ggplot2::ggplot(catch_by_catch_share_gear, ggplot2::aes(x = year, y = discard_mt, fill = Group)) +
+  c3 <- ggplot2::ggplot(
+    catch_by_catch_share_gear,
+    ggplot2::aes(x = year, y = discard_mt, fill = Group)
+  ) +
     ggplot2::geom_bar(stat = "identity") +
     ggplot2::xlab("Year") +
     ggplot2::ylab("Discards (mt) Source: GEMM") +
@@ -194,19 +219,19 @@ calc_prop_gemm_catch <- function(
     ) +
     ggplot2::scale_fill_viridis_d()
 
-
   if (!is.null(dir)) {
-    write.csv(catch_by_catch_share_gear,
+    write.csv(
+      catch_by_catch_share_gear,
       file = file.path(dir, "gemm_catch_by_cs_gear.csv"),
       row.names = FALSE
     )
     cowplot::plot_grid(c1, c2, c3, ncol = 1, nrow = 3)
-    ggplot2::ggsave(file.path(dir, "gemm_catch.png"),
-      height = 12, width = 12
-    )
+    ggplot2::ggsave(file.path(dir, "gemm_catch.png"), height = 12, width = 12)
     cowplot::plot_grid(p1, p2, p3, ncol = 1, nrow = 3)
-    ggplot2::ggsave(file.path(dir, "gemm_proportions.png"),
-      height = 12, width = 12
+    ggplot2::ggsave(
+      file.path(dir, "gemm_proportions.png"),
+      height = 12,
+      width = 12
     )
   }
   return(catch_by_catch_share_gear)

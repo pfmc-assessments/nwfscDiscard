@@ -22,18 +22,19 @@
 #'
 #'
 get_biological_data <- function(
-    dir = NULL,
-    data,
-    catch_data,
-    species_name,
-    len_bins,
-    age_bins,
-    gear_groups,
-    gear_names,
-    fleet_colname,
-    fleet_groups,
-    fleet_names,
-    expand = TRUE) {
+  dir = NULL,
+  data,
+  catch_data,
+  species_name,
+  len_bins,
+  age_bins,
+  gear_groups,
+  gear_names,
+  fleet_colname,
+  fleet_groups,
+  fleet_names,
+  expand = TRUE
+) {
   if (length(gear_names) != length(gear_groups)) {
     cli::cli_abort("The gear groups and names are not of the same length.")
   }
@@ -50,7 +51,9 @@ get_biological_data <- function(
       do_ages = sum(!is.na(AGE))
     )
   if (sum(present_data) == 0) {
-    cli::cli_abort("There are no length or age samples in the data for {species_name}.")
+    cli::cli_abort(
+      "There are no length or age samples in the data for {species_name}."
+    )
   }
 
   # Remove duplicate columns
@@ -123,7 +126,8 @@ get_biological_data <- function(
       ) |>
       dplyr::mutate(
         exp1 = dplyr::case_when(
-          !is.na(species_number) | !is.na(bio_specimen_count) ~ species_number / bio_specimen_count,
+          !is.na(species_number) | !is.na(bio_specimen_count) ~
+            species_number / bio_specimen_count,
           .default = 0
         ),
         exp_weight = dplyr::case_when(

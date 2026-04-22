@@ -14,16 +14,19 @@
 #'
 #'
 create_groups <- function(
-    data,
-    gear_groups,
-    gear_names,
-    fleet_colname,
-    fleet_groups,
-    fleet_names) {
+  data,
+  gear_groups,
+  gear_names,
+  fleet_colname,
+  fleet_groups,
+  fleet_names
+) {
   check <- colnames(data)[which(colnames(data) == "gear_to_use")]
   if (length(check) != 1) {
     # Format the observer catch data column names
-    data <- data[, which(!colnames(data) %in% c("MT", "SPGRFTOB1", "SCIENTIFIC_NAME"))]
+    data <- data[, which(
+      !colnames(data) %in% c("MT", "SPGRFTOB1", "SCIENTIFIC_NAME")
+    )]
     colnames(data)[which(colnames(data) == "gear")] <- "gear_to_use"
     colnames(data) <- tolower(colnames(data))
     if ("ryear" %in% colnames(data)) {
@@ -36,8 +39,13 @@ create_groups <- function(
 
   data$catch_shares <- "FALSE"
   catch_shares <- c(
-    "Catch Shares", "Catch Shares EM", "LE CA Halibut", "Midwater Hake", "Midwater Rockfish",
-    "Midwater Hake EM", "Midwater Rockfish EM"
+    "Catch Shares",
+    "Catch Shares EM",
+    "LE CA Halibut",
+    "Midwater Hake",
+    "Midwater Rockfish",
+    "Midwater Hake EM",
+    "Midwater Rockfish EM"
   )
   find <- which(data$sector %in% catch_shares & data$year >= 2011)
   if (length(find) > 0) {
@@ -72,6 +80,11 @@ create_groups <- function(
     data <- data[!is.na(data$fleet_groups), ]
   }
 
-  data$fleet <- apply(data[, c("gear_groups", "fleet_groups")], 1, paste, collapse = "-")
+  data$fleet <- apply(
+    data[, c("gear_groups", "fleet_groups")],
+    1,
+    paste,
+    collapse = "-"
+  )
   return(data)
 }

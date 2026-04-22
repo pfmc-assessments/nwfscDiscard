@@ -11,15 +11,20 @@
 #'
 #'
 calc_comps <- function(
-    dir = NULL,
-    data,
-    comp_bins,
-    comp_column = "length") {
+  dir = NULL,
+  data,
+  comp_bins,
+  comp_column = "length"
+) {
   # Calculate the discard length frequencies
   comp_data <- data[!is.na(data[, comp_column]), ]
   # Perhaps add a check for lengths being available
   bins <- c(comp_bins, Inf)
-  comp_data[, "bin"] <- bins[findInterval(comp_data[, comp_column], bins, all.inside = TRUE)]
+  comp_data[, "bin"] <- bins[findInterval(
+    comp_data[, comp_column],
+    bins,
+    all.inside = TRUE
+  )]
   comp_data[, "bin"] <- factor(comp_data[, "bin"], levels = comp_bins)
 
   init_count <- comp_data |>
@@ -33,7 +38,11 @@ calc_comps <- function(
 
   filled_count <- init_count |>
     tidyr::complete(
-      year, gear_groups, fleet_groups, sex, bin,
+      year,
+      gear_groups,
+      fleet_groups,
+      sex,
+      bin,
       fill = list(
         n = 0,
         weighted = 0
@@ -54,7 +63,15 @@ calc_comps <- function(
     )
 
   # Format the composition data for SS3
-  comps <- all_weights[, c("year", "gear_groups", "fleet_groups", "sex", "bin", "n_by_year", "prop_weighted")] |>
+  comps <- all_weights[, c(
+    "year",
+    "gear_groups",
+    "fleet_groups",
+    "sex",
+    "bin",
+    "n_by_year",
+    "prop_weighted"
+  )] |>
     tidyr::pivot_wider(
       names_from = bin,
       values_from = prop_weighted
@@ -76,10 +93,13 @@ calc_comps <- function(
         trips = length(unique(trip_id)),
         vessels = length(unique(drvid)),
         ratio = fish / trips,
-        input_n = round(dplyr::case_when(
-          ratio < 44 ~ trips + 0.138 * fish,
-          .default = 7.06 * trips
-        ), 0),
+        input_n = round(
+          dplyr::case_when(
+            ratio < 44 ~ trips + 0.138 * fish,
+            .default = 7.06 * trips
+          ),
+          0
+        ),
         fleet = paste0(unique(gear_groups), "-", unique(fleet_groups))
       ) |>
       data.frame()
@@ -95,8 +115,14 @@ calc_comps <- function(
       0 * filter_comps[filter_comps$sex == "U", 6:ncol(comps)]
     )
     colnames(comps_out_unsexed) <- c(
-      "year", "month", "fleet", "sex", "partition", "input_n",
-      paste0("f", comp_bins), paste0("m", comp_bins)
+      "year",
+      "month",
+      "fleet",
+      "sex",
+      "partition",
+      "input_n",
+      paste0("f", comp_bins),
+      paste0("m", comp_bins)
     )
     out$unsexed <- comps_out_unsexed
   }
@@ -111,10 +137,13 @@ calc_comps <- function(
         trips = length(unique(trip_id)),
         vessels = length(unique(drvid)),
         ratio = fish / trips,
-        input_n = round(dplyr::case_when(
-          ratio < 44 ~ trips + 0.138 * fish,
-          .default = 7.06 * trips
-        ), 0),
+        input_n = round(
+          dplyr::case_when(
+            ratio < 44 ~ trips + 0.138 * fish,
+            .default = 7.06 * trips
+          ),
+          0
+        ),
         fleet = paste0(unique(gear_groups), "-", unique(fleet_groups))
       ) |>
       data.frame()
@@ -140,8 +169,14 @@ calc_comps <- function(
       filter_comps
     )
     colnames(comps_out_sexed) <- c(
-      "year", "month", "fleet", "sex", "partition", "input_n",
-      paste0("f", comp_bins), paste0("m", comp_bins)
+      "year",
+      "month",
+      "fleet",
+      "sex",
+      "partition",
+      "input_n",
+      paste0("f", comp_bins),
+      paste0("m", comp_bins)
     )
 
     out$sexed <- comps_out_sexed
@@ -157,7 +192,12 @@ calc_comps <- function(
         comps_out_unsexed[, "input_n"],
         comps_out_unsexed[, 7:ncol(comps_out_unsexed)]
       )
-      colnames(comps_out_unsexed)[6:9] <- c("age_error", "age_low", "age_high", "input_n")
+      colnames(comps_out_unsexed)[6:9] <- c(
+        "age_error",
+        "age_low",
+        "age_high",
+        "input_n"
+      )
       out$unsexed <- comps_out_unsexed
     }
     if (!is.null(comps_out_sexed)) {
@@ -169,7 +209,12 @@ calc_comps <- function(
         comps_out_sexed[, "input_n"],
         comps_out_sexed[, 7:ncol(comps_out_sexed)]
       )
-      colnames(comps_out_sexed)[6:9] <- c("age_error", "age_low", "age_high", "input_n")
+      colnames(comps_out_sexed)[6:9] <- c(
+        "age_error",
+        "age_low",
+        "age_high",
+        "input_n"
+      )
       out$sexed <- comps_out_sexed
     }
   }
@@ -183,25 +228,36 @@ calc_comps <- function(
       trips = length(unique(trip_id)),
       vessels = length(unique(drvid)),
       ratio = fish / trips,
-      input_n = round(dplyr::case_when(
-        ratio < 44 ~ trips + 0.138 * fish,
-        .default = 7.06 * trips
-      ), 0)
+      input_n = round(
+        dplyr::case_when(
+          ratio < 44 ~ trips + 0.138 * fish,
+          .default = 7.06 * trips
+        ),
+        0
+      )
     ) |>
     dplyr::select(-ratio) |>
     data.frame()
 
   if (!is.null(dir)) {
     if (dim(sample_size)[1] > 0) {
-      write.csv(sample_size,
-        file = file.path(dir, paste0("biological_sample_sizes_", comp_column, ".csv")),
+      write.csv(
+        sample_size,
+        file = file.path(
+          dir,
+          paste0("biological_sample_sizes_", comp_column, ".csv")
+        ),
         row.names = FALSE
       )
     }
 
     if (!is.null(all_comps)) {
-      write.csv(all_comps,
-        file = file.path(dir, paste0("biological_discard_", comp_column, "s.csv")),
+      write.csv(
+        all_comps,
+        file = file.path(
+          dir,
+          paste0("biological_discard_", comp_column, "s.csv")
+        ),
         row.names = FALSE
       )
     }

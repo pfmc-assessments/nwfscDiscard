@@ -20,17 +20,18 @@
 #'
 #
 do_discard_bootstrap <- function(
-    data,
-    species_name,
-    boot_number,
-    gear_groups,
-    gear_names,
-    fleet_colname,
-    fleet_groups,
-    fleet_names,
-    dir = NULL,
-    seed_number = 1,
-    rm_em_data = FALSE) {
+  data,
+  species_name,
+  boot_number,
+  gear_groups,
+  gear_names,
+  fleet_colname,
+  fleet_groups,
+  fleet_names,
+  dir = NULL,
+  seed_number = 1,
+  rm_em_data = FALSE
+) {
   nwfscSurvey::check_dir(dir = dir)
   if (!species_name %in% data[, "species"]) {
     cli::cli_abort("{species_name} not found in the data.")
@@ -109,7 +110,8 @@ do_discard_bootstrap <- function(
       cli::cli_inform("No catch share records found in the data.")
     }
 
-    if (nrow(ncs_data) > 0) { # calculate catch shares discard quantities
+    if (nrow(ncs_data) > 0) {
+      # calculate catch shares discard quantities
       ncs_data_out <- boostrap_discard(
         dir = dir,
         data = ncs_data,

@@ -15,11 +15,12 @@
 #'
 #'
 plot_wcgop_bio <- function(
-    data,
-    species_name,
-    dir = NULL,
-    plot = 1:2,
-    comp_column = "length") {
+  data,
+  species_name,
+  dir = NULL,
+  plot = 1:2,
+  comp_column = "length"
+) {
   nwfscSurvey::check_dir(dir = dir)
   data <- data |>
     dplyr::select(-SCIENTIFIC_NAME) |>
@@ -30,7 +31,10 @@ plot_wcgop_bio <- function(
 
   if (grepl("/", species_name)) {
     species_name_mod <- gsub("/", " ", species_name)
-    data[which(data[, "species"] == species_name), "species"] <- species_name_mod
+    data[
+      which(data[, "species"] == species_name),
+      "species"
+    ] <- species_name_mod
   }
 
   data[, "bio_plot"] <- data[, comp_column]
@@ -46,13 +50,17 @@ plot_wcgop_bio <- function(
       catch_shares = "non_catch_shares"
     )
   data$catch_shares[
-    data$sector %in% c("Catch Shares", "Catch Shares EM", "Midwater Hake", "LE CA Halibut") &
+    data$sector %in%
+      c("Catch Shares", "Catch Shares EM", "Midwater Hake", "LE CA Halibut") &
       data$year >= 2011
   ] <- "catch_shares"
 
   igroup <- 1
   if (igroup %in% plot) {
-    p1 <- ggplot2::ggplot(data, ggplot2::aes(y = bio_plot, x = year, group = year)) +
+    p1 <- ggplot2::ggplot(
+      data,
+      ggplot2::aes(y = bio_plot, x = year, group = year)
+    ) +
       ggplot2::geom_boxplot() +
       ggplot2::xlab("Year") +
       ggplot2::ylab(y_lab) +
@@ -73,7 +81,10 @@ plot_wcgop_bio <- function(
 
   igroup <- 2
   if (igroup %in% plot) {
-    p2 <- ggplot2::ggplot(data, ggplot2::aes(y = bio_plot, x = year, group = year)) +
+    p2 <- ggplot2::ggplot(
+      data,
+      ggplot2::aes(y = bio_plot, x = year, group = year)
+    ) +
       ggplot2::geom_boxplot() +
       ggplot2::xlab("Year") +
       ggplot2::ylab(y_lab) +

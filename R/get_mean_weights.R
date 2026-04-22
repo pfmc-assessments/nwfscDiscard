@@ -16,14 +16,15 @@
 #'
 #'
 get_mean_weights <- function(
-    dir = NULL,
-    data,
-    species_name,
-    gear_groups,
-    gear_names,
-    fleet_colname,
-    fleet_groups,
-    fleet_names) {
+  dir = NULL,
+  data,
+  species_name,
+  gear_groups,
+  gear_names,
+  fleet_colname,
+  fleet_groups,
+  fleet_names
+) {
   nwfscSurvey::check_dir(dir = dir)
   if (!species_name %in% data[, "species"]) {
     cli::cli_abort("{species_name} not found in the data.")
@@ -64,7 +65,13 @@ get_mean_weights <- function(
   if (dim(ci_not_met)[1] > 0) {
     remove <- NULL
     for (f in unique(ci_not_met$fleet)) {
-      remove <- c(remove, which(data$fleet == f & data$year %in% ci_not_met[ci_not_met$fleet == f, "year"]))
+      remove <- c(
+        remove,
+        which(
+          data$fleet == f &
+            data$year %in% ci_not_met[ci_not_met$fleet == f, "year"]
+        )
+      )
     }
     data <- data[-remove, ]
     cli::cli_inform(
@@ -72,9 +79,11 @@ get_mean_weights <- function(
     )
   }
 
-  data <- data |> dplyr::filter(
-    species == species_name, catch_disposition == "D"
-  )
+  data <- data |>
+    dplyr::filter(
+      species == species_name,
+      catch_disposition == "D"
+    )
 
   if (sum(is.na(data$exp_sp_wt)) > 0) {
     data$exp_sp_wt[is.na(data$exp_sp_wt)] <- 0
@@ -90,14 +99,18 @@ get_mean_weights <- function(
   data$species_weight_kg <- 0.453592 * data$species_weight
   data$average_weight <- data$species_weight_kg / data$species_number
   data$exp_average_weight <- data$average_weight * data$exp_sp_ct
-  data$weighted_average <- stats::weighted.mean(data$average_weight, data$exp_sp_ct)
+  data$weighted_average <- stats::weighted.mean(
+    data$average_weight,
+    data$exp_sp_ct
+  )
 
   mean_weights <- data |>
     dplyr::group_by(year, gear_groups, fleet_groups) |>
     dplyr::summarise(
       n = dplyr::n(),
       weighted_ave_w = (sum(exp_average_weight)) / sum(exp_sp_ct),
-      v = sum(exp_sp_ct * (average_weight - weighted_average)^2) / sum(exp_sp_ct),
+      v = sum(exp_sp_ct * (average_weight - weighted_average)^2) /
+        sum(exp_sp_ct),
       max_count = max(exp_sp_ct),
       total_count = sum(exp_sp_ct),
       weighted_ave_w_sd = sqrt(v / ((total_count / max_count) - 1)),
@@ -108,16 +121,24 @@ get_mean_weights <- function(
   mean_bodyweight <- data.frame(
     year = mean_weights[, "year"],
     month = "Month",
-    fleet = apply(mean_weights[, c("gear_groups", "fleet_groups")], 1, paste, collapse = "-"),
+    fleet = apply(
+      mean_weights[, c("gear_groups", "fleet_groups")],
+      1,
+      paste,
+      collapse = "-"
+    ),
     partition = 1,
     type = 2,
     obs = mean_weights[, "weighted_ave_w"],
     cv = mean_weights[, "weighted_ave_w_cv"]
   )
 
-  colnames(mean_bodyweight)[(ncol(mean_bodyweight) - 1):ncol(mean_bodyweight)] <- c("obs", "cv")
+  colnames(mean_bodyweight)[
+    (ncol(mean_bodyweight) - 1):ncol(mean_bodyweight)
+  ] <- c("obs", "cv")
   if (!is.null(dir)) {
-    write.csv(mean_bodyweight,
+    write.csv(
+      mean_bodyweight,
       file = file.path(dir, "discard_mean_body_weights.csv"),
       row.names = FALSE
     )

@@ -15,13 +15,14 @@
 #'
 #'
 check_confidential <- function(
-    data,
-    gear_groups,
-    gear_names,
-    fleet_colname,
-    fleet_groups,
-    fleet_names,
-    dir = NULL) {
+  data,
+  gear_groups,
+  gear_names,
+  fleet_colname,
+  fleet_groups,
+  fleet_names,
+  dir = NULL
+) {
   nwfscSurvey::check_dir(dir = dir)
   if (sum(colnames(data) == "emtrip_id") == 1) {
     data[, "trip_id"] <- data[, "emtrip_id"]
@@ -72,16 +73,29 @@ check_confidential <- function(
   vessels_by_year_cs <- as.data.frame(vessels_by_year_cs)
 
   if (any(vessels_by_year_cs[, "n_vessels"] < 3)) {
-    bad_fleet_group <- vessels_by_year_cs[which(vessels_by_year_cs[, "n_vessels"] < 3), "fleet"]
-    bad_year <- vessels_by_year_cs[which(vessels_by_year_cs[, "n_vessels"] < 3), "year"]
-    bad_cs <- vessels_by_year_cs[which(vessels_by_year_cs[, "n_vessels"] < 3), "catch_shares"]
+    bad_fleet_group <- vessels_by_year_cs[
+      which(vessels_by_year_cs[, "n_vessels"] < 3),
+      "fleet"
+    ]
+    bad_year <- vessels_by_year_cs[
+      which(vessels_by_year_cs[, "n_vessels"] < 3),
+      "year"
+    ]
+    bad_cs <- vessels_by_year_cs[
+      which(vessels_by_year_cs[, "n_vessels"] < 3),
+      "catch_shares"
+    ]
     warn <- paste0(bad_year, "-", bad_fleet_group, "-", bad_cs)
     glue::glue("The fleet grouping does not meet confidentiality for {warn}.")
   }
 
   if (!is.null(dir)) {
-    write.csv(vessels_by_year_cs,
-      file = file.path(dir, paste0("confidentiality", add_name, "_by_catch_share.csv")),
+    write.csv(
+      vessels_by_year_cs,
+      file = file.path(
+        dir,
+        paste0("confidentiality", add_name, "_by_catch_share.csv")
+      ),
       row.names = FALSE
     )
   }

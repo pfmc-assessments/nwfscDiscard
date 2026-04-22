@@ -18,15 +18,16 @@
 #'
 #'
 run <- function(
-    species_name,
-    data_grouping,
-    len_bins = seq(10, 60, 2),
-    age_bins = 1:30,
-    catch_data,
-    biological_data,
-    em_catch_data = NULL,
-    save_loc = NULL,
-    n_boot = 10000) {
+  species_name,
+  data_grouping,
+  len_bins = seq(10, 60, 2),
+  age_bins = 1:30,
+  catch_data,
+  biological_data,
+  em_catch_data = NULL,
+  save_loc = NULL,
+  n_boot = 10000
+) {
   if (!is.null(em_catch_data)) {
     do_em <- TRUE
   } else {

@@ -14,11 +14,12 @@
 #'
 #
 boostrap_discard <- function(
-    dir = NULL,
-    data,
-    boot_number = boot_number,
-    boot_variable = "r_port_group",
-    seed_number = NULL) {
+  dir = NULL,
+  data,
+  boot_number = boot_number,
+  boot_variable = "r_port_group",
+  seed_number = NULL
+) {
   if (!is.null(seed_number)) {
     set.seed(seed_number)
   }
@@ -39,7 +40,8 @@ boostrap_discard <- function(
 
     numVessels <- unlist(
       lapply(
-        data_strat, function(x) {
+        data_strat,
+        function(x) {
           length(unique(x[, "drvid"]))
         }
       )
@@ -47,12 +49,19 @@ boostrap_discard <- function(
 
     # I think the below snippit of code could be deleted:
     if (any(numVessels < 1)) {
-      message("WARNING: fewer than 1 vessels in at least one of the strata for year ", years[yr], "\n")
+      message(
+        "WARNING: fewer than 1 vessels in at least one of the strata for year ",
+        years[yr],
+        "\n"
+      )
       message("Discard ratios will not be bootstrapped for these strata\n")
     }
 
     for (s in 1:length(data_strat)) {
-      pe[[yr]][[s]] <- c(sum(data_strat[[s]][, "dis_mt"]), sum(data_strat[[s]][, "ret_mt"]))
+      pe[[yr]][[s]] <- c(
+        sum(data_strat[[s]][, "dis_mt"]),
+        sum(data_strat[[s]][, "ret_mt"])
+      )
       pe[[yr]][[s]] <- c(pe[[yr]][[s]], pe[[yr]][[s]][1] / sum(pe[[yr]][[s]]))
       names(pe[[yr]][[s]]) <- c("discard", "retained", "ratio")
 
@@ -76,7 +85,8 @@ boostrap_discard <- function(
         obs_ratio = rep(pe[[yr]][[s]][3], n),
         discard = boot_samples$boot_discard,
         retained = boot_samples$boot_retain,
-        ratio = boot_samples$boot_discard / (boot_samples$boot_discard + boot_samples$boot_retain)
+        ratio = boot_samples$boot_discard /
+          (boot_samples$boot_discard + boot_samples$boot_retain)
       )
 
       out_df <- rbind(out_df, df)
@@ -116,12 +126,15 @@ boostrap_discard <- function(
     data.frame()
 
   if (!is.null(dir)) {
-    write.csv(all_boot_data,
+    write.csv(
+      all_boot_data,
       file = file.path(dir, "discard_rates_noncatch_share.csv"),
       row.names = FALSE
     )
   } else {
-    cli::cli_inform("No directory provided. Catch share discard rates not saved.")
+    cli::cli_inform(
+      "No directory provided. Catch share discard rates not saved."
+    )
   }
   return(all_boot_data)
 }
