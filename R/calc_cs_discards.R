@@ -8,9 +8,10 @@
 #' @export
 #'
 calc_cs_discards <- function(
-    data,
-    conf_data_check,
-    dir = NULL) {
+  data,
+  conf_data_check,
+  dir = NULL
+) {
   if (sum(colnames(data) == "emtrip_id") == 1) {
     add_name <- "em_"
   } else {
@@ -22,13 +23,14 @@ calc_cs_discards <- function(
     dplyr::summarise(
       observed_discard_mt = sum(dis_mt),
       observed_retained_mt = sum(ret_mt),
-      discard_rate = observed_discard_mt / (observed_discard_mt + observed_retained_mt)
+      discard_rate = observed_discard_mt /
+        (observed_discard_mt + observed_retained_mt)
     ) |>
     dplyr::ungroup()
 
   # Merge the confidential data check with the discard rates
   out <- dplyr::right_join(
-    x = conf_data_check,
+    x = conf_data_check |> dplyr::filter(catch_shares == "TRUE"),
     y = discards,
     by = c("fleet", "year")
   ) |>
@@ -38,11 +40,16 @@ calc_cs_discards <- function(
   if (!is.null(dir)) {
     write.csv(
       x = out,
-      file = file.path(dir, paste0("discards_rates_", add_name, "catch_share.csv")),
+      file = file.path(
+        dir,
+        paste0("discards_rates_", add_name, "catch_share.csv")
+      ),
       row.names = FALSE
     )
   } else {
-    cli::cli_inform("No directory provided. Catch share discard rates not saved.")
+    cli::cli_inform(
+      "No directory provided. Catch share discard rates not saved."
+    )
   }
   return(out)
 }
