@@ -237,7 +237,7 @@ get_biological_data <- function(
       dplyr::relocate(frequency, .after = prop_catch) |>
       as.data.frame()
 
-    if (sum(!is.na(expansions[, "length"])) > 0) {
+    if (sum(expansions[, "final_weight_length_capped"]) > 0) {
       comps <- calc_comps(
         dir = dir,
         data = expansions,
@@ -246,7 +246,7 @@ get_biological_data <- function(
       )
     }
 
-    if (sum(!is.na(data[, "age"])) > 0) {
+    if (sum(expansions[, "final_weight_age_capped"]) > 0) {
       comps <- calc_comps(
         dir = dir,
         data = expansions,
