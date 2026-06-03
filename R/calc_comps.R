@@ -26,52 +26,73 @@ calc_comps <- function(
     all.inside = TRUE
   )]
   comp_data[, "bin"] <- factor(comp_data[, "bin"], levels = comp_bins)
+  if (comp_column == "length") {
+    comp_data$n <- comp_data$n_length
+    comp_data$weight <- comp_data$final_weight_length_capped
+  } else {
+    comp_data$n <- comp_data$n_age
+    comp_data$weight <- comp_data$final_weight_age_capped
+  }
 
-  init_count <- comp_data |>
-    dplyr::group_by(year, gear_groups, fleet_groups, sex, bin) |>
+  # calculate input n similar to pacfintools
+  comp_weights <- comp_data |>
+    dplyr::group_by(year, fleet, sex) |>
+    dplyr::mutate(
+      hauls = dplyr::n_distinct(haul_id),
+      trips = dplyr::n_distinct(trip_id),
+      fish = sum(n),
+      ratio = sum(unique(fish)) / trips,
+      input_n = dplyr::case_when(
+        ratio < 44 ~ trips + 0.138 * sum(unique(fish)),
+        .default = 7.06 * trips
+      ),
+      total_weight_year = sum(weight)
+    ) |>
+    dplyr::ungroup()
+
+  init_count <- comp_weights |>
     dplyr::summarise(
-      n = dplyr::n(),
-      weighted = sum(wghtd_freq),
-      .groups = "drop"
+      .by = c(
+        "year",
+        "fleet",
+        "sex",
+        "bin"
+      ),
+      input_n = unique(input_n),
+      bin_weight = sum(weight),
+      total_weight_year = unique(total_weight_year)
     ) |>
     dplyr::ungroup()
 
   filled_count <- init_count |>
     tidyr::complete(
       year,
-      gear_groups,
-      fleet_groups,
+      fleet,
       sex,
       bin,
       fill = list(
-        n = 0,
-        weighted = 0
+        input_n = 0,
+        bin_weight = 0
       )
     )
 
   all_weights <- filled_count |>
-    dplyr::group_by(year, gear_groups, fleet_groups) |>
+    dplyr::filter(input_n != 0) |>
+    dplyr::group_by(year, fleet) |>
     dplyr::mutate(
-      n_by_year = sum(n),
-      w_by_year = sum(weighted)
-    ) |>
-    dplyr::ungroup() |>
-    dplyr::filter(n_by_year != 0) |>
-    dplyr::mutate(
-      prop_numbers = 100 * n / n_by_year,
-      prop_weighted = 100 * weighted / w_by_year
+      prop_weighted = 100 * bin_weight / unique(total_weight_year)
     )
 
   # Format the composition data for SS3
   comps <- all_weights[, c(
     "year",
-    "gear_groups",
-    "fleet_groups",
+    "fleet",
     "sex",
     "bin",
-    "n_by_year",
+    "input_n",
     "prop_weighted"
   )] |>
+    dplyr::arrange(bin, year, fleet) |>
     tidyr::pivot_wider(
       names_from = bin,
       values_from = prop_weighted
@@ -80,47 +101,22 @@ calc_comps <- function(
   comps_out_sexed <- comps_out_unsexed <- all_comps <- NULL
   out <- list()
   if (any(comps[, "sex"] == "U")) {
-    sub <- comps[comps$sex == "U", ]
-    keep <- which(apply(sub[, 6:ncol(sub)], 1, sum) != 0)
-    filter_comps <- sub[keep, ]
-
-    sample_size <- comp_data |>
-      dplyr::filter(sex == "U") |>
-      dplyr::group_by(year, gear_groups, fleet_groups) |>
-      dplyr::summarise(
-        fish = sum(frequency),
-        hauls = length(unique(haul_id)),
-        trips = length(unique(trip_id)),
-        vessels = length(unique(drvid)),
-        ratio = fish / trips,
-        input_n = round(
-          dplyr::case_when(
-            ratio < 44 ~ trips + 0.138 * fish,
-            .default = 7.06 * trips
-          ),
-          0
-        ),
-        fleet = paste0(unique(gear_groups), "-", unique(fleet_groups))
-      ) |>
-      data.frame()
+    filter_comps <- comps[comps$sex == "U", ]
+    filter_comps[is.na(filter_comps)] <- 0
 
     comps_out_unsexed <- cbind(
-      sample_size[, "year"],
-      "Month",
-      sample_size[, "fleet"],
-      0,
-      1,
-      sample_size[, "input_n"],
-      filter_comps[filter_comps$sex == "U", 6:ncol(comps)],
-      0 * filter_comps[filter_comps$sex == "U", 6:ncol(comps)]
+      data.frame(
+        year = filter_comps$year,
+        month = 7,
+        fleet = filter_comps$fleet,
+        sex = 0,
+        partition = 1,
+        input_n = filter_comps$input_n
+      ),
+      filter_comps[filter_comps$sex == "U", 5:ncol(filter_comps)],
+      0 * filter_comps[filter_comps$sex == "U", 5:ncol(comps)]
     )
-    colnames(comps_out_unsexed) <- c(
-      "year",
-      "month",
-      "fleet",
-      "sex",
-      "partition",
-      "input_n",
+    colnames(comps_out_unsexed[, 7:dim(comps_out_unsexed)[2]]) <- c(
       paste0("f", comp_bins),
       paste0("m", comp_bins)
     )
@@ -128,26 +124,6 @@ calc_comps <- function(
   }
 
   if ((sum(comps$sex == "F") + sum(comps$sex == "M")) > 0) {
-    sample_size <- comp_data |>
-      dplyr::filter(sex != "U") |>
-      dplyr::group_by(year, gear_groups, fleet_groups) |>
-      dplyr::summarise(
-        fish = sum(frequency),
-        hauls = length(unique(haul_id)),
-        trips = length(unique(trip_id)),
-        vessels = length(unique(drvid)),
-        ratio = fish / trips,
-        input_n = round(
-          dplyr::case_when(
-            ratio < 44 ~ trips + 0.138 * fish,
-            .default = 7.06 * trips
-          ),
-          0
-        ),
-        fleet = paste0(unique(gear_groups), "-", unique(fleet_groups))
-      ) |>
-      data.frame()
-
     comps_sexed <- cbind(
       comps[comps$sex == "F", 6:ncol(comps)],
       comps[comps$sex == "M", 6:ncol(comps)]
@@ -159,26 +135,22 @@ calc_comps <- function(
     } else {
       filter_comps <- comps_sexed
     }
+
     comps_out_sexed <- cbind(
-      sample_size[, "year"],
-      "Month",
-      sample_size[, "fleet"],
-      3,
-      1,
-      sample_size[, "input_n"],
-      filter_comps
+      data.frame(
+        year = filter_comps$year,
+        month = 7,
+        fleet = filter_comps$fleet,
+        sex = 0,
+        partition = 1,
+        input_n = filter_comps$input_n
+      ),
+      comps_sexed
     )
-    colnames(comps_out_sexed) <- c(
-      "year",
-      "month",
-      "fleet",
-      "sex",
-      "partition",
-      "input_n",
+    colnames(comps_out_sexed[, 7:dim(comps_out_sexed)[2]]) <- c(
       paste0("f", comp_bins),
       paste0("m", comp_bins)
     )
-
     out$sexed <- comps_out_sexed
   }
 
@@ -221,22 +193,28 @@ calc_comps <- function(
   all_comps <- dplyr::bind_rows(comps_out_sexed, comps_out_unsexed)
 
   sample_size <- comp_data |>
-    dplyr::group_by(year, gear_groups, fleet_groups) |>
+    dplyr::mutate(
+      sex_group = dplyr::case_when(
+        sex == "U" ~ "unsexed",
+        .default = "sexed"
+      )
+    ) |>
     dplyr::summarise(
-      fish = sum(frequency),
-      hauls = length(unique(haul_id)),
-      trips = length(unique(trip_id)),
-      vessels = length(unique(drvid)),
-      ratio = fish / trips,
+      .by = c(year, fleet, sex_group),
+      hauls = dplyr::n_distinct(haul_id),
+      trips = dplyr::n_distinct(trip_id),
+      fish = sum(n),
+      ratio = sum(unique(fish)) / trips,
       input_n = round(
         dplyr::case_when(
-          ratio < 44 ~ trips + 0.138 * fish,
+          ratio < 44 ~ trips + 0.138 * sum(unique(fish)),
           .default = 7.06 * trips
         ),
         0
       )
     ) |>
     dplyr::select(-ratio) |>
+    dplyr::arrange(fleet, year) |>
     data.frame()
 
   if (!is.null(dir)) {

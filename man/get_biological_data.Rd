@@ -7,6 +7,7 @@
 get_biological_data(
   dir = NULL,
   data,
+  weight_data,
   catch_data,
   species_name,
   len_bins,
@@ -16,6 +17,7 @@ get_biological_data(
   fleet_colname,
   fleet_groups,
   fleet_names,
+  min_sample_size = 20,
   expand = TRUE
 )
 }
@@ -23,6 +25,9 @@ get_biological_data(
 \item{dir}{Directory location to save files.}
 
 \item{data}{A data frame of WCGOP biological data that includes all species.}
+
+\item{weight_data}{A data frame created by \verb{[calc_weights()]} that will be used
+to weight the biological data samples.}
 
 \item{catch_data}{A data frame of WCGOP catch data that includes all species.
 This data frame will be used to check confidentiality.}
@@ -43,6 +48,9 @@ This data frame will be used to check confidentiality.}
 \item{fleet_groups}{List of fleet groups to use (example: list(c("WA", "OR", "CA"))).}
 
 \item{fleet_names}{Vector of fleet names (example: c("coastwide")).}
+
+\item{min_sample_size}{Numeric value to only retain years of data by gear that are >= to
+this value.}
 
 \item{expand}{Logical statement on whether to expand the compositions samples.  Default is
 TRUE. If set to FALSE, then raw samples will be returned that are filtered for

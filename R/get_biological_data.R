@@ -2,6 +2,8 @@
 #'
 #' @param dir Directory location to save files.
 #' @param data A data frame of WCGOP biological data that includes all species.
+#' @param weight_data A data frame created by `[calc_weights()]` that will be used
+#'   to weight the biological data samples.
 #' @param catch_data A data frame of WCGOP catch data that includes all species.
 #'   This data frame will be used to check confidentiality.
 #' @param species_name Species that you want composition data for.
@@ -13,6 +15,8 @@
 #' @param fleet_colname Column to use to determine areas for fleets (example: "r_state.x")
 #' @param fleet_groups List of fleet groups to use (example: list(c("WA", "OR", "CA"))).
 #' @param fleet_names Vector of fleet names (example: c("coastwide")).
+#' @param min_sample_size Numeric value to only retain years of data by gear that are >= to
+#'   this value.
 #' @param expand Logical statement on whether to expand the compositions samples.  Default is
 #'   TRUE. If set to FALSE, then raw samples will be returned that are filtered for
 #'   confidentiality.
@@ -24,6 +28,7 @@
 get_biological_data <- function(
   dir = NULL,
   data,
+  weight_data,
   catch_data,
   species_name,
   len_bins,
@@ -33,6 +38,7 @@ get_biological_data <- function(
   fleet_colname,
   fleet_groups,
   fleet_names,
+  min_sample_size = 20,
   expand = TRUE
 ) {
   if (length(gear_names) != length(gear_groups)) {
@@ -116,7 +122,9 @@ get_biological_data <- function(
   }
 
   if (expand) {
-    expansions <- data |>
+    # Need to add filter check for records with unique(bio_specimen_item_id)
+    # This column is NA for fish that were only lengthed
+    data_filtered <- data |>
       dplyr::filter(
         species == species_name,
         catch_disposition == "D"
@@ -124,7 +132,59 @@ get_biological_data <- function(
       dplyr::mutate(
         sex = nwfscSurvey::codify_sex(sex)
       ) |>
+      dplyr::group_by(year, gear_to_use, haul_id) |>
       dplyr::mutate(
+        n_sampled_haul = sum(frequency),
+        n_caught_haul = sum(unique(species_number)),
+      ) |>
+      dplyr::group_by(year, fleet) |>
+      dplyr::mutate(
+        n_sampled_year = sum(frequency, na.rm = TRUE)
+      )
+    data_filtered_sample_size <- data_filtered |>
+      # only keep gears and years with more than 20 samples
+      dplyr::filter(n_sampled_year >= min_sample_size)
+    # join the weights with the data for second stage expansion
+    data_and_weights <- dplyr::left_join(
+      x = data_filtered_sample_size,
+      y = weight_data |>
+        dplyr::select(
+          year,
+          gear,
+          fleet,
+          total_discard_mt,
+          total_catch_mt,
+          gear_group_catch_mt,
+          prop_discard,
+          prop_catch
+        ) |>
+        dplyr::rename(gear_to_use = gear),
+      by = c("year", "gear_to_use", "fleet")
+    )
+    # first stage expansion
+    # species_number: Total number of individuals of given species. This is the
+    #   individual species number from the species_composition_items table.  It
+    #   is the same as TOTAL_SPECIES_SAMPLE_COUNT.
+    # bio_specimen_count: A count of the number of data records in the
+    #   BIO_SPECIMEN_ID sample. This is the total number bio specimens items and
+    #   a sum of the length frequencies collected for a species.
+    # species_weight: Weight of an individual species within a species composition
+    #   item id
+    # exp_sp_wt: Weight of catch for data record/line, expanded to the haul-level
+    #   based on sampling protocol
+    # frequency: Number of individual fish in given length bin (from LF table
+    #   in database), or is equal to one if data record is from the Biological
+    #   Specimen Item table
+    expansions <- data_and_weights |>
+      dplyr::mutate(
+        n_age = dplyr::case_when(
+          !is.na(age) ~ frequency,
+          .default = 0
+        ),
+        n_length = dplyr::case_when(
+          !is.na(length) ~ frequency,
+          .default = 0
+        ),
         exp1 = dplyr::case_when(
           !is.na(species_number) | !is.na(bio_specimen_count) ~
             species_number / bio_specimen_count,
@@ -138,9 +198,44 @@ get_biological_data <- function(
           !is.na(species_weight) ~ exp_weight / species_weight,
           .default = 0
         ),
-        wghtd_freq = frequency * exp1 * exp2
+        sample_weight_length = n_length * exp1 * exp2,
+        sample_weight_age = n_age * exp1 * exp2,
       ) |>
-      dplyr::filter(wghtd_freq != 0)
+      dplyr::group_by(year, gear_to_use) |>
+      dplyr::mutate(
+        discard_numerator = unique(total_discard_mt),
+        catch_numerator = unique(total_catch_mt),
+        calc_total_sample_weight_mt = sum(exp_weight, na.rm = TRUE) / 2204.62,
+        total_sample_weight_mt = dplyr::case_when(
+          calc_total_sample_weight_mt > discard_numerator ~ discard_numerator,
+          .default = calc_total_sample_weight_mt
+        ),
+        wghtd_catch = prop_catch * (catch_numerator / total_sample_weight_mt),
+        # intentionally use the proportion of catch here since that is a better indicator
+        # of how to weight the second stage expansion
+        wghtd_discard = dplyr::case_when(
+          catch_shares == FALSE ~
+            prop_catch * discard_numerator / total_sample_weight_mt,
+          .default = 1
+        ),
+        final_weight_length = sample_weight_length * wghtd_discard,
+        final_weight_age = sample_weight_age * wghtd_discard
+      ) |>
+      dplyr::ungroup() |>
+      dplyr::mutate(
+        length_cap = quantile(final_weight_length, 0.95),
+        age_cap = quantile(final_weight_age, 0.95),
+        final_weight_length_capped = dplyr::case_when(
+          final_weight_length > length_cap ~ length_cap,
+          .default = final_weight_length
+        ),
+        final_weight_age_capped = dplyr::case_when(
+          final_weight_age > age_cap ~ age_cap,
+          .default = final_weight_age
+        )
+      ) |>
+      dplyr::relocate(frequency, .after = prop_catch) |>
+      as.data.frame()
 
     if (sum(!is.na(expansions[, "length"])) > 0) {
       comps <- calc_comps(
