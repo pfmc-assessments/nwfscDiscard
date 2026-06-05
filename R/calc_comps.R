@@ -193,5 +193,5 @@ calc_comps <- function(
       )
     }
   }
-  return(all_comps)
+  return(wide_composition_data)
 }
