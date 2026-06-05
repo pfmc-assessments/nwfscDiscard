@@ -130,7 +130,15 @@ get_biological_data <- function(
         catch_disposition == "D"
       ) |>
       dplyr::mutate(
-        sex = nwfscSurvey::codify_sex(sex)
+        sex = nwfscSurvey::codify_sex(sex),
+        n_age = dplyr::case_when(
+          !is.na(age) ~ frequency,
+          .default = 0
+        ),
+        n_length = dplyr::case_when(
+          !is.na(length) ~ frequency,
+          .default = 0
+        )
       ) |>
       dplyr::group_by(year, gear_to_use, haul_id) |>
       dplyr::mutate(
@@ -139,14 +147,28 @@ get_biological_data <- function(
       ) |>
       dplyr::group_by(year, fleet) |>
       dplyr::mutate(
-        n_sampled_year = sum(frequency, na.rm = TRUE)
+        n_length_sampled_year = sum(n_length, na.rm = TRUE),
+        n_age_sampled_year = sum(n_age, na.rm = TRUE),
+        n_length_haul_year = dplyr::case_when(
+          n_length > 0 ~ dplyr::n_distinct(haul_id),
+          .default = 0
+        ),
+        n_age_haul_year = dplyr::case_when(
+          n_age > 0 ~ dplyr::n_distinct(haul_id),
+          .default = 0
+        ),
+        n_length_trip_year = dplyr::case_when(
+          n_length > 0 ~ dplyr::n_distinct(trip_id),
+          .default = 0
+        ),
+        n_age_trip_year = dplyr::case_when(
+          n_age > 0 ~ dplyr::n_distinct(trip_id),
+          .default = 0
+        )
       )
-    data_filtered_sample_size <- data_filtered |>
-      # only keep gears and years with more than 20 samples
-      dplyr::filter(n_sampled_year >= min_sample_size)
     # join the weights with the data for second stage expansion
     data_and_weights <- dplyr::left_join(
-      x = data_filtered_sample_size,
+      x = data_filtered,
       y = weight_data |>
         dplyr::select(
           year,
@@ -177,14 +199,6 @@ get_biological_data <- function(
     #   Specimen Item table
     expansions <- data_and_weights |>
       dplyr::mutate(
-        n_age = dplyr::case_when(
-          !is.na(age) ~ frequency,
-          .default = 0
-        ),
-        n_length = dplyr::case_when(
-          !is.na(length) ~ frequency,
-          .default = 0
-        ),
         exp1 = dplyr::case_when(
           !is.na(species_number) | !is.na(bio_specimen_count) ~
             species_number / bio_specimen_count,
@@ -235,23 +249,58 @@ get_biological_data <- function(
         )
       ) |>
       dplyr::relocate(frequency, .after = prop_catch) |>
-      as.data.frame()
+      dplyr::select(
+        fleet,
+        year,
+        sex,
+        length,
+        age,
+        n_length_haul_year,
+        n_length_trip_year,
+        n_length_sampled_year,
+        length,
+        final_weight_length_capped,
+        n_age_haul_year,
+        n_age_trip_year,
+        n_age_sampled_year,
+        final_weight_age_capped
+      )
 
     if (sum(expansions[, "final_weight_length_capped"]) > 0) {
       comps <- calc_comps(
         dir = dir,
-        data = expansions,
+        data = expansions |>
+          dplyr::select(
+            year,
+            fleet,
+            sex,
+            length,
+            n_length_haul_year,
+            n_length_trip_year,
+            n_length_sampled_year,
+            final_weight_length_capped
+          ),
         comp_bins = len_bins,
-        comp_column = "length"
+        comp_column_name = "length"
       )
     }
 
     if (sum(expansions[, "final_weight_age_capped"]) > 0) {
       comps <- calc_comps(
         dir = dir,
-        data = expansions,
+        data = expansions |>
+          dplyr::select(
+            year,
+            fleet,
+            sex,
+            age,
+            n_age_haul_year,
+            n_age_trip_year,
+            n_age_sampled_year,
+            final_weight_age_capped
+          ),
         comp_bins = age_bins,
-        comp_column = "age"
+        comp_column_name = "age"
       )
     }
   } else {
