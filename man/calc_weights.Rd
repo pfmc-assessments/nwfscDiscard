@@ -4,13 +4,15 @@
 \alias{calc_weights}
 \title{Calculate discard, landings, and catch by gear for weighting data}
 \usage{
-calc_weights(data, dir = NULL)
+calc_weights(data, include_catch_share = TRUE, dir = NULL)
 }
 \arguments{
 \item{data}{Data frame of the alternative GEMM data provided by the FOS
 team for calculating data weights using alternative areas. The gear type
 (minor) and the gear group (major) are used to calculate totals by area
 and weighting proportions.}
+
+\item{include_catch_share}{TRUE/FALSE}
 
 \item{dir}{Directory location to save files.}
 }

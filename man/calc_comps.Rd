@@ -4,7 +4,7 @@
 \alias{calc_comps}
 \title{Calculate expanded discard composition}
 \usage{
-calc_comps(dir = NULL, data, comp_bins, comp_column = "length")
+calc_comps(dir = NULL, data, comp_bins, comp_column_name = "length")
 }
 \arguments{
 \item{dir}{Directory location to save files.}
@@ -13,7 +13,7 @@ calc_comps(dir = NULL, data, comp_bins, comp_column = "length")
 
 \item{comp_bins}{Length or age bins to apply to the composition data.}
 
-\item{comp_column}{Column name for the type of composition data to process (e.g., "length" or "age")}
+\item{comp_column_name}{Column name for the type of composition data to process (e.g., "length" or "age")}
 }
 \description{
 Calculate expanded discard composition
