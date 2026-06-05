@@ -38,9 +38,9 @@ do_discard_bootstrap <- function(
   }
 
   # Format the observer catch data column names
-  if (sum(colnames(data) == "TRIP_ID") == 1) {
-    data <- data |> dplyr::select(-MT, -SPGRFTOB1, -SCIENTIFIC_NAME)
-  }
+  #if (sum(colnames(data) == "TRIP_ID") == 1) {
+  #  data <- data |> dplyr::select(-MT, -SPGRFTOB1, -SCIENTIFIC_NAME)
+  #}
 
   data <- data |>
     dplyr::rename(
