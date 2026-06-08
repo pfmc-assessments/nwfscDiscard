@@ -49,12 +49,11 @@ boostrap_discard <- function(
 
     # I think the below snippit of code could be deleted:
     if (any(numVessels < 1)) {
-      message(
-        "WARNING: fewer than 1 vessels in at least one of the strata for year ",
-        years[yr],
-        "\n"
+      message <- years[yr]
+      cli::cli_alert_warning(
+        "There are 1 or 0 vessels in at least one of the strata for year {message}.
+        Discard ratios will not be bootstrapped for these strata"
       )
-      message("Discard ratios will not be bootstrapped for these strata\n")
     }
 
     for (s in 1:length(data_strat)) {
@@ -101,8 +100,10 @@ boostrap_discard <- function(
       obs_retained = mean(obs_retained),
       obs_ratio = mean(obs_ratio),
       median_discard = median(discard),
+      variance_discard = var(discard),
       sd_discard = sd(discard),
       median_ratio = median(ratio),
+      var_ratio = var(ratio),
       sd_ratio = sd(ratio)
     ) |>
     dplyr::ungroup()
