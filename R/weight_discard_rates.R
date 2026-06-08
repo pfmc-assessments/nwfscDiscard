@@ -30,7 +30,15 @@ weight_discard_rates <- function(
       sd = sd_ratio
     )
   ncs_pre_2011 <- ncs_filtered |>
-    dplyr::filter(year < 2011)
+    dplyr::filter(year < 2011) |>
+    dplyr::mutate(
+      month = 7
+    ) |>
+    dplyr::select(-catch_shares) |>
+    dplyr::relocate(
+      month,
+      .after = year
+    )
   ncs_post_2011 <- ncs_filtered |>
     dplyr::filter(year >= 2011) |>
     dplyr::relocate(catch_shares, .after = fleet)
@@ -49,30 +57,52 @@ weight_discard_rates <- function(
         sd = 0.015
       )
     )
-  join_all <- dplyr::join_left(
+  join_all <- dplyr::left_join(
     bind_rates,
-    weight_data |> dplyr::select(year, fleet, catch_shares)
+    weight_data |> dplyr::select(-gear_type),
+    by = c("year", "catch_shares", "fleet")
   )
 
-  ncs_post_2011 <- ncs_filtered |>
-    dplyr::filter(year >= 2011) |>
-    dplyr::rename(
-      ncs_discard_rate = discard_rate,
-      ncs_sd = sd
-    )
-  cs_filtered <- cs_data |>
-    dplyr::select(year, fleet, catch_shares, discard_rate) |>
+  combine_rates <- join_all |>
+    dplyr::group_by(year, fleet) |>
     dplyr::mutate(
-      sd = 0.015
+      n = sum(discard_rate > 0)
     ) |>
-    dplyr::rename(
-      cs_discard_rate = discard_rate,
-      cs_sd = sd
-    )
-  combined_rates <- dplyr::full_join(ncs_post_2011, cs_filtered) |>
+    dplyr::ungroup() |>
+    dplyr::filter(discard_rate != 0) |>
     dplyr::mutate(
-      cs_rate =
+      weighted_rate = dplyr::case_when(
+        n == 2 ~ discard_rate * prop_catch,
+        .default = discard_rate
+      ),
+      weighted_sd = dplyr::case_when(
+        n == 2 ~ sd * prop_catch,
+        .default = sd
+      )
+    ) |>
+    dplyr::summarise(
+      .by = c("year", "fleet"),
+      month = 7,
+      discard_rate = round(sum(weighted_rate), 4),
+      sd = round(sum(weighted_sd), 4)
+    ) |>
+    dplyr::relocate(month, .after = year)
+
+  all_rates <- dplyr::bind_rows(
+    ncs_pre_2011,
+    combine_rates
+  ) |>
+    dplyr::arrange(fleet, year)
+
+  if (!is.null(dir)) {
+    write.csv(
+      all_rates,
+      file = file.path(
+        dir,
+        paste0("wcgop_discard_rates_weighted.csv")
+      ),
+      row.names = FALSE
     )
-  #month
-  #fleet
+  }
+  return(all_rates)
 }
