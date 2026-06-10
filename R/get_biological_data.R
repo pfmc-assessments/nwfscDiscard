@@ -270,6 +270,7 @@ get_biological_data <- function(
       comps <- calc_comps(
         dir = dir,
         data = expansions |>
+          dplyr::filter(n_length_sampled_year >= min_sample_size) |>
           dplyr::select(
             year,
             fleet,
