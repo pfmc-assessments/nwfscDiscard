@@ -4,10 +4,25 @@
 \alias{format_gemm_alt}
 \title{Format GEMM alternative data to match the WCGOP}
 \usage{
-format_gemm_alt(data)
+format_gemm_alt(
+  dir,
+  species_name,
+  areas_to_keep,
+  gears_to_keep,
+  data_file = "SATAN_GEMM_2026-04-12.csv"
+)
 }
 \arguments{
-\item{data}{Data frame of the alternative GEMM data provided by the FOS
+\item{dir}{Directory location to save files.}
+
+\item{species_name}{species name that should match the name in the alternative
+gemm data file. Needs to be a single species.}
+
+\item{areas_to_keep}{Area names in the alternative GEMM to filter the data for.}
+
+\item{gears_to_keep}{Gear names in the alternative GEMM to filter the data for.}
+
+\item{data_file}{CSV file name of the alternative GEMM data provided by the FOS
 team for calculating data weights using alternative areas. The gear type
 (minor) and the gear group (major) are used to calculate totals by area
 and weighting proportions.}
