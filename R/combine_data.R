@@ -44,8 +44,7 @@ combine_data <- function(
       TRIP_ID = EMTRIP_ID,
       RYEAR = YEAR
     ) |>
-    # !!!!!!!!!!  CHANGE THIS BEFORE FINISHING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    dplyr::filter(RYEAR >= 2023) |>
+    dplyr::filter(RYEAR >= 2024) |>
     dplyr::mutate(
       sector = dplyr::case_when(
         sector == "Catch Shares EM" ~ "Catch Shares EM Low Review Rates",
@@ -58,7 +57,8 @@ combine_data <- function(
   em_early <- em_catch_data |>
     dplyr::select(tidyr::all_of(em_cols)) |>
     dplyr::filter(YEAR < 2024) |>
-    dplyr::rename(RYEAR = YEAR)
+    dplyr::rename(RYEAR = YEAR) |>
+    as.data.frame()
 
   cd_cols <- cols_to_keep[cols_to_keep %in% colnames(catch_data)]
   catch_data_select <- catch_data |>
