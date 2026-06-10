@@ -66,10 +66,17 @@ run <- function(
     fleet_names = fleet_names
   )
 
+  # Move EM data collected in 2024 to the catch file as non-catch share
+  # due to the lower review rates.
+  data_list <- combine_data(
+    catch_data = catch_data,
+    em_catch_data = em_catch_data
+  )
+
   # Calculate the discard total and rates, including the EM data:
   ob_out <- do_discard_bootstrap(
     dir = save_loc,
-    data = catch_data,
+    data = data_list$catch_data,
     species_name = species_name,
     boot_number = n_boot,
     gear_groups = gear_groups,
@@ -84,7 +91,7 @@ run <- function(
   if (do_em) {
     em_out <- do_discard_bootstrap(
       dir = save_loc,
-      data = em_catch_data,
+      data = data_list$em_catch_data,
       species_name = species_name,
       gear_groups = gear_groups,
       gear_names = gear_names,
