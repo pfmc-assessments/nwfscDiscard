@@ -4,7 +4,13 @@
 \alias{weight_discard_rates}
 \title{Weight discard rates between catch share and non-catch share}
 \usage{
-weight_discard_rates(weight_data, ncs_data, cs_data, dir = NULL)
+weight_discard_rates(
+  weight_data,
+  ncs_data,
+  cs_data,
+  dir = NULL,
+  min_sd = 0.015
+)
 }
 \arguments{
 \item{weight_data}{Data frame of the alternative GEMM data provided by the FOS
@@ -18,6 +24,9 @@ and weighting proportions.}
 This should be the combined observer and EM catch share data from \code{\link[=combine_cs_discards]{combine_cs_discards()}}.}
 
 \item{dir}{Directory location to save files.}
+
+\item{min_sd}{The minimum standard deviation to apply to catch share observations with full
+observer coverage.}
 }
 \value{
 list

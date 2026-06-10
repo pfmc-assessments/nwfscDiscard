@@ -8,6 +8,8 @@
 #'   This should be the combined observer and EM catch share data from [combine_cs_discards()].
 #' @param ncs_data Data object of the processed non0catch share discards from the OBCatch data.
 #' @param dir Directory location to save files.
+#' @param min_sd The minimum standard deviation to apply to catch share observations with full
+#'   observer coverage.
 #'
 #' @author Chantel Wetzel
 #' @export
@@ -18,23 +20,27 @@ weight_discard_rates <- function(
   weight_data,
   ncs_data,
   cs_data,
-  dir = NULL
+  dir = NULL,
+  min_sd = 0.015
 ) {
+  min_var <- min_sd * min_sd
   ncs_filtered <- ncs_data |>
-    dplyr::select(year, fleet, median_ratio, sd_ratio) |>
+    dplyr::select(year, fleet, median_ratio, var_ratio) |>
     dplyr::mutate(
       catch_shares = FALSE
     ) |>
     dplyr::rename(
       discard_rate = median_ratio,
-      sd = sd_ratio
+      var = var_ratio
     )
   ncs_pre_2011 <- ncs_filtered |>
     dplyr::filter(year < 2011) |>
     dplyr::mutate(
-      month = 7
+      month = 7,
+      discard_rate = round(discard_rate, 4),
+      sd = round(sqrt(var), 4)
     ) |>
-    dplyr::select(-catch_shares) |>
+    dplyr::select(-catch_shares, -var) |>
     dplyr::relocate(
       month,
       .after = year
@@ -45,7 +51,7 @@ weight_discard_rates <- function(
   cs_filtered <- cs_data |>
     dplyr::select(year, fleet, catch_shares, discard_rate) |>
     dplyr::mutate(
-      sd = 0.015
+      var = min_var
     )
   bind_rates <- dplyr::bind_rows(ncs_post_2011, cs_filtered) |>
     tidyr::complete(
@@ -54,7 +60,7 @@ weight_discard_rates <- function(
       catch_shares,
       fill = list(
         discard_rate = 0,
-        sd = 0.015
+        var = min_var
       )
     )
   join_all <- dplyr::left_join(
@@ -75,16 +81,16 @@ weight_discard_rates <- function(
         n == 2 ~ discard_rate * prop_catch,
         .default = discard_rate
       ),
-      weighted_sd = dplyr::case_when(
-        n == 2 ~ sd * prop_catch,
-        .default = sd
+      weighted_var = dplyr::case_when(
+        n == 2 ~ var * prop_catch * prop_catch,
+        .default = var
       )
     ) |>
     dplyr::summarise(
       .by = c("year", "fleet"),
       month = 7,
       discard_rate = round(sum(weighted_rate), 4),
-      sd = round(sum(weighted_sd), 4)
+      sd = round(sqrt(sum(weighted_var)), 4)
     ) |>
     dplyr::relocate(month, .after = year)
 
@@ -92,6 +98,12 @@ weight_discard_rates <- function(
     ncs_pre_2011,
     combine_rates
   ) |>
+    dplyr::mutate(
+      sd = dplyr::case_when(
+        sd < min_sd ~ min_sd,
+        .default = sd
+      )
+    ) |>
     dplyr::arrange(fleet, year)
 
   if (!is.null(dir)) {
