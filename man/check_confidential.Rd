@@ -11,6 +11,7 @@ check_confidential(
   fleet_colname,
   fleet_groups,
   fleet_names,
+  by_catch_share = FALSE,
   dir = NULL
 )
 }
@@ -27,6 +28,9 @@ check_confidential(
 \item{fleet_groups}{List of fleet groups to use (example: list(c("WA", "OR", "CA"))).}
 
 \item{fleet_names}{Vector of fleet names (example: c("coastwide")).}
+
+\item{by_catch_share}{Logical. Calculate the number of unique vessels by catch
+share for each year and fleet.}
 
 \item{dir}{Directory location to save files.}
 }

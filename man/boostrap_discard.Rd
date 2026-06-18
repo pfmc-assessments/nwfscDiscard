@@ -5,17 +5,20 @@
 \title{Bootstrap non-catch share data}
 \usage{
 boostrap_discard(
-  dir = NULL,
   data,
+  conf_data_check,
+  dir = NULL,
   boot_number = boot_number,
   boot_variable = "r_port_group",
   seed_number = NULL
 )
 }
 \arguments{
-\item{dir}{Directory location to save files.}
-
 \item{data}{A data frame of WCGOP catch data filtered down to non-catch share data.}
+
+\item{conf_data_check}{Dataframe with the number of observations, trips, and vessels by fleet.}
+
+\item{dir}{Directory location to save files.}
 
 \item{boot_number}{The number of bootstraps to conduct}
 

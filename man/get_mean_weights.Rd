@@ -5,19 +5,19 @@
 \title{Calculate mean weights for discarded fish}
 \usage{
 get_mean_weights(
-  dir = NULL,
   data,
+  weight_data,
   species_name,
   gear_groups,
   gear_names,
   fleet_colname,
   fleet_groups,
-  fleet_names
+  fleet_names,
+  min_sample_size = 20,
+  dir = NULL
 )
 }
 \arguments{
-\item{dir}{Directory location to save files.}
-
 \item{data}{A data frame of WCGOP catch data}
 
 \item{species_name}{Species that you want composition data for.}
@@ -32,6 +32,8 @@ get_mean_weights(
 \item{fleet_groups}{List of fleet groups to use (example: list(c("WA", "OR", "CA"))).}
 
 \item{fleet_names}{Vector of fleet names (example: c("coastwide")).}
+
+\item{dir}{Directory location to save files.}
 }
 \description{
 Calculate mean weights for discarded fish
