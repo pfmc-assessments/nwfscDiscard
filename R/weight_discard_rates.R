@@ -24,7 +24,15 @@ weight_discard_rates <- function(
   min_sd = 0.015
 ) {
   min_var <- min_sd * min_sd
+  # For rates that were based on <3 observations set those to 0
   ncs_filtered <- ncs_data |>
+    dplyr::mutate(
+      median_ratio = dplyr::case_when(
+        n_ret < 3 ~ NA,
+        # using retained observations for now but could switch to discard or both
+        .default = median_ratio
+      )
+    ) |>
     dplyr::select(year, fleet, median_ratio, var_ratio) |>
     dplyr::mutate(
       catch_shares = FALSE
@@ -49,8 +57,16 @@ weight_discard_rates <- function(
     dplyr::filter(year >= 2011) |>
     dplyr::relocate(catch_shares, .after = fleet)
   cs_filtered <- cs_data |>
-    dplyr::select(year, fleet, catch_shares, discard_rate) |>
     dplyr::mutate(
+      discard_rate = dplyr::case_when(
+        n_ret < 3 ~ NA,
+        # using retained observations for now but could switch to discard or both
+        .default = discard_rate
+      )
+    ) |>
+    dplyr::select(year, fleet, discard_rate) |>
+    dplyr::mutate(
+      catch_shares = TRUE,
       var = min_var
     )
   bind_rates <- dplyr::bind_rows(ncs_post_2011, cs_filtered) |>
@@ -59,7 +75,7 @@ weight_discard_rates <- function(
       fleet,
       catch_shares,
       fill = list(
-        discard_rate = 0,
+        discard_rate = NA,
         var = min_var
       )
     )
@@ -72,10 +88,10 @@ weight_discard_rates <- function(
   combine_rates <- join_all |>
     dplyr::group_by(year, fleet) |>
     dplyr::mutate(
-      n = sum(discard_rate > 0)
+      n = sum(!is.na(discard_rate))
     ) |>
     dplyr::ungroup() |>
-    dplyr::filter(discard_rate != 0) |>
+    dplyr::filter(!is.na(discard_rate)) |>
     dplyr::mutate(
       weighted_rate = dplyr::case_when(
         n == 2 ~ discard_rate * prop_catch,
@@ -111,7 +127,7 @@ weight_discard_rates <- function(
       all_rates,
       file = file.path(
         dir,
-        paste0("wcgop_discard_rates_weighted.csv")
+        "wcgop_discard_rates_weighted.csv"
       ),
       row.names = FALSE
     )
