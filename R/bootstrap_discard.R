@@ -7,15 +7,16 @@
 #' @param boot_number The number of bootstraps to conduct
 #' @param boot_variable The column name to do the inner sampling across.
 #' @param seed_number The seed number.
-#'
+#' @param conf_data_check Dataframe with the number of observations, trips, and vessels by fleet.
 #'
 #' @author Chantel Wetzel, Allan Hicks, and Jason Jannot
 #' @export
 #'
 #
 boostrap_discard <- function(
-  dir = NULL,
   data,
+  conf_data_check,
+  dir = NULL,
   boot_number = boot_number,
   boot_variable = "r_port_group",
   seed_number = NULL
@@ -92,9 +93,16 @@ boostrap_discard <- function(
     }
   }
 
-  boot_out <- out_df |>
-    dplyr::group_by(year, fleet) |>
+  actual_obs <- data |>
     dplyr::summarise(
+      .by = c("year", "fleet"),
+      n_ret = sum(ret_mt > 0),
+      n_dis = sum(dis_mt > 0)
+    )
+
+  boot_out <- out_df |>
+    dplyr::summarise(
+      .by = c("year", "fleet"),
       n_boot = boot_number,
       obs_discard = mean(obs_discard),
       obs_retained = mean(obs_retained),
@@ -108,19 +116,21 @@ boostrap_discard <- function(
     ) |>
     dplyr::ungroup()
 
-  cf_data <- data |>
-    dplyr::group_by(year, fleet) |>
-    dplyr::summarise(
-      n_obs = dplyr::n(),
-      n_hauls = length(unique(haul_id)),
-      n_trips = length(unique(trip_id)),
-      n_vessels = length(unique(drvid))
-    ) |>
-    dplyr::ungroup()
+  boot_and_obs <- dplyr::left_join(
+    x = boot_out,
+    y = actual_obs,
+    by = c("fleet", "year")
+  )
+
+  if ("catch_shares" %in% colnames(conf_data_check)) {
+    conf_data_check <- conf_data_check |>
+      dplyr::filter(catch_shares == FALSE) |>
+      dplyr::select(-catch_shares)
+  }
 
   all_boot_data <- dplyr::left_join(
-    y = boot_out,
-    x = cf_data,
+    y = boot_and_obs,
+    x = conf_data_check,
     by = c("fleet", "year")
   ) |>
     dplyr::filter(n_vessels >= 3) |>
@@ -129,11 +139,11 @@ boostrap_discard <- function(
   if (!is.null(dir)) {
     write.csv(
       all_boot_data,
-      file = file.path(dir, "discard_rates_noncatch_share.csv"),
+      file = file.path(dir, "wcgop_discard_rates_noncatch_share.csv"),
       row.names = FALSE
     )
   } else {
-    cli::cli_inform(
+    cli::cli_alert_info(
       "No directory provided. Catch share discard rates not saved."
     )
   }
