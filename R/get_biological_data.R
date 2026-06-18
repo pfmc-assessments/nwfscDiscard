@@ -108,14 +108,13 @@ get_biological_data <- function(
         remove,
         which(
           data[, "fleet"] == ci_not_met[f, "fleet"] &
-            data[, "year"] == ci_not_met[f, "year"] &
-            data[, "catch_shares"] == ci_not_met[f, "catch_shares"]
+            data[, "year"] == ci_not_met[f, "year"]
         )
       )
     }
     if (length(remove) > 0) {
       data <- data[-remove, ]
-      cli::cli_inform(
+      cli::cli_alert_info(
         "The following number of records due to not meeting confidentiality: {length(remove)}"
       )
     }
@@ -138,6 +137,10 @@ get_biological_data <- function(
         n_length = dplyr::case_when(
           !is.na(length) ~ frequency,
           .default = 0
+        ),
+        sex_group = dplyr::case_when(
+          sex == "U" ~ "u",
+          .default = "fm"
         )
       ) |>
       dplyr::group_by(year, gear_to_use, haul_id) |>
@@ -145,7 +148,7 @@ get_biological_data <- function(
         n_sampled_haul = sum(frequency),
         n_caught_haul = sum(unique(species_number)),
       ) |>
-      dplyr::group_by(year, fleet) |>
+      dplyr::group_by(year, fleet, sex_group) |>
       dplyr::mutate(
         n_length_sampled_year = sum(n_length, na.rm = TRUE),
         n_age_sampled_year = sum(n_age, na.rm = TRUE),
@@ -203,6 +206,10 @@ get_biological_data <- function(
           !is.na(species_number) | !is.na(bio_specimen_count) ~
             species_number / bio_specimen_count,
           .default = 0
+        ),
+        exp1 = dplyr::case_when(
+          is.na(exp1) ~ 0,
+          .default = exp1
         ),
         exp_weight = dplyr::case_when(
           is.na(exp_sp_wt) ~ (species_weight / hooks_sampled) * total_hooks,
@@ -270,7 +277,7 @@ get_biological_data <- function(
       comps <- calc_comps(
         dir = dir,
         data = expansions |>
-          dplyr::filter(n_length_sampled_year >= min_sample_size) |>
+          #dplyr::filter(n_length_sampled_year >= min_sample_size) |>
           dplyr::select(
             year,
             fleet,
