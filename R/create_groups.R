@@ -61,7 +61,7 @@ create_groups <- function(
   if (sum(is.na(data[, "gear_groups"])) > 0) {
     ind <- which(is.na(data[, "gear_groups"]))
     gear <- unique(data[ind, "gear_to_use"])
-    cli::cli_inform(
+    cli::cli_alert_info(
       "The following gears are not included in the gear groupings and will be omitted: {gear}"
     )
     data <- data[!is.na(data$gear_groups), ]
@@ -74,7 +74,7 @@ create_groups <- function(
   if (sum(is.na(data$fleet_groups)) > 0) {
     ind <- which(is.na(data$fleet_groups))
     fleet <- unique(data[ind, fleet_colname])
-    cli::cli_inform(
+    cli::cli_alert_info(
       "The following state/areas are not included in the fleet groupings and will be omitted: {fleet}"
     )
     data <- data[!is.na(data$fleet_groups), ]
