@@ -11,10 +11,10 @@
 #'
 #' @author Chantel Wetzel
 #' @export
-#' @return list
+#' @return dataframe
 #'
 #'
-combine_data <- function(
+combine_catch_data <- function(
   catch_data,
   em_catch_data
 ) {
@@ -38,7 +38,16 @@ combine_data <- function(
     "RET_MT"
   )
   em_cols <- cols_to_keep[cols_to_keep %in% colnames(em_catch_data)]
-  em_late <- em_catch_data |>
+  em_catch_data_fill <- em_catch_data |>
+    dplyr::mutate(
+      R_STATE = dplyr::case_when(
+        is.na(R_STATE) & AVG_LAT < 42.0 ~ "CA",
+        is.na(R_STATE) & AVG_LAT > 46.25 ~ "WA",
+        is.na(R_STATE) & AVG_LAT < 46.25 & AVG_LAT > 42.0 ~ "OR",
+        .default = R_STATE
+      )
+    )
+  em_late <- em_catch_data_fill |>
     dplyr::select(tidyr::all_of(em_cols)) |>
     dplyr::rename(
       TRIP_ID = EMTRIP_ID,
@@ -53,13 +62,11 @@ combine_data <- function(
           "Midwater Rockfish EM Low Review Rates"
       )
     )
-
-  em_early <- em_catch_data |>
+  em_early <- em_catch_data_fill |>
     dplyr::select(tidyr::all_of(em_cols)) |>
     dplyr::filter(YEAR < 2024) |>
     dplyr::rename(RYEAR = YEAR) |>
     as.data.frame()
-
   cd_cols <- cols_to_keep[cols_to_keep %in% colnames(catch_data)]
   catch_data_select <- catch_data |>
     dplyr::select(tidyr::all_of(cd_cols)) |>
@@ -67,15 +74,14 @@ combine_data <- function(
     dplyr::mutate(
       TRIP_ID = as.character(TRIP_ID),
       HAUL_ID = as.character(HAUL_ID)
-    )
-
+    ) |>
+    dplyr::filter(sector != "Catch Shares EM")
   catch_data_combined <- dplyr::bind_rows(
     tibble::tibble(catch_data_select),
+    tibble::tibble(em_early),
     tibble::tibble(em_late)
   ) |>
     as.data.frame()
-  data_list <- list()
-  data_list$catch_data <- catch_data_combined
-  data_list$em_catch_data <- em_early
-  return(data_list)
+
+  return(catch_data_combined)
 }
