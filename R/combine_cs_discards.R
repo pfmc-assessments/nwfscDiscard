@@ -30,7 +30,8 @@ combine_cs_discards <- function(
         observed_discard_mt / (observed_discard_mt + observed_retained_mt),
         3
       )
-    )
+    ) |>
+    as.data.frame()
 
   if (!is.null(dir)) {
     write.csv(
