@@ -76,7 +76,7 @@ get_mean_weights <- function(
       )
     }
     data <- data[-remove, ]
-    cli::cli_inform(
+    cli::cli_alert_info(
       "The following number of records due to not meeting confidentiality: {length(remove)}"
     )
   }
@@ -85,7 +85,16 @@ get_mean_weights <- function(
     dplyr::filter(
       species == species_name,
       catch_disposition == "D"
-    ) |>
+    )
+
+  combined_data <- dplyr::left_join(
+    data_filtered,
+    weight_data |> dplyr::select(year, fleet, prop_discard, prop_catch),
+    by = c("year", "fleet"),
+    relationship = "many-to-many"
+  )
+
+  data_weights <- combined_data |>
     dplyr::mutate(
       exp_sp_wt = dplyr::case_when(
         is.na(exp_sp_wt) ~ 0,
@@ -106,7 +115,6 @@ get_mean_weights <- function(
       species_weight_kg = 0.453592 * species_weight,
       average_weight = species_weight_kg / species_number,
       exp_average_weight = average_weight * exp_sp_ct,
-      weighted_average_all = stats::weighted.mean(average_weight, exp_sp_ct)
     ) |>
     dplyr::group_by(period, fleet) |>
     dplyr::mutate(
@@ -114,7 +122,7 @@ get_mean_weights <- function(
     ) |>
     dplyr::ungroup()
 
-  mean_body_weights <- data_filtered |>
+  mean_body_weights <- data_weights |>
     dplyr::summarise(
       .by = c("year", "fleet"),
       weighted_mean = round(sum(exp_average_weight) / sum(exp_sp_ct), 4),
@@ -135,13 +143,13 @@ get_mean_weights <- function(
     dplyr::rename(
       obs = weighted_mean
     ) |>
-    dplyr::select(year, month, fleet, partition, type, obs, sd, cv) |>
+    dplyr::select(year, month, fleet, partition, type, obs, cv) |>
     dplyr::arrange(fleet, year)
 
   if (!is.null(dir)) {
     write.csv(
       mean_body_weights,
-      file = file.path(dir, "discard_mean_body_weights.csv"),
+      file = file.path(dir, "wcgop_discard_mean_body_weights.csv"),
       row.names = FALSE
     )
   }
