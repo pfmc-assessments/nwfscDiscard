@@ -43,12 +43,16 @@ calc_comps <- function(
         .default = "fm"
       )
     ) |>
-    dplyr::group_by(year, fleet, sex_group) |>
+    dplyr::group_by(year, fleet, sex) |>
     dplyr::mutate(
       ratio = sum(unique(n_fish)) / n_trips,
       input_n = dplyr::case_when(
         ratio < 44 ~ n_trips + 0.138 * sum(unique(n_fish)),
         .default = 7.06 * n_trips
+      ),
+      input_n = dplyr::case_when(
+        input_n > sum(unique(n_fish)) ~ 0.138 * sum(unique(n_fish)),
+        .default = input_n
       )
     ) |>
     dplyr::ungroup() |>
@@ -63,7 +67,7 @@ calc_comps <- function(
   # Modify inComps to include all bins in comp_bins
   check_bin_width <- diff(comp_bins)
   if (any(check_bin_width != check_bin_width[1])) {
-    cli::cli_inform(
+    cli::cli_alert_info(
       "The output should be careful checked to ensure correctness when unequal
       bin intervals are used."
     )
@@ -176,7 +180,7 @@ calc_comps <- function(
         sample_size,
         file = file.path(
           dir,
-          paste0("biological_sample_sizes_", comp_column_name, ".csv")
+          paste0("wcgop_discard_sample_sizes_", comp_column_name, ".csv")
         ),
         row.names = FALSE
       )
@@ -187,7 +191,7 @@ calc_comps <- function(
         wide_composition_data,
         file = file.path(
           dir,
-          paste0("biological_discard_", comp_column_name, "s.csv")
+          paste0("wcgop_discard_", comp_column_name, "s.csv")
         ),
         row.names = FALSE
       )
