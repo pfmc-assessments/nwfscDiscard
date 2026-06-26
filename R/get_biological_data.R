@@ -222,7 +222,7 @@ get_biological_data <- function(
         sample_weight_length = n_length * exp1 * exp2,
         sample_weight_age = n_age * exp1 * exp2,
       ) |>
-      dplyr::group_by(year, gear_to_use) |>
+      dplyr::group_by(year, fleet_groups, gear_to_use) |>
       dplyr::mutate(
         discard_numerator = unique(total_discard_mt),
         catch_numerator = unique(total_catch_mt),
@@ -244,8 +244,8 @@ get_biological_data <- function(
       ) |>
       dplyr::ungroup() |>
       dplyr::mutate(
-        length_cap = quantile(final_weight_length, 0.95),
-        age_cap = quantile(final_weight_age, 0.95),
+        length_cap = quantile(final_weight_length, 0.95, na.rm = TRUE),
+        age_cap = quantile(final_weight_age, 0.95, na.rm = TRUE),
         final_weight_length_capped = dplyr::case_when(
           final_weight_length > length_cap ~ length_cap,
           .default = final_weight_length
@@ -273,11 +273,17 @@ get_biological_data <- function(
         final_weight_age_capped
       )
 
-    if (sum(expansions[, "final_weight_length_capped"]) > 0) {
+    if (
+      sum(expansions[
+        !is.na(expansions$final_weight_length_capped),
+        "final_weight_length_capped"
+      ]) >
+        0
+    ) {
       comps <- calc_comps(
         dir = dir,
         data = expansions |>
-          #dplyr::filter(n_length_sampled_year >= min_sample_size) |>
+          dplyr::filter(!is.na(final_weight_length_capped)) |>
           dplyr::select(
             year,
             fleet,
@@ -293,10 +299,17 @@ get_biological_data <- function(
       )
     }
 
-    if (sum(expansions[, "final_weight_age_capped"]) > 0) {
+    if (
+      sum(expansions[
+        !is.na(expansions$final_weight_age_capped),
+        "final_weight_age_capped"
+      ]) >
+        0
+    ) {
       comps <- calc_comps(
         dir = dir,
         data = expansions |>
+          dplyr::filter(!is.na(final_weight_age_capped)) |>
           dplyr::select(
             year,
             fleet,
