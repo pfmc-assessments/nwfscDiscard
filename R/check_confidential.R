@@ -62,7 +62,7 @@ check_confidential <- function(
     add_name <- "_by_catch_shares"
   } else {
     var <- c("year", "fleet")
-    add <- ""
+    add_name <- ""
   }
   vessels_by_year <- data |>
     dplyr::group_by_at(var) |>
