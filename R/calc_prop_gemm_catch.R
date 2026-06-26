@@ -1,15 +1,24 @@
-#' Calculate the discards, landings, and catch by gear type and catch share fleet
-#' and the proportions by year using GEMM data.
+#' Plot GEMM data
+#'
+#' Calculate the totals and proportions by gear and catch shares.  These data
+#' are not grouped in order to see the amounts for each gear and catch share
+#' sector prior to combining for WCGOP data processing.
 #'
 #' @param data Data frame of gemm data pulled using [nwfscSurvey::pull_gemm()]
+#' @param plot A vector of integers to specify which plots you would like. The
+#'   default is to print or save both figures, i.e., `plot = 1:2`. Integers
+#'   correspond to the following figures:
+#'   1. Catch, landings, and discard by catch share and gear
+#'   2. Proportion of catch, landings, and discards by catch share and gear
 #' @param dir Directory location to save files.
 #'
 #' @author Chantel Wetzel
 #' @export
 #'
 #
-calc_prop_gemm_catch <- function(
+plot_gemm <- function(
   data,
+  plot = 1:2,
   dir = NULL
 ) {
   nwfscSurvey::check_dir(dir = dir)
@@ -19,86 +28,84 @@ calc_prop_gemm_catch <- function(
   # total_discard_with_mort_rates_applied_and_landings_mt which
   # results in the the catch != dead discards + landings for
   # the non-catch share trawl group.
-  data <- data |>
-    dplyr::filter(sector != "Research") |>
+  data_formatted <- data |>
+    dplyr::filter(
+      !sector %in%
+        c(
+          "Research",
+          "California Recreational",
+          "Oregon Recreational",
+          "Washington Recreational",
+          "Incidental"
+        )
+    ) |>
     dplyr::mutate(
-      catch_shares = "Non-Catch Shares",
-      gear = NA
+      gear = dplyr::case_when(
+        sector %in%
+          c(
+            "CS - Hook & Line",
+            "Directed P Halibut",
+            "LE Fixed Gear DTL - Hook & Line",
+            "LE Sablefish - Hook & Line",
+            "OA Fixed Gear - Hook & Line"
+          ) ~
+          "Hook & Line",
+        sector == "Nearshore" ~ "Fixed Gears",
+        sector %in%
+          c(
+            "CS - Pot",
+            "CS EM - Pot",
+            "LE Fixed Gear DTL - Pot",
+            "OA Fixed Gear - Pot",
+            "LE Sablefish - Pot"
+          ) ~
+          "Pot",
+        sector %in%
+          c(
+            "At-Sea Hake CP",
+            "At-Sea Hake MSCV",
+            "Midwater Hake",
+            "Midwater Hake EM",
+            "Midwater Rockfish",
+            "Midwater Rockfish EM",
+            "Tribal At-Sea Hake"
+          ) ~
+          "Midwater Trawl",
+        .default = "Bottom Trawl"
+      ),
+      catch_shares = dplyr::case_when(
+        sector %in%
+          c(
+            "CS - Bottom and Midwater Trawl",
+            "CS - Bottom Trawl",
+            "CS - Hook & Line",
+            "CS - Pot",
+            "CS EM - Bottom Trawl",
+            "CS EM - Pot",
+            "Midwater Rockfish",
+            "Midwater Hake EM",
+            "Midwater Rockfish EM"
+          ) ~
+          "Catch Shares",
+        sector %in%
+          c("LE CA Halibut", "At-Sea Hake CP", "At-Sea Hake MSCV") &
+          year >= 2011 ~
+          "Catch Shares",
+        .default = "Non-Catch Shares"
+      )
     )
 
-  catch_shares <- c(
-    "At-Sea Hake CP",
-    "At-Sea Hake MSCV",
-    "CS - Bottom and Midwater Trawl",
-    "CS - Bottom Trawl",
-    "CS - Hook & Line",
-    "CS - Pot",
-    "CS EM - Bottom Trawl",
-    "CS EM - Pot",
-    "Midwater Hake",
-    "Midwater Hake EM",
-    "Midwater Rockfish",
-    "Midwater Rockfish EM"
-  )
-  find <- which(data[, "sector"] %in% catch_shares & data[, "year"] >= 2011)
-  if (length(find) > 0) {
-    data[find, "catch_shares"] <- "Catch Shares"
-  }
-
-  fixed_gear <- c(
-    "Combined LE & OA CA Halibut",
-    "CS - Hook & Line",
-    "CS - Pot",
-    "CS EM - Pot",
-    "Directed P Halibut",
-    "Incidental",
-    "LE CA Halibut",
-    "LE Fixed Gear DTL - Hook & Line",
-    "LE Fixed Gear DTL - Pot",
-    "LE Sablefish - Hook & Line",
-    "LE Sablefish - Pot",
-    "Nearshore",
-    "OA CA Halibut",
-    "OA Fixed Gear - Hook & Line",
-    "OA Fixed Gear - Pot"
-  )
-  hake <- c(
-    "At-Sea Hake CP",
-    "At-Sea Hake MSCV",
-    "Midwater Hake",
-    "Midwater Hake EM",
-    "Shoreside Hake",
-    "Tribal At-Sea Hake"
-  )
-  trawl <- c(
-    "CS - Bottom and Midwater Trawl",
-    "CS - Bottom Trawl",
-    "CS EM - Bottom Trawl",
-    "Limited Entry Trawl",
-    "Midwater Rockfish",
-    "Midwater Rockfish EM",
-    "Pink Shrimp",
-    "Research",
-    "Tribal Shoreside"
-  )
-  rec <- c(
-    "Washington Recreational",
-    "Oregon Recreational",
-    "California Recreational"
-  )
-
-  data[which(data[, "sector"] %in% fixed_gear), "gear"] <- "Fixed Gear"
-  data[which(data[, "sector"] %in% c(hake, trawl)), "gear"] <- "Trawl"
-  data[which(data[, "sector"] %in% rec), "gear"] <- "Recreational"
-
-  data[, "Group"] <- apply(
-    data[, c("catch_shares", "gear")],
+  data_formatted[, "Group"] <- apply(
+    data_formatted[, c("catch_shares", "gear")],
     1,
     paste,
     collapse = "-"
   )
 
-  catch_totals <- data |>
+  catch_totals <- data_formatted |>
+    dplyr::mutate(
+      all_total = sum(total_discard_with_mort_rates_applied_and_landings_mt)
+    ) |>
     dplyr::group_by(year) |>
     dplyr::mutate(
       landed_mt_by_year = sum(total_landings_mt),
@@ -107,11 +114,23 @@ calc_prop_gemm_catch <- function(
       catch_by_year = sum(
         total_discard_with_mort_rates_applied_and_landings_mt
       ),
-    )
+    ) |>
+    dplyr::ungroup() |>
+    dplyr::group_by(sector) |>
+    dplyr::mutate(
+      catch_all_years_total = sum(
+        total_discard_with_mort_rates_applied_and_landings_mt
+      )
+    ) |>
+    dplyr::mutate(
+      prop = catch_all_years_total / all_total
+    ) |>
+    dplyr::filter(prop >= 0.005) |>
+    dplyr::ungroup()
 
   catch_by_catch_share_gear <- catch_totals |>
-    dplyr::group_by(year, Group) |>
     dplyr::summarise(
+      .by = c("year", "Group"),
       discard_mt = sum(total_discard_mt),
       dead_discard_mt = sum(total_discard_with_mort_rates_applied_mt),
       landed_mt = sum(total_landings_mt),
@@ -131,13 +150,13 @@ calc_prop_gemm_catch <- function(
   ) +
     ggplot2::geom_bar(stat = "identity") +
     ggplot2::xlab("Year") +
-    ggplot2::ylab("Proportion of Catch (GEMM)") +
+    ggplot2::ylab("Proportion of Catch") +
     ggplot2::theme_bw() +
     ggplot2::theme(
-      axis.text = ggplot2::element_text(size = 14),
-      axis.title = ggplot2::element_text(size = 14),
-      strip.text.x = ggplot2::element_text(size = 14),
-      legend.text = ggplot2::element_text(size = 14)
+      axis.text = ggplot2::element_text(size = 10),
+      axis.title = ggplot2::element_text(size = 10),
+      strip.text.x = ggplot2::element_text(size = 10),
+      legend.text = ggplot2::element_text(size = 10)
     ) +
     ggplot2::scale_fill_viridis_d()
   p2 <- ggplot2::ggplot(
@@ -146,13 +165,13 @@ calc_prop_gemm_catch <- function(
   ) +
     ggplot2::geom_bar(stat = "identity") +
     ggplot2::xlab("Year") +
-    ggplot2::ylab("Proportion of Landings (GEMM)") +
+    ggplot2::ylab("Proportion of Landings") +
     ggplot2::theme_bw() +
     ggplot2::theme(
-      axis.text = ggplot2::element_text(size = 14),
-      axis.title = ggplot2::element_text(size = 14),
-      strip.text.x = ggplot2::element_text(size = 14),
-      legend.text = ggplot2::element_text(size = 14)
+      axis.text = ggplot2::element_text(size = 10),
+      axis.title = ggplot2::element_text(size = 10),
+      strip.text.x = ggplot2::element_text(size = 10),
+      legend.text = ggplot2::element_text(size = 10)
     ) +
     ggplot2::scale_fill_viridis_d()
   p3 <- ggplot2::ggplot(
@@ -161,13 +180,13 @@ calc_prop_gemm_catch <- function(
   ) +
     ggplot2::geom_bar(stat = "identity") +
     ggplot2::xlab("Year") +
-    ggplot2::ylab("Proportion of Discards (GEMM)") +
+    ggplot2::ylab("Proportion of Discards") +
     ggplot2::theme_bw() +
     ggplot2::theme(
-      axis.text = ggplot2::element_text(size = 14),
-      axis.title = ggplot2::element_text(size = 14),
-      strip.text.x = ggplot2::element_text(size = 14),
-      legend.text = ggplot2::element_text(size = 14)
+      axis.text = ggplot2::element_text(size = 10),
+      axis.title = ggplot2::element_text(size = 10),
+      strip.text.x = ggplot2::element_text(size = 10),
+      legend.text = ggplot2::element_text(size = 10)
     ) +
     ggplot2::scale_fill_viridis_d()
   c1 <- ggplot2::ggplot(
@@ -175,32 +194,32 @@ calc_prop_gemm_catch <- function(
     ggplot2::aes(x = year, y = catch, fill = Group)
   ) +
     ggplot2::geom_bar(stat = "identity") +
-    ggplot2::ylim(as.numeric(ylim[1]), as.numeric(ylim[2])) +
+    #ggplot2::ylim(as.numeric(ylim[1]), as.numeric(ylim[2])) +
     ggplot2::theme_bw() +
     ggplot2::theme(
-      axis.text = ggplot2::element_text(size = 14),
-      axis.title = ggplot2::element_text(size = 14),
-      strip.text.x = ggplot2::element_text(size = 14),
-      legend.text = ggplot2::element_text(size = 14)
+      axis.text = ggplot2::element_text(size = 10),
+      axis.title = ggplot2::element_text(size = 10),
+      strip.text.x = ggplot2::element_text(size = 10),
+      legend.text = ggplot2::element_text(size = 10)
     ) +
     ggplot2::xlab("Year") +
-    ggplot2::ylab("Catch (mt) Source: GEMM") +
+    ggplot2::ylab("Catch (mt)") +
     ggplot2::scale_fill_viridis_d()
   c2 <- ggplot2::ggplot(
     catch_by_catch_share_gear,
     ggplot2::aes(x = year, y = landed_mt, fill = Group)
   ) +
     ggplot2::geom_bar(stat = "identity") +
-    ggplot2::ylim(as.numeric(ylim[1]), as.numeric(ylim[2])) +
+    #ggplot2::ylim(as.numeric(ylim[1]), as.numeric(ylim[2])) +
     ggplot2::theme_bw() +
     ggplot2::theme(
-      axis.text = ggplot2::element_text(size = 14),
-      axis.title = ggplot2::element_text(size = 14),
-      strip.text.x = ggplot2::element_text(size = 14),
-      legend.text = ggplot2::element_text(size = 14)
+      axis.text = ggplot2::element_text(size = 10),
+      axis.title = ggplot2::element_text(size = 10),
+      strip.text.x = ggplot2::element_text(size = 10),
+      legend.text = ggplot2::element_text(size = 10)
     ) +
     ggplot2::xlab("Year") +
-    ggplot2::ylab("Landings (mt) Source: GEMM") +
+    ggplot2::ylab("Landings (mt)") +
     ggplot2::scale_fill_viridis_d()
   c3 <- ggplot2::ggplot(
     catch_by_catch_share_gear,
@@ -208,31 +227,50 @@ calc_prop_gemm_catch <- function(
   ) +
     ggplot2::geom_bar(stat = "identity") +
     ggplot2::xlab("Year") +
-    ggplot2::ylab("Discards (mt) Source: GEMM") +
-    ggplot2::ylim(as.numeric(ylim[1]), as.numeric(ylim[2])) +
+    ggplot2::ylab("Discards (mt)") +
+    #ggplot2::ylim(as.numeric(ylim[1]), as.numeric(ylim[2])) +
     ggplot2::theme_bw() +
     ggplot2::theme(
-      axis.text = ggplot2::element_text(size = 14),
-      axis.title = ggplot2::element_text(size = 14),
-      strip.text.x = ggplot2::element_text(size = 14),
-      legend.text = ggplot2::element_text(size = 14)
+      axis.text = ggplot2::element_text(size = 10),
+      axis.title = ggplot2::element_text(size = 10),
+      strip.text.x = ggplot2::element_text(size = 10),
+      legend.text = ggplot2::element_text(size = 10)
     ) +
     ggplot2::scale_fill_viridis_d()
 
+  #plot_2 <- cowplot::plot_grid(p2, p3, ncol = 1, nrow = 3)
+  #plot_1 <- cowplot::plot_grid(c2, c3, ncol = 1, nrow = 3)
+  plot_1 <- c2 / c3
+  plot_2 <- p2 / p3
+
   if (!is.null(dir)) {
-    write.csv(
-      catch_by_catch_share_gear,
-      file = file.path(dir, "gemm_catch_by_cs_gear.csv"),
-      row.names = FALSE
-    )
-    cowplot::plot_grid(c1, c2, c3, ncol = 1, nrow = 3)
-    ggplot2::ggsave(file.path(dir, "gemm_catch.png"), height = 12, width = 12)
-    cowplot::plot_grid(p1, p2, p3, ncol = 1, nrow = 3)
-    ggplot2::ggsave(
-      file.path(dir, "gemm_proportions.png"),
-      height = 12,
-      width = 12
-    )
+    if (1 %in% plot) {
+      ggplot2::ggsave(
+        plot = plot_1,
+        filename = file.path(dir, "gemm_catch.png"),
+        height = 18,
+        width = 12
+      )
+    }
+    if (2 %in% plot) {
+      ggplot2::ggsave(
+        plot = plot_2,
+        filename = file.path(dir, "gemm_proportion.png"),
+        height = 18,
+        width = 12
+      )
+    }
   }
-  return(catch_by_catch_share_gear)
+  if (is.null(dir)) {
+    if (length(plot) == 1) {
+      if (plot == 1) {
+        return(plot_1)
+      }
+      if (plot == 2) {
+        return(plot_2)
+      }
+    } else {
+      return(list(plot_1, plot_2))
+    }
+  }
 }
