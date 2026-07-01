@@ -23,6 +23,16 @@ weight_discard_rates <- function(
   dir = NULL,
   min_sd = 0.015
 ) {
+  # check for fleet name alignment
+  weight_names <- unique(weight_data$fleet)
+  data_names <- unique(c(unique(ncs_data$fleet), unique(cs_data$fleet)))
+  if (any(!data_names %in% weight_names)) {
+    cli::cli_abort(
+      "The weight data has the following fleet names: {weight_names}.
+       The data has the following fleet names: {data_names}.
+      "
+    )
+  }
   min_var <- min_sd * min_sd
   # For rates that were based on <3 observations set those to 0
   ncs_filtered <- ncs_data |>
