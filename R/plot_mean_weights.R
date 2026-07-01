@@ -31,7 +31,7 @@ plot_mean_weights <- function(
     ggplot2::theme_bw() +
     ggplot2::ylab("Mean Body Weight (kg)") +
     ggplot2::xlab("Year") +
-    ggplot2::facet_wrap("fleet", ncol = 1)
+    ggplot2::facet_wrap("fleet")
 
   if (!is.null(dir)) {
     ggplot2::ggsave(
