@@ -47,10 +47,6 @@ format_gemm_alt <- function(
       gear_type = bigboy_fleet
     ) |>
     dplyr::mutate(
-      sector = dplyr::case_when(
-        sector == "Pink Shrimp" ~ "Shrimp Trawl",
-        .default = sector
-      ),
       gear = dplyr::case_when(
         gear == "bottom_trawl" ~ "Bottom Trawl",
         gear == "fixed_gear" ~ "Fixed Gears",
@@ -63,17 +59,23 @@ format_gemm_alt <- function(
       catch_shares = dplyr::case_when(
         sector %in% catch_share_sectors ~ TRUE,
         sector %in% c("CS EM - Bottom Trawl",
-                      "CS EM - Pot", "Midwater Hake EM",
+                      "CS EM - Pot",
+                      "Midwater Hake EM",
                       "Midwater Rockfish EM") &
         year >= 2024 ~ FALSE,
         .default = FALSE
       ),
+      catch_shares = dplyr::case_when(
+        year < 2011 ~ FALSE,
+        .default = catch_shares
+      ),
+      gemm_dis_est = dplyr::coalesce(gemm_dis_est, 0),
+      gemm_dis_est_area = dplyr::coalesce(gemm_dis_est_area, 0),
       landings_area = dplyr::coalesce(landings_area, 0),
       gemm_lnd_est = dplyr::coalesce(gemm_lnd_est, 0)
     ) |>
     dplyr::relocate(catch_shares, .after = sector) |>
     dplyr::filter(gear %in% gears_to_keep)
 
-  format_data$catch_shares[format_data$year < 2011] <- FALSE
   return(format_data)
 }
