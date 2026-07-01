@@ -169,6 +169,12 @@ get_biological_data <- function(
           .default = 0
         )
       )
+    if (any(!unique(data_filtered$fleet) %in% unique(weight_data$fleet))) {
+      cli::cli_abort(
+        "The weight data has the following fleet names: {unique(weight_data$fleet)}.
+       The data has the following fleet names: {unique(data_filtered$fleet)}."
+      )
+    }
     # join the weights with the data for second stage expansion
     data_and_weights <- dplyr::left_join(
       x = data_filtered,
@@ -179,7 +185,6 @@ get_biological_data <- function(
           fleet,
           total_discard_mt,
           total_catch_mt,
-          gear_group_catch_mt,
           prop_discard,
           prop_catch
         ) |>
