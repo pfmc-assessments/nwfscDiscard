@@ -13,7 +13,7 @@
 #' @export
 #'
 #
-calc_weights <- function(
+get_weights <- function(
   data,
   include_catch_share = TRUE,
   dir = NULL
@@ -34,6 +34,7 @@ calc_weights <- function(
   }
 
   if (include_catch_share) {
+    add <- "_by_catch_share"
     weights <- data |>
       dplyr::group_by(year, area, gear_type) |>
       dplyr::mutate(
@@ -56,6 +57,7 @@ calc_weights <- function(
       ) |>
       dplyr::ungroup()
   } else {
+    add <- ""
     weights <- data |>
       dplyr::summarise(
         .by = c("year", "area", "gear", "gear_type"),
@@ -82,12 +84,13 @@ calc_weights <- function(
         ),
         prop_catch = round(total_catch_mt / unique(gear_group_catch_mt), 4)
       ) |>
+      dplyr::select(-gear_group_discard_mt,	-gear_group_landings_mt, -gear_group_catch_mt) |>
       dplyr::ungroup()
   }
   if (!is.null(dir)) {
     write.csv(
       x = weights,
-      file = file.path(dir, "weights_alt_gemm.csv"),
+      file = file.path(dir, paste0("weights_alt_gemm", add, ".csv")),
       row.names = FALSE
     )
   }

@@ -11,7 +11,7 @@
 #' @export
 #'
 #
-do_bootstrap <- function(
+bootstrap <- function(
   data,
   boot_number
 ) {

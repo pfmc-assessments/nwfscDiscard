@@ -70,7 +70,7 @@ boostrap_discard <- function(
         as.character(data_strat[[s]][, boot_variable])
       )
 
-      boot_samples <- do_bootstrap(
+      boot_samples <- bootstrap(
         data = boot_data,
         boot_number = boot_number
       )
