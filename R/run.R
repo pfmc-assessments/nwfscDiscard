@@ -1,32 +1,26 @@
 #' Run all the analysis together
 #'
-#' @param species_name Species that you want composition data for. Should match
-#'   the species names in the WCGOP data.
-#' @param data_grouping A list of the groupings to apply to the data. The list should
-#'   formatted as: list(gear_groups, gear_names, fleet_groups, fleet_names, fleet_colname).
-#' @param len_bins Length composition bins (example: seq(20, 90, 2)).
-#' @param age_bins Age composition bins (example: 1:50).
-#' @param catch_data A data frame of WCGOP catch data that includes all species.
-#'   This data frame will be used to check confidentiality.
-#' @param biological_data A data frame of WCGOP biological data that includes all species.
 #' @param em_catch_data A data frame of WCGOP EM catch data that includes all species.
-#' @param save_loc Directory location to save files.
-#' @param n_boot Number of bootstraps to run.
+#' @param format_gemm_data Data frame of GEMM data created by [format_gemm()] or [format_gemm_alt()]
+#' @inheritParams get_biological_data
+#' @inheritParams get_discard_rates
 #'
 #' @author Chantel Wetzel
 #' @export
 #'
 #'
 run <- function(
-    species_name,
-    data_grouping,
-    len_bins = seq(10, 60, 2),
-    age_bins = 1:30,
-    catch_data,
-    biological_data,
-    em_catch_data = NULL,
-    save_loc = NULL,
-    n_boot = 10000) {
+  species_name,
+  catch_data,
+  em_catch_data,
+  biological_data,
+  format_gemm_data,
+  data_grouping,
+  length_bins = seq(10, 60, 2),
+  age_bins = 1:30,
+  dir = NULL,
+  n_boot = 10000
+) {
   if (!is.null(em_catch_data)) {
     do_em <- TRUE
   } else {
@@ -40,12 +34,18 @@ run <- function(
   fleet_colname <- data_grouping[[5]]
 
   # Process the biological data
+  weights <- get_weights(
+    data = format_gemm_data |> dplyr::filter(gear %in% unlist(gear_groups)),
+    include_catch_share = FALSE,
+    dir = dir
+  )
   comps <- get_biological_data(
-    dir = save_loc,
-    data = biological_data,
+    dir = dir,
+    biological_data = biological_data,
     catch_data = catch_data,
+    weight_data = weights,
     species_name = species_name,
-    len_bins = len_bins,
+    length_bins = length_bins,
     age_bins = age_bins,
     gear_groups = gear_groups,
     gear_names = gear_names,
@@ -54,9 +54,11 @@ run <- function(
     fleet_names = fleet_names
   )
 
+  # Mean discard body weight
   mean_weights <- get_mean_weights(
-    dir = save_loc,
-    data = catch_data,
+    dir = dir,
+    catch_data = catch_data,
+    weight_data = weights,
     species_name = species_name,
     gear_groups = gear_groups,
     gear_names = gear_names,
@@ -65,10 +67,19 @@ run <- function(
     fleet_names = fleet_names
   )
 
-  # Calculate the discard total and rates, including the EM data:
-  ob_out <- do_discard_bootstrap(
-    dir = save_loc,
-    data = catch_data,
+  # Discard Rates
+  weight_cs <- get_weights(
+    data = format_gemm_data,
+    include_catch_share = TRUE,
+    dir = dir
+  )
+  data_combined <- combine_catch_data(
+    catch_data = catch_data,
+    em_catch_data = em_catch_data
+  )
+  ob_out <- get_discard_rates(
+    dir = dir,
+    data = data_combined,
     species_name = species_name,
     boot_number = n_boot,
     gear_groups = gear_groups,
@@ -76,26 +87,13 @@ run <- function(
     fleet_colname = fleet_colname,
     fleet_groups = fleet_groups,
     fleet_names = fleet_names,
-    seed_number = 1,
-    rm_em_data = do_em
+    seed_number = 1
+  )
+  rates <- weight_discard_rates(
+    weight_data = weight_cs,
+    ncs_data = ob_out$ncs,
+    cs_data = ob_out$cs,
+    dir = dir
   )
 
-  if (do_em) {
-    em_out <- do_discard_bootstrap(
-      dir = save_loc,
-      data = em_catch_data,
-      species_name = species_name,
-      gear_groups = gear_groups,
-      gear_names = gear_names,
-      fleet_colname = fleet_colname,
-      fleet_groups = fleet_groups,
-      fleet_names = fleet_names
-    )
-
-    cs_out <- combine_cs_discards(
-      dir = save_loc,
-      cs_data = ob_out$cs,
-      em_data = em_out$em
-    )
-  }
 }

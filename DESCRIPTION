@@ -1,7 +1,7 @@
 Type: Package
 Package: nwfscDiscard
 Title: Northwest Fisheries Science Center
-Version: 2.0
+Version: 2.1
 Date: 2018-04-13
 Authors@R: 
     person(c("Chantel", "R."), "Wetzel", , "chantel.wetzel@noaa.gov", role = c("aut", "cre"),
@@ -20,6 +20,7 @@ Imports:
     ggplot2,
     glue,
     nwfscSurvey,
+    patchwork,
     tidyr
 Suggests:
     knitr,
@@ -31,4 +32,4 @@ Remotes:
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3

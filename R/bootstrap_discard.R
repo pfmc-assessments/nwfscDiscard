@@ -2,23 +2,28 @@
 #'
 #' @details Bootstrap samples across year, fleet, and return port group.
 #'
-#' @param dir Directory location to save files.
-#' @param data A data frame of WCGOP catch data filtered down to non-catch share data.
-#' @param boot_number The number of bootstraps to conduct
-#' @param boot_variable The column name to do the inner sampling across.
-#' @param seed_number The seed number.
-#'
+#' @param dir Directory where output will be saved. The directory where the file
+#'   should be saved. If dir = NULL no output will be saved.
+#' @param data A data frame of WCGOP catch data filtered down to non-catch share data
+#'   created by [get_discard_rates()].
+#' @param boot_variable String to defined the column name in WCGOP catch data to
+#'   group data for bootstrapping.
+#' @param conf_data_check Dataframe with the number of observations, trips, and
+#'   vessels by fleet created by [check_confidential()].
+#' @inheritParams get_discard_rates
 #'
 #' @author Chantel Wetzel, Allan Hicks, and Jason Jannot
 #' @export
 #'
 #
-boostrap_discard <- function(
-    dir = NULL,
-    data,
-    boot_number = boot_number,
-    boot_variable = "r_port_group",
-    seed_number = NULL) {
+bootstrap_discard <- function(
+  data,
+  conf_data_check,
+  dir = NULL,
+  boot_number = 10000,
+  boot_variable = "r_port_group",
+  seed_number = NULL
+) {
   if (!is.null(seed_number)) {
     set.seed(seed_number)
   }
@@ -39,7 +44,8 @@ boostrap_discard <- function(
 
     numVessels <- unlist(
       lapply(
-        data_strat, function(x) {
+        data_strat,
+        function(x) {
           length(unique(x[, "drvid"]))
         }
       )
@@ -47,12 +53,18 @@ boostrap_discard <- function(
 
     # I think the below snippit of code could be deleted:
     if (any(numVessels < 1)) {
-      message("WARNING: fewer than 1 vessels in at least one of the strata for year ", years[yr], "\n")
-      message("Discard ratios will not be bootstrapped for these strata\n")
+      message <- years[yr]
+      cli::cli_alert_warning(
+        "There are 1 or 0 vessels in at least one of the strata for year {message}.
+        Discard ratios will not be bootstrapped for these strata"
+      )
     }
 
     for (s in 1:length(data_strat)) {
-      pe[[yr]][[s]] <- c(sum(data_strat[[s]][, "dis_mt"]), sum(data_strat[[s]][, "ret_mt"]))
+      pe[[yr]][[s]] <- c(
+        sum(data_strat[[s]][, "dis_mt"]),
+        sum(data_strat[[s]][, "ret_mt"])
+      )
       pe[[yr]][[s]] <- c(pe[[yr]][[s]], pe[[yr]][[s]][1] / sum(pe[[yr]][[s]]))
       names(pe[[yr]][[s]]) <- c("discard", "retained", "ratio")
 
@@ -61,7 +73,7 @@ boostrap_discard <- function(
         as.character(data_strat[[s]][, boot_variable])
       )
 
-      boot_samples <- do_bootstrap(
+      boot_samples <- bootstrap(
         data = boot_data,
         boot_number = boot_number
       )
@@ -76,52 +88,67 @@ boostrap_discard <- function(
         obs_ratio = rep(pe[[yr]][[s]][3], n),
         discard = boot_samples$boot_discard,
         retained = boot_samples$boot_retain,
-        ratio = boot_samples$boot_discard / (boot_samples$boot_discard + boot_samples$boot_retain)
+        ratio = boot_samples$boot_discard /
+          (boot_samples$boot_discard + boot_samples$boot_retain)
       )
 
       out_df <- rbind(out_df, df)
     }
   }
 
-  boot_out <- out_df |>
-    dplyr::group_by(year, fleet) |>
+  actual_obs <- data |>
     dplyr::summarise(
+      .by = c("year", "fleet"),
+      n_ret = sum(ret_mt > 0),
+      n_dis = sum(dis_mt > 0)
+    )
+
+  boot_out <- out_df |>
+    dplyr::summarise(
+      .by = c("year", "fleet"),
       n_boot = boot_number,
       obs_discard = mean(obs_discard),
       obs_retained = mean(obs_retained),
       obs_ratio = mean(obs_ratio),
       median_discard = median(discard),
+      variance_discard = var(discard),
       sd_discard = sd(discard),
       median_ratio = median(ratio),
+      var_ratio = var(ratio),
       sd_ratio = sd(ratio)
     ) |>
     dplyr::ungroup()
 
-  cf_data <- data |>
-    dplyr::group_by(year, fleet) |>
-    dplyr::summarise(
-      n_obs = dplyr::n(),
-      n_hauls = length(unique(haul_id)),
-      n_trips = length(unique(trip_id)),
-      n_vessels = length(unique(drvid))
-    ) |>
-    dplyr::ungroup()
+  boot_and_obs <- dplyr::left_join(
+    x = boot_out,
+    y = actual_obs,
+    by = c("fleet", "year")
+  )
+
+  if ("catch_shares" %in% colnames(conf_data_check)) {
+    conf_data_check <- conf_data_check |>
+      dplyr::filter(catch_shares == FALSE) |>
+      dplyr::select(-catch_shares)
+  }
 
   all_boot_data <- dplyr::left_join(
-    y = boot_out,
-    x = cf_data,
+    y = boot_and_obs,
+    x = conf_data_check,
     by = c("fleet", "year")
   ) |>
     dplyr::filter(n_vessels >= 3) |>
     data.frame()
 
   if (!is.null(dir)) {
-    write.csv(all_boot_data,
-      file = file.path(dir, "discard_rates_noncatch_share.csv"),
+    write.csv(
+      all_boot_data,
+      file = file.path(dir, "wcgop_discard_rates_noncatch_share.csv"),
       row.names = FALSE
     )
   } else {
-    cli::cli_inform("No directory provided. Catch share discard rates not saved.")
+    cli::cli_alert_info(
+      "No directory provided. Catch share discard rates not saved."
+    )
   }
   return(all_boot_data)
 }
