@@ -106,7 +106,8 @@ get_mean_weights <- function(
     dplyr::mutate(
       period = dplyr::case_when(
         year < 2011 ~ "pre-catch shares",
-        .default = "post-catch shares"),
+        .default = "post-catch shares"
+      ),
       species_weight_kg = 0.453592 * species_weight,
       average_weight = species_weight_kg / species_number,
       exp_average_weight = average_weight * exp_sp_ct

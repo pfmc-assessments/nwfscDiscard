@@ -19,7 +19,8 @@ plot_mean_weights <- function(
       lower_bound = obs - add,
       upper_bound = obs + add,
       lower_bound = dplyr::case_when(
-        lower_bound < 0 ~ 0, .default = lower_bound
+        lower_bound < 0 ~ 0,
+        .default = lower_bound
       )
     )
 
