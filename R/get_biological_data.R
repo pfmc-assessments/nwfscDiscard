@@ -68,10 +68,10 @@ get_biological_data <- function(
   if (length(gear_names) != length(gear_groups)) {
     cli::cli_abort("The gear groups and names are not of the same length.")
   }
-  if (any(!"LENGTH" %in% colnames(data))) {
+  if (any(!"LENGTH" %in% colnames(biological_data))) {
     cli::cli_abort("The LENGTH column is not present in the data.")
   }
-  if (any(!"AGE" %in% colnames(data))) {
+  if (any(!"AGE" %in% colnames(biological_data))) {
     cli::cli_abort("The AGE column is not present in the data.")
   }
   present_data <- biological_data |>
@@ -229,7 +229,7 @@ get_biological_data <- function(
     # frequency: Number of individual fish in given length bin (from LF table
     #   in database), or is equal to one if data record is from the Biological
     #   Specimen Item table
-    expansions <- data_and_weights |>
+    expansion_values <- data_and_weights |>
       dplyr::mutate(
         exp1 = dplyr::case_when(
           !is.na(species_number) | !is.na(bio_specimen_count) ~
@@ -251,21 +251,32 @@ get_biological_data <- function(
         sample_weight_length = n_length * exp1 * exp2,
         sample_weight_age = n_age * exp1 * exp2,
       ) |>
+      dplyr::ungroup()
+
+    total_discard_by_group <- expansion_values |>
+      dplyr::summarise(
+        .by = c(year, haul_id, fleet_groups, gear_to_use),
+        total_sample_weight_by_haul = sum(exp_weight, na.rm = TRUE) / 2204.62
+      ) |>
+      dplyr::summarise(
+        .by = c(year, fleet_groups, gear_to_use),
+        calc_total_sample_weight_mt = round(sum(total_sample_weight_by_haul), 4)
+      )
+
+    expansions <- dplyr::left_join(
+      expansion_values,
+      total_discard_by_group
+    ) |>
       dplyr::group_by(year, fleet_groups, gear_to_use) |>
       dplyr::mutate(
         discard_numerator = unique(total_discard_mt),
         catch_numerator = unique(total_catch_mt),
-        calc_total_sample_weight_mt = sum(exp_weight, na.rm = TRUE) / 2204.62,
-        total_sample_weight_mt = dplyr::case_when(
-          calc_total_sample_weight_mt > discard_numerator ~ discard_numerator,
-          .default = calc_total_sample_weight_mt
-        ),
-        wghtd_catch = prop_catch * (catch_numerator / total_sample_weight_mt),
+        wghtd_catch = prop_catch * (catch_numerator / calc_total_sample_weight_mt),
         # intentionally use the proportion of catch here since that is a better indicator
         # of how to weight the second stage expansion
         wghtd_discard = dplyr::case_when(
           catch_shares == FALSE ~
-            prop_catch * discard_numerator / total_sample_weight_mt,
+            prop_catch * discard_numerator / calc_total_sample_weight_mt,
           .default = 1
         ),
         final_weight_length = sample_weight_length * wghtd_discard,
