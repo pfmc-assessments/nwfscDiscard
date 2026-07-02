@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">nwfscDiscard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1</span>
       </span>
     </div>
 
@@ -62,7 +62,7 @@
                         <h4 data-toc-skip class="author">Chantel
 Wetzel</h4>
             
-            <h4 data-toc-skip class="date">2025-05-01</h4>
+            <h4 data-toc-skip class="date">2026-07-02</h4>
       
 
       <div class="hidden name"><code>nwfscDiscard.Rmd</code></div>
@@ -147,7 +147,7 @@ combined for use in an assessment (e.g., are the majority of catches
 occurring by catch share vessels?).</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gemm</span> <span class="op">&lt;-</span> <span class="fu">nwfscSurvey</span><span class="op">(</span>common_name <span class="op">=</span> <span class="st">"Sablefish"</span><span class="op">)</span></span>
-<span><span class="va">gemm_check</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_prop_gemm_catch.html">calc_prop_gemm_catch</a></span><span class="op">(</span></span>
+<span><span class="va">gemm_check</span> <span class="op">&lt;-</span> <span class="fu">calc_prop_gemm_catch</span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">gemm</span>,</span>
 <span>  species_name <span class="op">=</span> <span class="st">"Sablefish"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -222,7 +222,7 @@ Non-catch share vessels have variable rates of observer coverage and the
 discard rates are based on the observed trips. These trips are then
 bootstrap to estimate uncertainty around the discard rates.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ob_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_discard_bootstrap.html">do_discard_bootstrap</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">ob_out</span> <span class="op">&lt;-</span> <span class="fu">do_discard_bootstrap</span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">catch_data</span>,</span>
 <span>  species_name <span class="op">=</span> <span class="st">"Sablefish"</span>,</span>
 <span>  boot_number <span class="op">=</span> <span class="fl">10000</span>,</span>
@@ -248,7 +248,7 @@ to the observed non-EM catch share discards, one must exclude the
 physical onobard observer data from EM vessels since this would
 duplicate records.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">em_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_discard_bootstrap.html">do_discard_bootstrap</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">em_out</span> <span class="op">&lt;-</span> <span class="fu">do_discard_bootstrap</span><span class="op">(</span></span>
 <span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu">here</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  data <span class="op">=</span> <span class="va">em_catch_data</span>,</span>
 <span>  species_name <span class="op">=</span> <span class="st">"Sablefish"</span>,</span>
@@ -345,7 +345,7 @@ assessment.</p></li>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>

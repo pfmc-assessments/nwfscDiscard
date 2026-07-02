@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">nwfscDiscard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1</span>
       </span>
     </div>
 
@@ -49,13 +49,14 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run</span><span class="op">(</span></span>
 <span>  <span class="va">species_name</span>,</span>
-<span>  <span class="va">data_grouping</span>,</span>
-<span>  len_bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">60</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>  age_bins <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">30</span>,</span>
 <span>  <span class="va">catch_data</span>,</span>
+<span>  <span class="va">em_catch_data</span>,</span>
 <span>  <span class="va">biological_data</span>,</span>
-<span>  em_catch_data <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  save_loc <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">format_gemm_data</span>,</span>
+<span>  <span class="va">data_grouping</span>,</span>
+<span>  length_bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">60</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  age_bins <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">30</span>,</span>
+<span>  dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_boot <span class="op">=</span> <span class="fl">10000</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -65,21 +66,9 @@
 
 
 <dl><dt id="arg-species-name">species_name<a class="anchor" aria-label="anchor" href="#arg-species-name"></a></dt>
-<dd><p>Species that you want composition data for. Should match
-the species names in the WCGOP data.</p></dd>
-
-
-<dt id="arg-data-grouping">data_grouping<a class="anchor" aria-label="anchor" href="#arg-data-grouping"></a></dt>
-<dd><p>A list of the groupings to apply to the data. The list should
-formatted as: list(gear_groups, gear_names, fleet_groups, fleet_names, fleet_colname).</p></dd>
-
-
-<dt id="arg-len-bins">len_bins<a class="anchor" aria-label="anchor" href="#arg-len-bins"></a></dt>
-<dd><p>Length composition bins (example: seq(20, 90, 2)).</p></dd>
-
-
-<dt id="arg-age-bins">age_bins<a class="anchor" aria-label="anchor" href="#arg-age-bins"></a></dt>
-<dd><p>Age composition bins (example: 1:50).</p></dd>
+<dd><p>Species name to process discard biological data for. The
+casing needs to match WCGOP biological species column that capitalizes the
+first letter of each name (e.g., Canary Rockfish, Sablefish).</p></dd>
 
 
 <dt id="arg-catch-data">catch_data<a class="anchor" aria-label="anchor" href="#arg-catch-data"></a></dt>
@@ -87,20 +76,42 @@ formatted as: list(gear_groups, gear_names, fleet_groups, fleet_names, fleet_col
 This data frame will be used to check confidentiality.</p></dd>
 
 
-<dt id="arg-biological-data">biological_data<a class="anchor" aria-label="anchor" href="#arg-biological-data"></a></dt>
-<dd><p>A data frame of WCGOP biological data that includes all species.</p></dd>
-
-
 <dt id="arg-em-catch-data">em_catch_data<a class="anchor" aria-label="anchor" href="#arg-em-catch-data"></a></dt>
 <dd><p>A data frame of WCGOP EM catch data that includes all species.</p></dd>
 
 
-<dt id="arg-save-loc">save_loc<a class="anchor" aria-label="anchor" href="#arg-save-loc"></a></dt>
-<dd><p>Directory location to save files.</p></dd>
+<dt id="arg-biological-data">biological_data<a class="anchor" aria-label="anchor" href="#arg-biological-data"></a></dt>
+<dd><p>A data frame of WCGOP biological data that includes all species.
+The full biological data frame is filtered down to selected species and to include
+only discard data (catch_disposition == "D").</p></dd>
 
 
-<dt id="arg-n-boot">n_boot<a class="anchor" aria-label="anchor" href="#arg-n-boot"></a></dt>
-<dd><p>Number of bootstraps to run.</p></dd>
+<dt id="arg-format-gemm-data">format_gemm_data<a class="anchor" aria-label="anchor" href="#arg-format-gemm-data"></a></dt>
+<dd><p>Data frame of GEMM data created by <code><a href="format_gemm.html">format_gemm()</a></code> or <code><a href="format_gemm_alt.html">format_gemm_alt()</a></code></p></dd>
+
+
+<dt id="arg-length-bins">length_bins<a class="anchor" aria-label="anchor" href="#arg-length-bins"></a></dt>
+<dd><p>Vector of integers to bin length data by to
+create discard composition data. Values above or below the minimum or maximum
+values in the vector are grouped into the first size or plus group size, respectively.
+For example, creating length compositions that uses a vector bin of seq(10, 50, 2)
+would create 2 cm bins where fish length between [0, 11.99) would be included in the
+10 cm bin, fish of length [12, 13.99) would be included in the 12 cm bin, and
+all fish [50- Inf) would be included in the 50 cm plus bin.</p></dd>
+
+
+<dt id="arg-age-bins">age_bins<a class="anchor" aria-label="anchor" href="#arg-age-bins"></a></dt>
+<dd><p>Vector of integers to bin age data by to
+create discard composition data. Values above or below the minimum or maximum
+values in the vector are grouped into the first age or plus group age, respectively.
+For example, creating age compositions that uses a vector bin of seq(1, 20, 1)
+would create 1 year age bins where fish age between [0, 1) would be included in the
+1 age bin and all fish [20- Inf) would be included in the 20 age plus bin.</p></dd>
+
+
+<dt id="arg-dir">dir<a class="anchor" aria-label="anchor" href="#arg-dir"></a></dt>
+<dd><p>Directory where output will be saved. The directory where the file
+should be saved. If dir = NULL no output will be saved.</p></dd>
 
 </dl></div>
     <div id="author">
@@ -120,7 +131,7 @@ This data frame will be used to check confidentiality.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>

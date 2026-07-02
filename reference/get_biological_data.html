@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">nwfscDiscard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1</span>
       </span>
     </div>
 
@@ -48,17 +48,18 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_biological_data</span><span class="op">(</span></span>
-<span>  dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">data</span>,</span>
+<span>  <span class="va">biological_data</span>,</span>
 <span>  <span class="va">catch_data</span>,</span>
+<span>  <span class="va">weight_data</span>,</span>
 <span>  <span class="va">species_name</span>,</span>
-<span>  <span class="va">len_bins</span>,</span>
+<span>  <span class="va">length_bins</span>,</span>
 <span>  <span class="va">age_bins</span>,</span>
 <span>  <span class="va">gear_groups</span>,</span>
 <span>  <span class="va">gear_names</span>,</span>
 <span>  <span class="va">fleet_colname</span>,</span>
 <span>  <span class="va">fleet_groups</span>,</span>
 <span>  <span class="va">fleet_names</span>,</span>
+<span>  dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  expand <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -67,12 +68,10 @@
     <h2>Arguments</h2>
 
 
-<dl><dt id="arg-dir">dir<a class="anchor" aria-label="anchor" href="#arg-dir"></a></dt>
-<dd><p>Directory location to save files.</p></dd>
-
-
-<dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A data frame of WCGOP biological data that includes all species.</p></dd>
+<dl><dt id="arg-biological-data">biological_data<a class="anchor" aria-label="anchor" href="#arg-biological-data"></a></dt>
+<dd><p>A data frame of WCGOP biological data that includes all species.
+The full biological data frame is filtered down to selected species and to include
+only discard data (catch_disposition == "D").</p></dd>
 
 
 <dt id="arg-catch-data">catch_data<a class="anchor" aria-label="anchor" href="#arg-catch-data"></a></dt>
@@ -80,37 +79,71 @@
 This data frame will be used to check confidentiality.</p></dd>
 
 
+<dt id="arg-weight-data">weight_data<a class="anchor" aria-label="anchor" href="#arg-weight-data"></a></dt>
+<dd><p>A data frame created by <code>[get_weights()]</code> that will be used
+to weight the biological data samples.</p></dd>
+
+
 <dt id="arg-species-name">species_name<a class="anchor" aria-label="anchor" href="#arg-species-name"></a></dt>
-<dd><p>Species that you want composition data for.</p></dd>
+<dd><p>Species name to process discard biological data for. The
+casing needs to match WCGOP biological species column that capitalizes the
+first letter of each name (e.g., Canary Rockfish, Sablefish).</p></dd>
 
 
-<dt id="arg-len-bins">len_bins<a class="anchor" aria-label="anchor" href="#arg-len-bins"></a></dt>
-<dd><p>Length composition bins (example: seq(20, 90, 2)).</p></dd>
+<dt id="arg-length-bins">length_bins<a class="anchor" aria-label="anchor" href="#arg-length-bins"></a></dt>
+<dd><p>Vector of integers to bin length data by to
+create discard composition data. Values above or below the minimum or maximum
+values in the vector are grouped into the first size or plus group size, respectively.
+For example, creating length compositions that uses a vector bin of seq(10, 50, 2)
+would create 2 cm bins where fish length between [0, 11.99) would be included in the
+10 cm bin, fish of length [12, 13.99) would be included in the 12 cm bin, and
+all fish [50- Inf) would be included in the 50 cm plus bin.</p></dd>
 
 
 <dt id="arg-age-bins">age_bins<a class="anchor" aria-label="anchor" href="#arg-age-bins"></a></dt>
-<dd><p>Age composition bins (example: 1:50).</p></dd>
+<dd><p>Vector of integers to bin age data by to
+create discard composition data. Values above or below the minimum or maximum
+values in the vector are grouped into the first age or plus group age, respectively.
+For example, creating age compositions that uses a vector bin of seq(1, 20, 1)
+would create 1 year age bins where fish age between [0, 1) would be included in the
+1 age bin and all fish [20- Inf) would be included in the 20 age plus bin.</p></dd>
 
 
 <dt id="arg-gear-groups">gear_groups<a class="anchor" aria-label="anchor" href="#arg-gear-groups"></a></dt>
-<dd><p>List of gear types to group together
-(example: list(c("Bottom Trawl", "Midwater Trawl"), c("Hook &amp; Line", "Pot", "Shrimp Trawl"))).</p></dd>
+<dd><p>List object of gear names to group together based on the WCGOP
+gear column, example: list(c("Bottom Trawl", "Midwater Trawl"),
+c("Hook &amp; Line", "Pot", "Fixed Gear")).</p></dd>
 
 
 <dt id="arg-gear-names">gear_names<a class="anchor" aria-label="anchor" href="#arg-gear-names"></a></dt>
-<dd><p>Vector of gear group names (example: c("trawl", "fixed gear")).</p></dd>
+<dd><p>Vector of gear group names that needs to match the length of
+the <code>gear_groups</code> object and align in order of the assigned names.
+For example, if gear_groups = list(c("Bottom Trawl", "Midwater Trawl"),
+c("Hook &amp; Line", "Pot", "Fixed Gear")) then gear_names = c("trawl", "fixed gear")).</p></dd>
 
 
 <dt id="arg-fleet-colname">fleet_colname<a class="anchor" aria-label="anchor" href="#arg-fleet-colname"></a></dt>
-<dd><p>Column to use to determine areas for fleets (example: "r_state.x")</p></dd>
+<dd><p>Column in the biological data that should be used to
+define the fleet areas. Commonly used columns is <code>r_state</code> which can allow you
+to group or split data by state. The <code>area</code> column can be used to split data
+north and south of 4010 N. lat.</p></dd>
 
 
 <dt id="arg-fleet-groups">fleet_groups<a class="anchor" aria-label="anchor" href="#arg-fleet-groups"></a></dt>
-<dd><p>List of fleet groups to use (example: list(c("WA", "OR", "CA"))).</p></dd>
+<dd><p>List object of how to combine the data to define fleet
+groups. For example, list(c("WA", "OR"), "CA") would define WA-OR and CA fleets.</p></dd>
 
 
 <dt id="arg-fleet-names">fleet_names<a class="anchor" aria-label="anchor" href="#arg-fleet-names"></a></dt>
-<dd><p>Vector of fleet names (example: c("coastwide")).</p></dd>
+<dd><p>Vector of fleet names that needs to match the length of
+the <code>fleet_groups</code> object and align in order of the assigned names. For
+example, the fleet_names should be c("OR-WA", "CA") to align with a
+fleet_groups of list(c("WA", "OR"), "CA").</p></dd>
+
+
+<dt id="arg-dir">dir<a class="anchor" aria-label="anchor" href="#arg-dir"></a></dt>
+<dd><p>Directory where output will be saved. The directory where the file
+should be saved. If dir = NULL no output will be saved.</p></dd>
 
 
 <dt id="arg-expand">expand<a class="anchor" aria-label="anchor" href="#arg-expand"></a></dt>
@@ -136,7 +169,7 @@ confidentiality.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>

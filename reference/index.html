@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">nwfscDiscard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1</span>
       </span>
     </div>
 
@@ -45,7 +45,15 @@
           <p class="section-desc"></p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="boostrap_discard.html">boostrap_discard()</a></code> </p>
+          <p><code><a href="bio_samples_by_year.html">bio_samples_by_year()</a></code> </p>
+        </td>
+        <td><p>Calculate biological sample size</p></td>
+      </tr><tr><td>
+          <p><code><a href="bootstrap.html">bootstrap()</a></code> </p>
+        </td>
+        <td><p>Bootstrap non-catch share data</p></td>
+      </tr><tr><td>
+          <p><code><a href="bootstrap_discard.html">bootstrap_discard()</a></code> </p>
         </td>
         <td><p>Bootstrap non-catch share data</p></td>
       </tr><tr><td>
@@ -57,13 +65,13 @@
         </td>
         <td><p>Function that calculates discards for the catch share vessels</p></td>
       </tr><tr><td>
-          <p><code><a href="calc_prop_gemm_catch.html">calc_prop_gemm_catch()</a></code> </p>
-        </td>
-        <td><p>Calculate the discards, landings, and catch by gear type and catch share fleet and the proportions by year using GEMM data.</p></td>
-      </tr><tr><td>
           <p><code><a href="check_confidential.html">check_confidential()</a></code> </p>
         </td>
         <td><p>Check confidentiality using the catch data</p></td>
+      </tr><tr><td>
+          <p><code><a href="combine_catch_data.html">combine_catch_data()</a></code> </p>
+        </td>
+        <td><p>Function to combine catch data with EM catch data</p></td>
       </tr><tr><td>
           <p><code><a href="combine_cs_discards.html">combine_cs_discards()</a></code> </p>
         </td>
@@ -73,21 +81,41 @@
         </td>
         <td><p>Create gear and fleet groups</p></td>
       </tr><tr><td>
-          <p><code><a href="do_bootstrap.html">do_bootstrap()</a></code> </p>
+          <p><code><a href="format_gemm.html">format_gemm()</a></code> </p>
         </td>
-        <td><p>Bootstrap non-catch share data</p></td>
+        <td><p>Format GEMM data to match the WCGOP</p></td>
       </tr><tr><td>
-          <p><code><a href="do_discard_bootstrap.html">do_discard_bootstrap()</a></code> </p>
+          <p><code><a href="format_gemm_alt.html">format_gemm_alt()</a></code> </p>
         </td>
-        <td><p>Bootstrap uncertainty and summarize WCGOP discard data</p></td>
+        <td><p>Format GEMM alternative data to match the WCGOP</p></td>
       </tr><tr><td>
           <p><code><a href="get_biological_data.html">get_biological_data()</a></code> </p>
         </td>
         <td><p>Calculate expanded discard composition</p></td>
       </tr><tr><td>
+          <p><code><a href="get_discard_rates.html">get_discard_rates()</a></code> </p>
+        </td>
+        <td><p>Bootstrap uncertainty and summarize WCGOP discard data</p></td>
+      </tr><tr><td>
           <p><code><a href="get_mean_weights.html">get_mean_weights()</a></code> </p>
         </td>
         <td><p>Calculate mean weights for discarded fish</p></td>
+      </tr><tr><td>
+          <p><code><a href="get_weights.html">get_weights()</a></code> </p>
+        </td>
+        <td><p>Calculate discard, landings, and catch proportions by year and gear for data weighting</p></td>
+      </tr><tr><td>
+          <p><code><a href="plot_discard_rates.html">plot_discard_rates()</a></code> </p>
+        </td>
+        <td><p>Plot discard rates</p></td>
+      </tr><tr><td>
+          <p><code><a href="plot_gemm.html">plot_gemm()</a></code> </p>
+        </td>
+        <td><p>Plot GEMM data</p></td>
+      </tr><tr><td>
+          <p><code><a href="plot_mean_weights.html">plot_mean_weights()</a></code> </p>
+        </td>
+        <td><p>Plot mean weights with the CV</p></td>
       </tr><tr><td>
           <p><code><a href="plot_wcgop_bio.html">plot_wcgop_bio()</a></code> </p>
         </td>
@@ -96,6 +124,10 @@
           <p><code><a href="run.html">run()</a></code> </p>
         </td>
         <td><p>Run all the analysis together</p></td>
+      </tr><tr><td>
+          <p><code><a href="weight_discard_rates.html">weight_discard_rates()</a></code> </p>
+        </td>
+        <td><p>Weight discard rates between catch share and non-catch share</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -109,7 +141,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>
