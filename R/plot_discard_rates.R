@@ -10,16 +10,16 @@
 #'
 #'
 plot_discard_rates <- function(
-    data,
-    dir = NULL
+  data,
+  dir = NULL
 ) {
-
   data_modified <- data |>
     dplyr::mutate(
       lower_bound = qnorm(0.025, discard_rate, sd),
       upper_bound = qnorm(0.975, discard_rate, sd),
       lower_bound = dplyr::case_when(
-        lower_bound < 0 ~ 0, .default = lower_bound
+        lower_bound < 0 ~ 0,
+        .default = lower_bound
       )
     )
 
@@ -31,7 +31,7 @@ plot_discard_rates <- function(
     ggplot2::xlab("Year") +
     ggplot2::facet_wrap("fleet")
 
-  if(!is.null(dir)){
+  if (!is.null(dir)) {
     ggplot2::ggsave(
       plot = g1,
       filename = file.path(dir, "discard_rates.png"),

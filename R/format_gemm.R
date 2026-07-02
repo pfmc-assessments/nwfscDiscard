@@ -19,11 +19,11 @@
 #'
 #
 format_gemm <- function(
-    data,
-    species_name,
-    areas_to_keep,
-    gears_to_keep,
-    dir = NULL
+  data,
+  species_name,
+  areas_to_keep,
+  gears_to_keep,
+  dir = NULL
 ) {
   format_data <- data |>
     dplyr::filter(species == species_name, grouping %in% areas_to_keep) |>
@@ -32,15 +32,19 @@ format_gemm <- function(
       "Oregon Recreational",
       "Washington Recreational",
       "Incidental",
-      "Research")
-    ) |>
+      "Research"
+    )) |>
     dplyr::mutate(
       gear = dplyr::case_when(
-        sector %in% c("CS - Hook & Line", "Directed P Halibut", "LE Fixed Gear DTL - Hook & Line",
-                      "LE Sablefish - Hook & Line", "OA Fixed Gear - Hook & Line") ~ "Hook & Line",
+        sector %in% c(
+          "CS - Hook & Line", "Directed P Halibut", "LE Fixed Gear DTL - Hook & Line",
+          "LE Sablefish - Hook & Line", "OA Fixed Gear - Hook & Line"
+        ) ~ "Hook & Line",
         sector == "Nearshore" ~ "Fixed Gear",
-        sector %in% c("CS - Pot", "CS EM - Pot", "LE Fixed Gear DTL - Pot", "OA Fixed Gear - Pot",
-                      "LE Sablefish - Pot") ~
+        sector %in% c(
+          "CS - Pot", "CS EM - Pot", "LE Fixed Gear DTL - Pot", "OA Fixed Gear - Pot",
+          "LE Sablefish - Pot"
+        ) ~
           "Pot",
         .default = "Bottom Trawl"
       ),
@@ -51,10 +55,12 @@ format_gemm <- function(
         .default = "trawl"
       ),
       catch_shares = dplyr::case_when(
-        sector %in% c("CS - Bottom and Midwater Trawl",
-                      "CS - Bottom Trawl", "CS - Hook & Line", "CS - Pot", "CS EM - Bottom Trawl",
-                      "CS EM - Pot",
-                      "Midwater Rockfish", "Midwater Hake EM", "Midwater Rockfish EM") ~ TRUE,
+        sector %in% c(
+          "CS - Bottom and Midwater Trawl",
+          "CS - Bottom Trawl", "CS - Hook & Line", "CS - Pot", "CS EM - Bottom Trawl",
+          "CS EM - Pot",
+          "Midwater Rockfish", "Midwater Hake EM", "Midwater Rockfish EM"
+        ) ~ TRUE,
         sector %in% c("LE CA Halibut", "At-Sea Hake CP", "At-Sea Hake MSCV") & year >= 2011 ~ TRUE,
         .default = FALSE
       )
