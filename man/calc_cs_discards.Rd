@@ -7,11 +7,15 @@
 calc_cs_discards(data, conf_data_check, dir = NULL)
 }
 \arguments{
-\item{data}{A data frame of WCGOP catch data filtered down to only catch share data}
+\item{data}{A data frame of WCGOP catch data filtered down to only catch share data
+created by \code{\link[=get_discard_rates]{get_discard_rates()}}.
+group data for bootstrapping.}
 
-\item{conf_data_check}{Dataframe with the number of observations, trips, and vessels by fleet.}
+\item{conf_data_check}{Dataframe with the number of observations, trips, and
+vessels by fleet created by \code{\link[=check_confidential]{check_confidential()}}.}
 
-\item{dir}{Directory location to save files.}
+\item{dir}{Directory where output will be saved. The directory where the file
+should be saved. If dir = NULL no output will be saved.}
 }
 \description{
 Function that calculates discards for the catch share vessels

@@ -17,7 +17,8 @@ correspond to the following figures:
 \item Proportion of catch, landings, and discards by catch share and gear
 }}
 
-\item{dir}{Directory location to save files.}
+\item{dir}{Directory where output will be saved. The directory where the file
+should be saved. If dir = NULL no output will be saved.}
 }
 \description{
 Calculate the totals and proportions by gear and catch shares.  These data

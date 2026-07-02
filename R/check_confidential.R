@@ -1,16 +1,13 @@
 #' Check confidentiality using the catch data
 #'
 #'
-#' @param data A data frame of WCGOP catch data
-#' @param gear_groups List of gear types to group together
-#' (example: list(c("Bottom Trawl", "Midwater Trawl"), c("Hook & Line", "Pot", "Shrimp Trawl"))).
-#' @param gear_names Vector of gear group names (example: c("trawl", "fixed gear")).
-#' @param fleet_colname Column to use to determine areas for fleets (example: "r_state.x")
-#' @param fleet_groups List of fleet groups to use (example: list(c("WA", "OR", "CA"))).
-#' @param fleet_names Vector of fleet names (example: c("coastwide")).
-#' @param dir Directory location to save files.
+#' @param data A data frame of WCGOP catch data that includes all species.
+#'   This data frame will be used to check confidentiality.
+#' @param dir Directory where output will be saved. The directory where the file
+#'   should be saved. If dir = NULL no output will be saved.
 #' @param  by_catch_share Logical. Calculate the number of unique vessels by catch
 #'   share for each year and fleet.
+#' @inheritParams get_biological_data
 #'
 #' @author Chantel Wetzel
 #' @export

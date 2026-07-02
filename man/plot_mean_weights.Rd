@@ -9,7 +9,8 @@ plot_mean_weights(data, dir = NULL)
 \arguments{
 \item{data}{A data frame produced by \code{\link[=get_mean_weights]{get_mean_weights()}}}
 
-\item{dir}{Directory location to save files.}
+\item{dir}{Directory where output will be saved. The directory where the file
+should be saved. If dir = NULL no output will be saved.}
 }
 \value{
 Boxplot of discard mean weight by gear group and year.

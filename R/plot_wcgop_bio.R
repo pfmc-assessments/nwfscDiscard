@@ -1,13 +1,11 @@
 #' Visualize biological discard data
 #'
-#' @param dir Directory location to save files.
-#' @param data A data frame of WCGOP biological data
-#' @param species_name Species that you want composition data for.
-#' @param comp_column Column in the data to plot (e.g. "LENGTH").
-#' @param gear_names Vector of gear group names (example: c("trawl", "fixed gear")).
-#' @param fleet_colname Column to use to determine areas for fleets (example: "r_state.x")
-#' @param fleet_groups List of fleet groups to use (example: list(c("WA", "OR", "CA"))).
-#' @param fleet_names Vector of fleet names (example: c("coastwide")).
+#' @param dir Directory where output will be saved. The directory where the file
+#'   should be saved. If dir = NULL no output will be saved.
+#' @param data A data frame of WCGOP biological data that includes all species.
+#'   The full biological data frame is filtered down to selected species and to include
+#'   only discard data (catch_disposition == "D").
+#' @inheritParams get_biological_data
 #'
 #' @author Chantel Wetzel
 #' @export

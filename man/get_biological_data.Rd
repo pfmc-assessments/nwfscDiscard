@@ -5,52 +5,75 @@
 \title{Calculate expanded discard composition}
 \usage{
 get_biological_data(
-  dir = NULL,
-  data,
-  weight_data,
+  biological_data,
   catch_data,
+  weight_data,
   species_name,
-  len_bins,
+  length_bins,
   age_bins,
   gear_groups,
   gear_names,
   fleet_colname,
   fleet_groups,
   fleet_names,
-  min_sample_size = 20,
+  dir = NULL,
   expand = TRUE
 )
 }
 \arguments{
-\item{dir}{Directory location to save files.}
-
-\item{data}{A data frame of WCGOP biological data that includes all species.}
-
-\item{weight_data}{A data frame created by \verb{[calc_weights()]} that will be used
-to weight the biological data samples.}
+\item{biological_data}{A data frame of WCGOP biological data that includes all species.
+The full biological data frame is filtered down to selected species and to include
+only discard data (catch_disposition == "D").}
 
 \item{catch_data}{A data frame of WCGOP catch data that includes all species.
 This data frame will be used to check confidentiality.}
 
-\item{species_name}{Species that you want composition data for.}
+\item{weight_data}{A data frame created by \verb{[get_weights()]} that will be used
+to weight the biological data samples.}
 
-\item{len_bins}{Length composition bins (example: seq(20, 90, 2)).}
+\item{species_name}{Species name to process discard biological data for. The
+casing needs to match WCGOP biological species column that capitalizes the
+first letter of each name (e.g., Canary Rockfish, Sablefish).}
 
-\item{age_bins}{Age composition bins (example: 1:50).}
+\item{length_bins}{Vector of integers to bin length data by to
+create discard composition data. Values above or below the minimum or maximum
+values in the vector are grouped into the first size or plus group size, respectively.
+For example, creating length compositions that uses a vector bin of seq(10, 50, 2)
+would create 2 cm bins where fish length between [0, 11.99) would be included in the
+10 cm bin, fish of length [12, 13.99) would be included in the 12 cm bin, and
+all fish [50- Inf) would be included in the 50 cm plus bin.}
 
-\item{gear_groups}{List of gear types to group together
-(example: list(c("Bottom Trawl", "Midwater Trawl"), c("Hook & Line", "Pot", "Shrimp Trawl"))).}
+\item{age_bins}{Vector of integers to bin age data by to
+create discard composition data. Values above or below the minimum or maximum
+values in the vector are grouped into the first age or plus group age, respectively.
+For example, creating age compositions that uses a vector bin of seq(1, 20, 1)
+would create 1 year age bins where fish age between [0, 1) would be included in the
+1 age bin and all fish [20- Inf) would be included in the 20 age plus bin.}
 
-\item{gear_names}{Vector of gear group names (example: c("trawl", "fixed gear")).}
+\item{gear_groups}{List object of gear names to group together based on the WCGOP
+gear column, example: list(c("Bottom Trawl", "Midwater Trawl"),
+c("Hook & Line", "Pot", "Fixed Gear")).}
 
-\item{fleet_colname}{Column to use to determine areas for fleets (example: "r_state.x")}
+\item{gear_names}{Vector of gear group names that needs to match the length of
+the \code{gear_groups} object and align in order of the assigned names.
+For example, if gear_groups = list(c("Bottom Trawl", "Midwater Trawl"),
+c("Hook & Line", "Pot", "Fixed Gear")) then gear_names = c("trawl", "fixed gear")).}
 
-\item{fleet_groups}{List of fleet groups to use (example: list(c("WA", "OR", "CA"))).}
+\item{fleet_colname}{Column in the biological data that should be used to
+define the fleet areas. Commonly used columns is \code{r_state} which can allow you
+to group or split data by state. The \code{area} column can be used to split data
+north and south of 4010 N. lat.}
 
-\item{fleet_names}{Vector of fleet names (example: c("coastwide")).}
+\item{fleet_groups}{List object of how to combine the data to define fleet
+groups. For example, list(c("WA", "OR"), "CA") would define WA-OR and CA fleets.}
 
-\item{min_sample_size}{Numeric value to only retain years of data by gear that are >= to
-this value.}
+\item{fleet_names}{Vector of fleet names that needs to match the length of
+the \code{fleet_groups} object and align in order of the assigned names. For
+example, the fleet_names should be c("OR-WA", "CA") to align with a
+fleet_groups of list(c("WA", "OR"), "CA").}
+
+\item{dir}{Directory where output will be saved. The directory where the file
+should be saved. If dir = NULL no output will be saved.}
 
 \item{expand}{Logical statement on whether to expand the compositions samples.  Default is
 TRUE. If set to FALSE, then raw samples will be returned that are filtered for

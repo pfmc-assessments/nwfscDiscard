@@ -1,19 +1,23 @@
 #' Format GEMM alternative data to match the WCGOP
 #'
-#' @param dir Directory location to save files.
-#' @param species_name species name that should match the name in the alternative
-#'   gemm data file. Needs to be a single species.
-#' @param areas_to_keep Area names in the alternative GEMM to filter the data for.
-#' @param gears_to_keep Gear names in the alternative GEMM to filter the data for.
-#' @param data_file CSV file name of the alternative GEMM data provided by the FOS
-#'   team for calculating data weights using alternative areas. The gear type
-#'   (minor) and the gear group (major) are used to calculate totals by area
-#'   and weighting proportions.
-#'
+#' @param dir Directory where output will be saved. The directory where the file
+#'   should be saved. If dir = NULL no output will be saved.
+#' @param species_name A string to specify the species name that data should be
+#'   summarized for. The string should match the name in the alternative
+#'   gemm data file and needs to be a single species.
+#' @param areas_to_keep A vector of area names in the alternative GEMM to filter
+#'   the data for.
+#' @param gears_to_keep A vector of gear names in the alternative GEMM to filter
+#'    the data for.
+#' @param data_file A string of the CSV file name of the alternative GEMM data
+#'   provided by the FOS team for calculating data weights using alternative areas.
+#'   The gear type (minor) and the gear group (major) are used to calculate totals
+#'   by area and weighting proportions.
 #'
 #'
 #' @author Chantel Wetzel
 #' @export
+#' @return dataframe
 #'
 #
 format_gemm_alt <- function(

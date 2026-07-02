@@ -1,6 +1,7 @@
 #' Plot mean weights with the CV
 #'
-#' @param dir Directory location to save files.
+#' @param dir Directory where output will be saved. The directory where the file
+#'   should be saved. If dir = NULL no output will be saved.
 #' @param data A data frame produced by [get_mean_weights()]
 #'
 #' @author Chantel Wetzel

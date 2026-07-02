@@ -17,21 +17,38 @@ plot_wcgop_bio(
 )
 }
 \arguments{
-\item{data}{A data frame of WCGOP biological data}
+\item{data}{A data frame of WCGOP biological data that includes all species.
+The full biological data frame is filtered down to selected species and to include
+only discard data (catch_disposition == "D").}
 
-\item{species_name}{Species that you want composition data for.}
+\item{species_name}{Species name to process discard biological data for. The
+casing needs to match WCGOP biological species column that capitalizes the
+first letter of each name (e.g., Canary Rockfish, Sablefish).}
 
-\item{gear_names}{Vector of gear group names (example: c("trawl", "fixed gear")).}
+\item{gear_groups}{List object of gear names to group together based on the WCGOP
+gear column, example: list(c("Bottom Trawl", "Midwater Trawl"),
+c("Hook & Line", "Pot", "Fixed Gear")).}
 
-\item{fleet_groups}{List of fleet groups to use (example: list(c("WA", "OR", "CA"))).}
+\item{gear_names}{Vector of gear group names that needs to match the length of
+the \code{gear_groups} object and align in order of the assigned names.
+For example, if gear_groups = list(c("Bottom Trawl", "Midwater Trawl"),
+c("Hook & Line", "Pot", "Fixed Gear")) then gear_names = c("trawl", "fixed gear")).}
 
-\item{fleet_names}{Vector of fleet names (example: c("coastwide")).}
+\item{fleet_groups}{List object of how to combine the data to define fleet
+groups. For example, list(c("WA", "OR"), "CA") would define WA-OR and CA fleets.}
 
-\item{fleet_colname}{Column to use to determine areas for fleets (example: "r_state.x")}
+\item{fleet_names}{Vector of fleet names that needs to match the length of
+the \code{fleet_groups} object and align in order of the assigned names. For
+example, the fleet_names should be c("OR-WA", "CA") to align with a
+fleet_groups of list(c("WA", "OR"), "CA").}
 
-\item{dir}{Directory location to save files.}
+\item{fleet_colname}{Column in the biological data that should be used to
+define the fleet areas. Commonly used columns is \code{r_state} which can allow you
+to group or split data by state. The \code{area} column can be used to split data
+north and south of 4010 N. lat.}
 
-\item{comp_column}{Column in the data to plot (e.g. "LENGTH").}
+\item{dir}{Directory where output will be saved. The directory where the file
+should be saved. If dir = NULL no output will be saved.}
 }
 \value{
 Boxplot of discard length/age by gear group and year.

@@ -7,11 +7,14 @@
 combine_cs_discards(cs_data, em_data, dir = NULL)
 }
 \arguments{
-\item{cs_data}{Data object of the processed catch share discards from the OBCatch data.}
+\item{cs_data}{Data object of the processed catch share discards from the OBCatch data
+created by \code{\link[=get_discard_rates]{get_discard_rates()}}.}
 
-\item{em_data}{Data object of the processed em catch share discards from the EMCatch data.}
+\item{em_data}{Data object of the processed em catch share discards from the EMCatch data
+created by \code{\link[=get_discard_rates]{get_discard_rates()}}.}
 
-\item{dir}{Directory location to save files.}
+\item{dir}{Directory where output will be saved. The directory where the file
+should be saved. If dir = NULL no output will be saved.}
 }
 \description{
 Bootstrap uncertainty and summarize WCGOP discard data

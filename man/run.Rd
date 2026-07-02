@@ -7,36 +7,49 @@
 run(
   species_name,
   data_grouping,
-  len_bins = seq(10, 60, 2),
-  age_bins = 1:30,
   catch_data,
+  em_catch_data,
   biological_data,
-  em_catch_data = NULL,
-  save_loc = NULL,
+  format_gemm_data,
+  length_bins = seq(10, 60, 2),
+  age_bins = 1:30,
+  dir = NULL,
   n_boot = 10000
 )
 }
 \arguments{
-\item{species_name}{Species that you want composition data for. Should match
-the species names in the WCGOP data.}
-
-\item{data_grouping}{A list of the groupings to apply to the data. The list should
-formatted as: list(gear_groups, gear_names, fleet_groups, fleet_names, fleet_colname).}
-
-\item{len_bins}{Length composition bins (example: seq(20, 90, 2)).}
-
-\item{age_bins}{Age composition bins (example: 1:50).}
+\item{species_name}{Species name to process discard biological data for. The
+casing needs to match WCGOP biological species column that capitalizes the
+first letter of each name (e.g., Canary Rockfish, Sablefish).}
 
 \item{catch_data}{A data frame of WCGOP catch data that includes all species.
 This data frame will be used to check confidentiality.}
 
-\item{biological_data}{A data frame of WCGOP biological data that includes all species.}
-
 \item{em_catch_data}{A data frame of WCGOP EM catch data that includes all species.}
 
-\item{save_loc}{Directory location to save files.}
+\item{biological_data}{A data frame of WCGOP biological data that includes all species.
+The full biological data frame is filtered down to selected species and to include
+only discard data (catch_disposition == "D").}
 
-\item{n_boot}{Number of bootstraps to run.}
+\item{format_gemm_data}{Data frame of GEMM data created by \code{\link[=format_gemm]{format_gemm()}} or \code{\link[=format_gemm_alt]{format_gemm_alt()}}}
+
+\item{length_bins}{Vector of integers to bin length data by to
+create discard composition data. Values above or below the minimum or maximum
+values in the vector are grouped into the first size or plus group size, respectively.
+For example, creating length compositions that uses a vector bin of seq(10, 50, 2)
+would create 2 cm bins where fish length between [0, 11.99) would be included in the
+10 cm bin, fish of length [12, 13.99) would be included in the 12 cm bin, and
+all fish [50- Inf) would be included in the 50 cm plus bin.}
+
+\item{age_bins}{Vector of integers to bin age data by to
+create discard composition data. Values above or below the minimum or maximum
+values in the vector are grouped into the first age or plus group age, respectively.
+For example, creating age compositions that uses a vector bin of seq(1, 20, 1)
+would create 1 year age bins where fish age between [0, 1) would be included in the
+1 age bin and all fish [20- Inf) would be included in the 20 age plus bin.}
+
+\item{dir}{Directory where output will be saved. The directory where the file
+should be saved. If dir = NULL no output will be saved.}
 }
 \description{
 Run all the analysis together

@@ -14,18 +14,29 @@ create_groups(
 )
 }
 \arguments{
-\item{data}{A data frame of WCGOP catch data}
+\item{gear_groups}{List object of gear names to group together based on the WCGOP
+gear column, example: list(c("Bottom Trawl", "Midwater Trawl"),
+c("Hook & Line", "Pot", "Fixed Gear")).}
 
-\item{gear_groups}{List of gear types to group together
-(example: list(c("Bottom Trawl", "Midwater Trawl"), c("Hook & Line", "Pot", "Shrimp Trawl"))).}
+\item{gear_names}{Vector of gear group names that needs to match the length of
+the \code{gear_groups} object and align in order of the assigned names.
+For example, if gear_groups = list(c("Bottom Trawl", "Midwater Trawl"),
+c("Hook & Line", "Pot", "Fixed Gear")) then gear_names = c("trawl", "fixed gear")).}
 
-\item{gear_names}{Vector of gear group names (example: c("trawl", "fixed gear")).}
+\item{fleet_colname}{Column in the biological data that should be used to
+define the fleet areas. Commonly used columns is \code{r_state} which can allow you
+to group or split data by state. The \code{area} column can be used to split data
+north and south of 4010 N. lat.}
 
-\item{fleet_colname}{Column to use to determine areas for fleets (example: "r_state.x")}
+\item{fleet_groups}{List object of how to combine the data to define fleet
+groups. For example, list(c("WA", "OR"), "CA") would define WA-OR and CA fleets.}
 
-\item{fleet_groups}{List of fleet groups to use (example: list(c("WA", "OR", "CA"))).}
+\item{fleet_names}{Vector of fleet names that needs to match the length of
+the \code{fleet_groups} object and align in order of the assigned names. For
+example, the fleet_names should be c("OR-WA", "CA") to align with a
+fleet_groups of list(c("WA", "OR"), "CA").}
 
-\item{fleet_names}{Vector of fleet names (example: c("coastwide")).}
+\item{catch_data}{A data frame of WCGOP catch data that includes all species.}
 }
 \description{
 Create gear and fleet groups

@@ -1,8 +1,12 @@
 #' Function that calculates discards for the catch share vessels
 #'
-#' @param dir Directory location to save files.
+#' @param dir Directory where output will be saved. The directory where the file
+#'   should be saved. If dir = NULL no output will be saved.
 #' @param data A data frame of WCGOP catch data filtered down to only catch share data
-#' @param conf_data_check Dataframe with the number of observations, trips, and vessels by fleet.
+#'   created by [get_discard_rates()].
+#'   group data for bootstrapping.
+#' @param conf_data_check Dataframe with the number of observations, trips, and
+#'   vessels by fleet created by [check_confidential()].
 #'
 #' @author Chantel Wetzel
 #' @export

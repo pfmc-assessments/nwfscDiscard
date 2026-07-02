@@ -1,8 +1,10 @@
 #' Calculate expanded discard composition
 #'
 #'
-#' @param dir Directory location to save files.
-#' @param data A data frame of WCGOP biological data
+#' @param dir Directory where output will be saved. The directory where the file
+#'   should be saved. If dir = NULL no output will be saved.
+#' @param data A data frame of WCGOP biological data created by [get_biological_data()]
+#'   that includes the data expansions for length or age data.
 #' @param comp_bins Length or age bins to apply to the composition data.
 #' @param comp_column_name Column name for the type of composition data to process (e.g., "length" or "age")
 #'
@@ -79,7 +81,7 @@ calc_comps <- function(
       year,
       fleet,
       sex,
-      tidyr:::full_seq(comp_bins, bin_width)
+      tidyr::full_seq(comp_bins, bin_width)
     )
   colnames(grid)[ncol(grid)] <- "bins"
   filled_comps <- comp_data |>

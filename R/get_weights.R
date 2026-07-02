@@ -1,16 +1,21 @@
-#' Calculate discard, landings, and catch by gear for weighting data
+#' Calculate discard, landings, and catch proportions by year and gear for data weighting
 #'
 #'
 #' @param data Data frame of the alternative GEMM data provided by the FOS
 #'   team for calculating data weights using alternative areas. The gear type
 #'   (minor) and the gear group (major) are used to calculate totals by area
 #'   and weighting proportions.
-#' @param include_catch_share TRUE/FALSE
-#' @param dir Directory location to save files.
+#' @param include_catch_share Logical to determine whether data should be combined
+#'   by catch share/non-catch Share. If TRUE a data frame is returned with proportions
+#'   calculated by year, fleet, and catch share is returned. If FALSE a data is
+#'   returned with proportions calculated by year and gear type within gear groups.
+#' @param dir Directory where output will be saved. The directory where the file
+#'   should be saved. If dir = NULL no output will be saved.
 #'
 #'
 #' @author Chantel Wetzel
 #' @export
+#' @return dataframe
 #'
 #
 get_weights <- function(

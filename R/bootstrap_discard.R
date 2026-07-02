@@ -2,22 +2,25 @@
 #'
 #' @details Bootstrap samples across year, fleet, and return port group.
 #'
-#' @param dir Directory location to save files.
-#' @param data A data frame of WCGOP catch data filtered down to non-catch share data.
-#' @param boot_number The number of bootstraps to conduct
-#' @param boot_variable The column name to do the inner sampling across.
-#' @param seed_number The seed number.
-#' @param conf_data_check Dataframe with the number of observations, trips, and vessels by fleet.
+#' @param dir Directory where output will be saved. The directory where the file
+#'   should be saved. If dir = NULL no output will be saved.
+#' @param data A data frame of WCGOP catch data filtered down to non-catch share data
+#'   created by [get_discard_rates()].
+#' @param boot_variable String to defined the column name in WCGOP catch data to
+#'   group data for bootstrapping.
+#' @param conf_data_check Dataframe with the number of observations, trips, and
+#'   vessels by fleet created by [check_confidential()].
+#' @inheritParams get_discard_rates
 #'
 #' @author Chantel Wetzel, Allan Hicks, and Jason Jannot
 #' @export
 #'
 #
-boostrap_discard <- function(
+bootstrap_discard <- function(
   data,
   conf_data_check,
   dir = NULL,
-  boot_number = boot_number,
+  boot_number = 10000,
   boot_variable = "r_port_group",
   seed_number = NULL
 ) {

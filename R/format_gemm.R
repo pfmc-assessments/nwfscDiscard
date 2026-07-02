@@ -1,15 +1,21 @@
 #' Format GEMM data to match the WCGOP
 #'
-#' @param dir Directory location to save files.
+#' @param dir Directory where output will be saved. The directory where the file
+#'   should be saved. If dir = NULL no output will be saved.
 #' @param data Dataframe of GEMM data from [nwfscSurvey::pull_gemm()]
-#' @param species_name species name that should match the name in the alternative
-#'   gemm data file. Needs to be a single species.
-#' @param areas_to_keep Area names in the alternative GEMM to filter the data for.
-#' @param gears_to_keep Gear names in the alternative GEMM to filter the data for.
+#' @param species_name A string to specify the species name that data should be
+#'   summarized for. The string should match the name in the gemm data file and
+#'   needs to be a single species.
+#' @param areas_to_keep A vector of area names in the GEMM grouping column to filter
+#'   the data for.
+#' @param gears_to_keep A vector of gear names to filter the data for. Gear is
+#'   defined based on the sector column in the GEMM dataframe with the gear
+#'   definitions based on WCGOP gear-sector specifications.
 #'
 #'
 #' @author Chantel Wetzel
 #' @export
+#' @return dataframe
 #'
 #
 format_gemm <- function(
@@ -19,13 +25,13 @@ format_gemm <- function(
     gears_to_keep,
     dir = NULL
 ) {
-  format.data.frame() <- data |>
+  format_data <- data |>
     dplyr::filter(species == species_name, grouping %in% areas_to_keep) |>
     dplyr::filter(!sector %in% c(
-      "California Recreational", 
-      "Oregon Recreational", 
+      "California Recreational",
+      "Oregon Recreational",
       "Washington Recreational",
-      "Incidental", 
+      "Incidental",
       "Research")
     ) |>
     dplyr::mutate(
@@ -59,6 +65,6 @@ format_gemm <- function(
     ) |>
     dplyr::relocate(catch_shares, .after = sector) |>
     dplyr::filter(gear %in% gears_to_keep)
-  
+
   return(format_data)
 }

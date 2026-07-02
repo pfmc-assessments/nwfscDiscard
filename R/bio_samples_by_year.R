@@ -1,19 +1,14 @@
 #' Calculate biological sample size
 #'
-#' @param dir Directory location to save files.
-#' @param data A data frame of WCGOP biological data
-#' @param species_name Species that you want composition data for.
-#' @param gear_names Vector of gear group names (example: c("trawl", "fixed gear")).
-#' @param fleet_colname Column to use to determine areas for fleets (example: "r_state.x")
-#' @param fleet_groups List of fleet groups to use (example: list(c("WA", "OR", "CA"))).
-#' @param fleet_names Vector of fleet names (example: c("coastwide")).
+#' @inheritParams get_biological_data
 #'
 #' @author Chantel Wetzel
 #' @export
+#' @return dataframe
 #'
 #'
 bio_samples_by_year <- function(
-  data,
+  biological_data,
   species_name,
   gear_groups,
   gear_names,
@@ -23,7 +18,7 @@ bio_samples_by_year <- function(
   dir = NULL
 ) {
   nwfscSurvey::check_dir(dir = dir)
-  data_filtered <- data |>
+  data_filtered <- biological_data |>
     dplyr::select(-SCIENTIFIC_NAME) |>
     dplyr::rename(gear_to_use = gear) |>
     dplyr::rename_with(tolower) |>

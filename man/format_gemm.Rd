@@ -9,14 +9,22 @@ format_gemm(data, species_name, areas_to_keep, gears_to_keep, dir = NULL)
 \arguments{
 \item{data}{Dataframe of GEMM data from \code{\link[nwfscSurvey:pull_gemm]{nwfscSurvey::pull_gemm()}}}
 
-\item{species_name}{species name that should match the name in the alternative
-gemm data file. Needs to be a single species.}
+\item{species_name}{A string to specify the species name that data should be
+summarized for. The string should match the name in the gemm data file and
+needs to be a single species.}
 
-\item{areas_to_keep}{Area names in the alternative GEMM to filter the data for.}
+\item{areas_to_keep}{A vector of area names in the GEMM grouping column to filter
+the data for.}
 
-\item{gears_to_keep}{Gear names in the alternative GEMM to filter the data for.}
+\item{gears_to_keep}{A vector of gear names to filter the data for. Gear is
+defined based on the sector column in the GEMM dataframe with the gear
+definitions based on WCGOP gear-sector specifications.}
 
-\item{dir}{Directory location to save files.}
+\item{dir}{Directory where output will be saved. The directory where the file
+should be saved. If dir = NULL no output will be saved.}
+}
+\value{
+dataframe
 }
 \description{
 Format GEMM data to match the WCGOP

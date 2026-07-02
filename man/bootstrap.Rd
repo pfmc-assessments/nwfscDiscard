@@ -7,9 +7,11 @@
 bootstrap(data, boot_number)
 }
 \arguments{
-\item{data}{A list of data separated by year, fleet, and return port group.}
+\item{data}{A list of data separated by year, fleet, and return port group
+created by \code{\link[=bootstrap_discard]{bootstrap_discard()}}.}
 
-\item{boot_number}{The number of bootstraps to conduct.}
+\item{boot_number}{An integer to determine the number of bootstraps to draw in
+order to estimate the yearly variance for non-catch share data.}
 }
 \description{
 Bootstrap non-catch share data

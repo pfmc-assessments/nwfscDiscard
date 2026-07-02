@@ -7,8 +7,7 @@
 combine_catch_data(catch_data, em_catch_data)
 }
 \arguments{
-\item{catch_data}{A data frame of WCGOP catch data that includes all species.
-This data frame will be used to check confidentiality.}
+\item{catch_data}{A data frame of WCGOP catch data that includes all species.}
 
 \item{em_catch_data}{A data frame of WCGOP EM catch data that includes all species.}
 }

@@ -1,22 +1,18 @@
 #' Calculate mean weights for discarded fish
 #'
 #'
-#' @param dir Directory location to save files.
-#' @param data A data frame of WCGOP catch data
-#' @param species_name Species that you want composition data for.
-#' @param gear_groups List of gear types to group together
-#' (example: list(c("Bottom Trawl", "Midwater Trawl"), c("Hook & Line", "Pot", "Shrimp Trawl"))).
-#' @param gear_names Vector of gear group names (example: c("trawl", "fixed gear")).
-#' @param fleet_colname Column to use to determine areas for fleets (example: "r_state.x")
-#' @param fleet_groups List of fleet groups to use (example: list(c("WA", "OR", "CA"))).
-#' @param fleet_names Vector of fleet names (example: c("coastwide")).
+#' @param weight_data A data frame created by `[get_weights()]` that will be used
+#'   to weight the biological data samples.
+#' @param min_sample_size An integer to filter annual estimates to retain only year
+#'   and fleets of data that have at least this number of samples to inform estimates.
+#' @inheritParams get_biological_data
 #'
 #' @author Chantel Wetzel
 #' @export
 #'
 #'
 get_mean_weights <- function(
-  data,
+  catch_data,
   weight_data,
   species_name,
   gear_groups,
@@ -32,7 +28,7 @@ get_mean_weights <- function(
     cli::cli_abort("{species_name} not found in the data.")
   }
   # Remove duplicate columns
-  data <- data |>
+  data <- catch_data |>
     dplyr::select(-MT, -SPGRFTOB1, -SCIENTIFIC_NAME, -YEAR) |>
     dplyr::rename(gear_to_use = gear, year = RYEAR) |>
     dplyr::rename_with(tolower)

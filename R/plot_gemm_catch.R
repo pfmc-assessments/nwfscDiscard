@@ -10,7 +10,8 @@
 #'   correspond to the following figures:
 #'   1. Catch, landings, and discard by catch share and gear
 #'   2. Proportion of catch, landings, and discards by catch share and gear
-#' @param dir Directory location to save files.
+#' @param dir Directory where output will be saved. The directory where the file
+#'   should be saved. If dir = NULL no output will be saved.
 #'
 #' @author Chantel Wetzel
 #' @export

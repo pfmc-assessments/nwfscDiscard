@@ -1,8 +1,11 @@
 #' Bootstrap uncertainty and summarize WCGOP discard data
 #'
-#' @param dir Directory location to save files.
-#' @param cs_data Data object of the processed catch share discards from the OBCatch data.
-#' @param em_data Data object of the processed em catch share discards from the EMCatch data.
+#' @param dir Directory where output will be saved. The directory where the file
+#'   should be saved. If dir = NULL no output will be saved.
+#' @param cs_data Data object of the processed catch share discards from the OBCatch data
+#'   created by [get_discard_rates()].
+#' @param em_data Data object of the processed em catch share discards from the EMCatch data
+#'   created by [get_discard_rates()].
 #'
 #'
 #' @author Chantel Wetzel
@@ -14,6 +17,12 @@ combine_cs_discards <- function(
   em_data,
   dir = NULL
 ) {
+  lifecycle::deprecate_stop(
+    when = "2.1",
+    what = "combine_cs_discards()",
+    details = "This function is no longer used. The combine_catch_data() combines
+    observer and EM data for use by get_discard_rates()."
+  )
   data <- rbind(cs_data, em_data)
 
   combined_data <- data |>

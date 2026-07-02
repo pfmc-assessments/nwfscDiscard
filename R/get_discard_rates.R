@@ -1,16 +1,11 @@
 #' Bootstrap uncertainty and summarize WCGOP discard data
 #'
-#' @param dir Directory location to save files.
 #' @param data A data frame of WCGOP catch data that is from [combine_catch_data()]
-#' @param species_name species name that should match the name in the ob data file, can be single species or multiple names (e.g. c("Gopher Rockfish", "Black and Yellow Rockfish"))
-#' @param boot_number The number of bootstraps to conduct
-#' @param gear_groups List of gear types to group together
-#' (example: list(c("Bottom Trawl", "Midwater Trawl"), c("Hook & Line", "Pot", "Shrimp Trawl"))).
-#' @param gear_names Vector of gear group names (example: c("trawl", "fixed gear")).
-#' @param fleet_colname Column to use to determine areas for fleets (example: "r_state.x")
-#' @param fleet_groups List of fleet groups to use (example: list(c("WA", "OR", "CA"))).
-#' @param fleet_names Vector of fleet names (example: c("coastwide")).
-#' @param seed_number The seed number.
+#' @param boot_number An integer to determine the number of bootstraps to draw in
+#'   order to estimate the yearly variance for non-catch share data.
+#' @param seed_number An integer to define the seed number when using `set.seed()`
+#'   for reproducibility.
+#' @inheritParams get_biological_data
 #'
 #'
 #' @author Chantel Wetzel, Allan Hicks, and Jason Jannot
@@ -77,12 +72,13 @@ get_discard_rates <- function(
       conf_data_check = data_conf_check
     )
   } else {
+    cs_data_out <- NULL
     cli::cli_alert_info("No catch share records found in the data.")
   }
 
   if (nrow(ncs_data) > 0) {
     # calculate catch shares discard quantities
-    ncs_data_out <- boostrap_discard(
+    ncs_data_out <- bootstrap_discard(
       dir = dir,
       data = ncs_data,
       conf_data_check = data_conf_check,
@@ -91,12 +87,8 @@ get_discard_rates <- function(
       seed_number = seed_number
     )
   } else {
+    ncs_data_out <- NULL
     cli::cli_alert_info("No non-catch share records found in the data.")
-  }
-
-  if (!is.null(dir)) {
-    ncs <- ncs_data_out
-    cs <- cs_data_out
   }
   return(list(cs = cs_data_out, ncs = ncs_data_out))
 }

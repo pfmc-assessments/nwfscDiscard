@@ -13,19 +13,26 @@ format_gemm_alt(
 )
 }
 \arguments{
-\item{dir}{Directory location to save files.}
+\item{dir}{Directory where output will be saved. The directory where the file
+should be saved. If dir = NULL no output will be saved.}
 
-\item{species_name}{species name that should match the name in the alternative
-gemm data file. Needs to be a single species.}
+\item{species_name}{A string to specify the species name that data should be
+summarized for. The string should match the name in the alternative
+gemm data file and needs to be a single species.}
 
-\item{areas_to_keep}{Area names in the alternative GEMM to filter the data for.}
+\item{areas_to_keep}{A vector of area names in the alternative GEMM to filter
+the data for.}
 
-\item{gears_to_keep}{Gear names in the alternative GEMM to filter the data for.}
+\item{gears_to_keep}{A vector of gear names in the alternative GEMM to filter
+the data for.}
 
-\item{data_file}{CSV file name of the alternative GEMM data provided by the FOS
-team for calculating data weights using alternative areas. The gear type
-(minor) and the gear group (major) are used to calculate totals by area
-and weighting proportions.}
+\item{data_file}{A string of the CSV file name of the alternative GEMM data
+provided by the FOS team for calculating data weights using alternative areas.
+The gear type (minor) and the gear group (major) are used to calculate totals
+by area and weighting proportions.}
+}
+\value{
+dataframe
 }
 \description{
 Format GEMM alternative data to match the WCGOP

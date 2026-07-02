@@ -3,8 +3,9 @@
 #' @details Bootstrap samples across the number of unique vessels in
 #' each year, fleet, and return port group.
 #'
-#' @param data A list of data separated by year, fleet, and return port group.
-#' @param boot_number The number of bootstraps to conduct.
+#' @param data A list of data separated by year, fleet, and return port group
+#'   created by [bootstrap_discard()].
+#' @inheritParams get_discard_rates
 #'
 #'
 #' @author Chantel Wetzel, Allan Hicks, and Jason Jannot

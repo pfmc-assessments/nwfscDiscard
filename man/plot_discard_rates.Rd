@@ -9,7 +9,8 @@ plot_discard_rates(data, dir = NULL)
 \arguments{
 \item{data}{A data frame produced by \code{\link[=weight_discard_rates]{weight_discard_rates()}}}
 
-\item{dir}{Directory location to save files.}
+\item{dir}{Directory where output will be saved. The directory where the file
+should be saved. If dir = NULL no output will be saved.}
 }
 \value{
 Boxplot of discard mean weight by gear group and year.

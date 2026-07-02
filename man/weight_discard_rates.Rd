@@ -13,23 +13,23 @@ weight_discard_rates(
 )
 }
 \arguments{
-\item{weight_data}{Data frame of the alternative GEMM data provided by the FOS
-team for calculating data weights using alternative areas. The gear type
-(minor) and the gear group (major) are used to calculate totals by area
-and weighting proportions.}
+\item{weight_data}{Data frame of the alternative GEMM or GEMM data provided by the FOS
+team for calculating data weights created by \code{\link[=get_weights]{get_weights()}}.}
 
-\item{ncs_data}{Data object of the processed non0catch share discards from the OBCatch data.}
+\item{ncs_data}{Data object of the processed non-catch share discards from the catch
+data created by \code{\link[=get_discard_rates]{get_discard_rates()}}.}
 
-\item{cs_data}{Data object of the processed catch share discards from the OBCatch data.
-This should be the combined observer and EM catch share data from \code{\link[=combine_cs_discards]{combine_cs_discards()}}.}
+\item{cs_data}{Data object of the processed catch share discards from catch data
+created by \code{\link[=get_discard_rates]{get_discard_rates()}}.}
 
-\item{dir}{Directory location to save files.}
+\item{dir}{Directory where output will be saved. The directory where the file
+should be saved. If dir = NULL no output will be saved.}
 
-\item{min_sd}{The minimum standard deviation to apply to catch share observations with full
-observer coverage.}
+\item{min_sd}{Numeric value that is defines minimum standard deviation to apply
+to catch share observations with full observer coverage.}
 }
 \value{
-list
+dataframe
 }
 \description{
 Weight discard rates between catch share and non-catch share

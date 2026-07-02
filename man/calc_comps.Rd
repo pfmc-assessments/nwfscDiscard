@@ -7,9 +7,11 @@
 calc_comps(dir = NULL, data, comp_bins, comp_column_name = "length")
 }
 \arguments{
-\item{dir}{Directory location to save files.}
+\item{dir}{Directory where output will be saved. The directory where the file
+should be saved. If dir = NULL no output will be saved.}
 
-\item{data}{A data frame of WCGOP biological data}
+\item{data}{A data frame of WCGOP biological data created by \code{\link[=get_biological_data]{get_biological_data()}}
+that includes the data expansions for length or age data.}
 
 \item{comp_bins}{Length or age bins to apply to the composition data.}
 

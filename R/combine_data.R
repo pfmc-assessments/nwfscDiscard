@@ -6,7 +6,6 @@
 #' to `catch_data` and are categorized as non-catch share for bootstrapping
 #'
 #' @param catch_data A data frame of WCGOP catch data that includes all species.
-#'   This data frame will be used to check confidentiality.
 #' @param em_catch_data A data frame of WCGOP EM catch data that includes all species.
 #'
 #' @author Chantel Wetzel
@@ -29,7 +28,6 @@ combine_catch_data <- function(
     "YEAR",
     "R_STATE",
     "AREA",
-    "SECTOR",
     "sector",
     "AVG_LAT",
     "CATCH_DISPOSITION",
@@ -38,16 +36,7 @@ combine_catch_data <- function(
     "RET_MT"
   )
   em_cols <- cols_to_keep[cols_to_keep %in% colnames(em_catch_data)]
-  em_catch_data_fill <- em_catch_data |>
-    dplyr::mutate(
-      R_STATE = dplyr::case_when(
-        is.na(R_STATE) & AVG_LAT < 42.0 ~ "CA",
-        is.na(R_STATE) & AVG_LAT > 46.25 ~ "WA",
-        is.na(R_STATE) & AVG_LAT < 46.25 & AVG_LAT > 42.0 ~ "OR",
-        .default = R_STATE
-      )
-    )
-  em_late <- em_catch_data_fill |>
+  em_late <- em_catch_data |>
     dplyr::select(tidyr::all_of(em_cols)) |>
     dplyr::rename(
       TRIP_ID = EMTRIP_ID,
@@ -57,12 +46,13 @@ combine_catch_data <- function(
     dplyr::mutate(
       sector = dplyr::case_when(
         sector == "Catch Shares EM" ~ "Catch Shares EM Low Review Rates",
-        sector == "Midwater Hake EM" ~ "Midwter Hake EM Low Review Rates",
+        sector == "Midwater Hake EM" ~ "Midwater Hake EM Low Review Rates",
         sector == "Midwater Rockfish EM" ~
-          "Midwater Rockfish EM Low Review Rates"
+          "Midwater Rockfish EM Low Review Rates",
+        .default = sector
       )
     )
-  em_early <- em_catch_data_fill |>
+  em_early <- em_catch_data |>
     dplyr::select(tidyr::all_of(em_cols)) |>
     dplyr::filter(YEAR < 2024) |>
     dplyr::rename(RYEAR = YEAR) |>
