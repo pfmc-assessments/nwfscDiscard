@@ -11,11 +11,11 @@
 #'
 run <- function(
   species_name,
-  data_grouping,
   catch_data,
   em_catch_data,
   biological_data,
   format_gemm_data,
+  data_grouping,
   length_bins = seq(10, 60, 2),
   age_bins = 1:30,
   dir = NULL,
@@ -41,8 +41,9 @@ run <- function(
   )
   comps <- get_biological_data(
     dir = dir,
-    data = biological_data,
+    biological_data = biological_data,
     catch_data = catch_data,
+    weight_data = weights,
     species_name = species_name,
     length_bins = length_bins,
     age_bins = age_bins,
@@ -53,10 +54,11 @@ run <- function(
     fleet_names = fleet_names
   )
 
-  # Mead discard body weight
+  # Mean discard body weight
   mean_weights <- get_mean_weights(
     dir = dir,
-    data = catch_data,
+    catch_data = catch_data,
+    weight_data = weights,
     species_name = species_name,
     gear_groups = gear_groups,
     gear_names = gear_names,
@@ -66,8 +68,8 @@ run <- function(
   )
 
   # Discard Rates
-  weights <- get_weights(
-    data = format_gemm,
+  weight_cs <- get_weights(
+    data = format_gemm_data,
     include_catch_share = TRUE,
     dir = dir
   )
@@ -75,7 +77,7 @@ run <- function(
     catch_data = catch_data,
     em_catch_data = em_catch_data
   )
-  ob_out <- do_discard_bootstrap(
+  ob_out <- get_discard_rates(
     dir = dir,
     data = data_combined,
     species_name = species_name,
@@ -85,11 +87,10 @@ run <- function(
     fleet_colname = fleet_colname,
     fleet_groups = fleet_groups,
     fleet_names = fleet_names,
-    seed_number = 1,
-    rm_em_data = do_em
+    seed_number = 1
   )
   rates <- weight_discard_rates(
-    weight_data = weights,
+    weight_data = weight_cs,
     ncs_data = ob_out$ncs,
     cs_data = ob_out$cs,
     dir = dir

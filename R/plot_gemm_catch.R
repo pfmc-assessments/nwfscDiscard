@@ -252,6 +252,7 @@ plot_gemm <- function(
         height = 18,
         width = 12
       )
+      invisible(plot_1)
     }
     if (2 %in% plot) {
       ggplot2::ggsave(
@@ -260,6 +261,7 @@ plot_gemm <- function(
         height = 18,
         width = 12
       )
+      invisible(plot_2)
     }
   }
   if (is.null(dir)) {

@@ -24,7 +24,7 @@ get_mean_weights <- function(
   dir = NULL
 ) {
   nwfscSurvey::check_dir(dir = dir)
-  if (!species_name %in% data[, "species"]) {
+  if (!species_name %in% catch_data[, "species"]) {
     cli::cli_abort("{species_name} not found in the data.")
   }
   # Remove duplicate columns
@@ -106,11 +106,10 @@ get_mean_weights <- function(
     dplyr::mutate(
       period = dplyr::case_when(
         year < 2011 ~ "pre-catch shares",
-        .default = "post-catch shares"
-      ),
+        .default = "post-catch shares"),
       species_weight_kg = 0.453592 * species_weight,
       average_weight = species_weight_kg / species_number,
-      exp_average_weight = average_weight * exp_sp_ct,
+      exp_average_weight = average_weight * exp_sp_ct
     ) |>
     dplyr::group_by(period, fleet) |>
     dplyr::mutate(

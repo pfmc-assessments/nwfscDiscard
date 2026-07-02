@@ -124,16 +124,13 @@ get_biological_data <- function(
   )
 
   # Remove years where there are < 3 vessels observed:
-  ci_not_met <- ci_check |> dplyr::filter(n_vessels < 3, )
+  ci_not_met <- ci_check |> dplyr::filter(n_vessels < 3)
   if (dim(ci_not_met)[1] > 0) {
     remove <- NULL
     for (f in 1:dim(ci_not_met)[1]) {
       remove <- c(
         remove,
-        which(
-          data[, "fleet"] == ci_not_met[f, "fleet"] &
-            data[, "year"] == ci_not_met[f, "year"]
-        )
+        which(data[, "fleet"] == ci_not_met[f, "fleet"] & data[, "year"] == ci_not_met[f, "year"])
       )
     }
     if (length(remove) > 0) {
@@ -170,7 +167,7 @@ get_biological_data <- function(
       dplyr::group_by(year, gear_to_use, haul_id) |>
       dplyr::mutate(
         n_sampled_haul = sum(frequency),
-        n_caught_haul = sum(unique(species_number)),
+        n_caught_haul = sum(unique(species_number))
       ) |>
       dplyr::group_by(year, fleet, sex_group) |>
       dplyr::mutate(
@@ -249,7 +246,7 @@ get_biological_data <- function(
           .default = 0
         ),
         sample_weight_length = n_length * exp1 * exp2,
-        sample_weight_age = n_age * exp1 * exp2,
+        sample_weight_age = n_age * exp1 * exp2
       ) |>
       dplyr::ungroup()
 
@@ -305,7 +302,6 @@ get_biological_data <- function(
         n_length_haul_year,
         n_length_trip_year,
         n_length_sampled_year,
-        length,
         final_weight_length_capped,
         n_age_haul_year,
         n_age_trip_year,

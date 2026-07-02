@@ -105,6 +105,7 @@ plot_wcgop_bio <- function(
       width = 14,
       height = 7
     )
+    invisible(p1)
   }
 
   if (is.null(dir)) {

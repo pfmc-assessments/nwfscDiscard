@@ -14,6 +14,8 @@ create_groups(
 )
 }
 \arguments{
+\item{data}{A data frame of WCGOP catch data that includes all species.}
+
 \item{gear_groups}{List object of gear names to group together based on the WCGOP
 gear column, example: list(c("Bottom Trawl", "Midwater Trawl"),
 c("Hook & Line", "Pot", "Fixed Gear")).}
@@ -35,8 +37,6 @@ groups. For example, list(c("WA", "OR"), "CA") would define WA-OR and CA fleets.
 the \code{fleet_groups} object and align in order of the assigned names. For
 example, the fleet_names should be c("OR-WA", "CA") to align with a
 fleet_groups of list(c("WA", "OR"), "CA").}
-
-\item{catch_data}{A data frame of WCGOP catch data that includes all species.}
 }
 \description{
 Create gear and fleet groups

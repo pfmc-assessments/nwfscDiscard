@@ -1,6 +1,6 @@
 #' Create gear and fleet groups
 #'
-#' @param catch_data A data frame of WCGOP catch data that includes all species.
+#' @param data A data frame of WCGOP catch data that includes all species.
 #' @inheritParams get_biological_data
 #'
 #' @author Chantel Wetzel

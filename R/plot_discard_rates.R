@@ -38,6 +38,7 @@ plot_discard_rates <- function(
       height = 12,
       width = 12
     )
+    invisible(g1)
   } else {
     return(g1)
   }

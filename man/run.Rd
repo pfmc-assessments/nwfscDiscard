@@ -6,11 +6,11 @@
 \usage{
 run(
   species_name,
-  data_grouping,
   catch_data,
   em_catch_data,
   biological_data,
   format_gemm_data,
+  data_grouping,
   length_bins = seq(10, 60, 2),
   age_bins = 1:30,
   dir = NULL,
