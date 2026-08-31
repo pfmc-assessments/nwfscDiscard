@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">nwfscDiscard</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -169,10 +169,10 @@ sectors which should be considered when processing and using data from
 West Coast Groundfish Observer Program (WCGOP).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gemm</span> <span class="op">&lt;-</span> <span class="fu">nwfscSurvey</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/nwfscSurvey/man/pull_gemm.html" class="external-link">pull_gemm</a></span><span class="op">(</span>common_name <span class="op">=</span> <span class="va">species_name</span><span class="op">)</span></span>
-<span><span class="va">gemm_filtered</span> <span class="op">&lt;-</span> <span class="va">gemm</span> <span class="op">|&gt;</span> </span>
+<span><span class="va">gemm_filtered</span> <span class="op">&lt;-</span> <span class="va">gemm</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
 <span>    <span class="va">species</span> <span class="op">==</span> <span class="va">species_name</span></span>
-<span>  <span class="op">)</span> </span>
+<span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/plot_gemm.html">plot_gemm</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">gemm_filtered</span>,</span>
@@ -191,7 +191,7 @@ type in WCGOP data.</p>
 <span>    <span class="st">"Bottom Trawl"</span>,</span>
 <span>    <span class="st">"Midwater Trawl"</span>,</span>
 <span>    <span class="st">"Shrimp Trawl"</span>,</span>
-<span>    <span class="st">"Fixed Gears"</span>, </span>
+<span>    <span class="st">"Fixed Gears"</span>,</span>
 <span>    <span class="st">"Hook &amp; Line"</span>,</span>
 <span>    <span class="st">"Pot"</span></span>
 <span>  <span class="op">)</span>,</span>
@@ -199,7 +199,7 @@ type in WCGOP data.</p>
 <span>    <span class="st">"Bottom Trawl"</span>,</span>
 <span>    <span class="st">"Midwater Trawl"</span>,</span>
 <span>    <span class="st">"Shrimp Trawl"</span>,</span>
-<span>    <span class="st">"Fixed Gears"</span>, </span>
+<span>    <span class="st">"Fixed Gears"</span>,</span>
 <span>    <span class="st">"Hook &amp; Line"</span>,</span>
 <span>    <span class="st">"Pot"</span></span>
 <span>  <span class="op">)</span>,</span>
