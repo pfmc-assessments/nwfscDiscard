@@ -89,7 +89,7 @@ get_weights <- function(
         ),
         prop_catch = round(total_catch_mt / unique(gear_group_catch_mt), 4)
       ) |>
-      dplyr::select(-gear_group_discard_mt,	-gear_group_landings_mt, -gear_group_catch_mt) |>
+      dplyr::select(-gear_group_discard_mt, -gear_group_landings_mt, -gear_group_catch_mt) |>
       dplyr::ungroup()
   }
   if (!is.null(dir)) {

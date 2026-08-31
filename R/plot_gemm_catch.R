@@ -195,7 +195,7 @@ plot_gemm <- function(
     ggplot2::aes(x = year, y = catch, fill = Group)
   ) +
     ggplot2::geom_bar(stat = "identity") +
-    #ggplot2::ylim(as.numeric(ylim[1]), as.numeric(ylim[2])) +
+    # ggplot2::ylim(as.numeric(ylim[1]), as.numeric(ylim[2])) +
     ggplot2::theme_bw() +
     ggplot2::theme(
       axis.text = ggplot2::element_text(size = 10),
@@ -211,7 +211,7 @@ plot_gemm <- function(
     ggplot2::aes(x = year, y = landed_mt, fill = Group)
   ) +
     ggplot2::geom_bar(stat = "identity") +
-    #ggplot2::ylim(as.numeric(ylim[1]), as.numeric(ylim[2])) +
+    # ggplot2::ylim(as.numeric(ylim[1]), as.numeric(ylim[2])) +
     ggplot2::theme_bw() +
     ggplot2::theme(
       axis.text = ggplot2::element_text(size = 10),
@@ -229,7 +229,7 @@ plot_gemm <- function(
     ggplot2::geom_bar(stat = "identity") +
     ggplot2::xlab("Year") +
     ggplot2::ylab("Discards (mt)") +
-    #ggplot2::ylim(as.numeric(ylim[1]), as.numeric(ylim[2])) +
+    # ggplot2::ylim(as.numeric(ylim[1]), as.numeric(ylim[2])) +
     ggplot2::theme_bw() +
     ggplot2::theme(
       axis.text = ggplot2::element_text(size = 10),
@@ -239,8 +239,8 @@ plot_gemm <- function(
     ) +
     ggplot2::scale_fill_viridis_d()
 
-  #plot_2 <- cowplot::plot_grid(p2, p3, ncol = 1, nrow = 3)
-  #plot_1 <- cowplot::plot_grid(c2, c3, ncol = 1, nrow = 3)
+  # plot_2 <- cowplot::plot_grid(p2, p3, ncol = 1, nrow = 3)
+  # plot_1 <- cowplot::plot_grid(c2, c3, ncol = 1, nrow = 3)
   plot_1 <- c2 / c3
   plot_2 <- p2 / p3
 
