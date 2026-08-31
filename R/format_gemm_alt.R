@@ -62,11 +62,13 @@ format_gemm_alt <- function(
       gear_type = gsub("_", "-", gear_type),
       catch_shares = dplyr::case_when(
         sector %in% catch_share_sectors ~ TRUE,
-        sector %in% c("CS EM - Bottom Trawl",
-                      "CS EM - Pot",
-                      "Midwater Hake EM",
-                      "Midwater Rockfish EM") &
-        year >= 2024 ~ FALSE,
+        sector %in% c(
+          "CS EM - Bottom Trawl",
+          "CS EM - Pot",
+          "Midwater Hake EM",
+          "Midwater Rockfish EM"
+        ) &
+          year >= 2024 ~ FALSE,
         .default = FALSE
       ),
       catch_shares = dplyr::case_when(

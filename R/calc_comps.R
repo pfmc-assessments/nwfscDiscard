@@ -143,8 +143,8 @@ calc_comps <- function(
     dplyr::arrange(fleet, sex, year) |>
     dplyr::rename_with(.fn = \(x) gsub("([a-z])0+([1-9])", "\\1\\2", x))
 
-  #normalize <- wide_composition_data
-  #normalize[, 7:dim(wide_composition_data)[2]] <- round(100 * wide_composition_data[, 7:dim(wide_composition_data)[2]] /
+  # normalize <- wide_composition_data
+  # normalize[, 7:dim(wide_composition_data)[2]] <- round(100 * wide_composition_data[, 7:dim(wide_composition_data)[2]] /
   #  apply(wide_composition_data[,7:dim(wide_composition_data)[2]], 1, sum), 4)
 
   if (comp_column_name == "age") {

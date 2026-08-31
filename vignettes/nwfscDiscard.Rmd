@@ -106,10 +106,10 @@ catch share and non-catch share sectors which should be considered when processi
 
 ```{r gemm-data, eval = FALSE, echo=TRUE}
 gemm <- nwfscSurvey::pull_gemm(common_name = species_name)
-gemm_filtered <- gemm |> 
+gemm_filtered <- gemm |>
   dplyr::filter(
     species == species_name
-  ) 
+  )
 
 plot_gemm(
   data = gemm_filtered,
@@ -127,7 +127,7 @@ plot_wcgop_bio(
     "Bottom Trawl",
     "Midwater Trawl",
     "Shrimp Trawl",
-    "Fixed Gears", 
+    "Fixed Gears",
     "Hook & Line",
     "Pot"
   ),
@@ -135,7 +135,7 @@ plot_wcgop_bio(
     "Bottom Trawl",
     "Midwater Trawl",
     "Shrimp Trawl",
-    "Fixed Gears", 
+    "Fixed Gears",
     "Hook & Line",
     "Pot"
   ),
@@ -188,7 +188,6 @@ weights <- get_weights(
   data = format_gemm |> dplyr::filter(gear %in% unlist(gear_groups)),
   include_catch_share = FALSE
 )
-
 ```
 
 ### Process discard biological data
@@ -208,7 +207,6 @@ comps <- get_biological_data(
   fleet_groups = fleet_groups,
   fleet_names = fleet_names
 )
-
 ```
 
 ### Process and weight discard rates
