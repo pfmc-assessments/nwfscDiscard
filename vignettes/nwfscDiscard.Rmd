@@ -28,10 +28,9 @@ used to process WCGOP data for West Coast groundfish assessments.
 * Ensure confidentiality is met based on the requested stratification of data
 by gear and area.
 
-* Summarize observed discard rates by gear and area for catch share and non-
-catch share vessels.
+* Process discard rates by gear and area for use in groundfish stock assessments.
 
-* Summarize biological data from observed discards for use in groundfish
+* Process biological data from observer biological samples for use in groundfish
 stock assessments.
 
 * Visualize data.
@@ -44,211 +43,245 @@ A list of all functions in the packages can be viewed by:
 ls("package:nwfscDiscard")
 ```
 
-## Examples
+## Avialable data and data processing
 
-### Defining Data Structure
+WCGOP data include observations of the size, age for select species, and the amount of
+discards that from observed trips across various West Coast Groundfish sectors starting in 2002. 
+Data from the onboard observers and electronic monitoring (EM) are available. The EM data
+only provides discard amounts, no biological data (length or age). Only vessels 
+participating in the Individual Fishing Quota (IFQ, also referred to as the catch share fishery) 
+fishery are allowed to use EM.
 
-The code combines the data into fleet structures requested by users based on gear
-and areas. The gear and area grouping are passed to all of the processing functions:
+As of 2024, WCGOP only observes federal fisheries. Historically, select fisheries that 
+occurred only in state waters had federal observers. Most sectors observed by WCGOP have 
+less than 100% observer coverage. Only the IFQ  fishery has 100% observer coverage 
+(as of 2026) with either onboard human observers or  EM used for every vessels and trip. 
+The observation rate can be variable for all other sectors and years. The Fisheries 
+Observation Science (FOS) Program provides an [annual report](https://repository.library.noaa.gov/view/noaa/61904) detailing coverage rates for each observed sector.
 
-```r
-# Gears to keep and how they should be grouped within a list:
-gear_groups <- list(c("Bottom Trawl", "Midwater Trawl", "Shrimp Trawl"), c("Hook & Line", "Pot"))
-gear_names <- c("trawl", "fixed gear")
+WGCOP data includes the following gear types; bottom trawl, midwater trawl, shrimp trawl, 
+fixed gears, hook & line, and pot.  The sectors represented in each gear type are:
 
-# Fleet areas:
+* Bottom trawl: Catch shares and catch shares EM (since 2011), limited entry trawl (2002-2010),
+limited entry California halibut, open access California halibut, and sea cucumber.
+
+* Midwater trawl: Catch shares (since 2011), limited entry trawl (2002-2010); 
+midwater hake, and midwater rockfish;
+
+* Shrimp trawl: Pink shrimp and ridgeback prawn;
+
+* Fixed gears: Nearshore;
+
+* Hook & line: Catch shares and catch shares EM (since 2011), directed Pacific halibut,
+limited entry fixed gear DTL, limited entry sablefish, and open access fixed gear; and
+
+* Pot: Catch shares and catch shares EM (since 2011), limited entry sablefish, and open
+access fixed gear.
+
+The Nearshore sector is a sector comprised of  multiple fixed gear types that operate 
+in shallow federal water areas. Additional information about sectors can be found
+[online](https://www.fisheries.noaa.gov/west-coast/fisheries-observers/overview-observed-west-coast-fishery-sectors)
+
+WCGOP data are grouped by gears and areas, as specified by the lead assessment
+author. The requested data grouping are checked to ensure confidentiality requirements
+are met. The data processing will weight the biological data within each gear group based
+on observed catches for the grouped gears and areas. For example, if hook & line and pot 
+gears are requested to be combined into a "fixed gear" group, the observations by 
+hook & line and pot for each year will be weighted by the corresponding catches for 
+each gear type. The catches by gear are calculated from the Groundfish Expanded Multiyear
+Mortality (GEMM) report or from an alternative GEMM (provided by the FOS team), depending
+on the fleet areas requested. The discard rates are also processed and weighted by catches
+for the requested gears. However, the discard rates and variances are weighted by the catch between 
+catch share and non-catch share sectors to produce a weighted discard rate by gear and
+area grouping. 
+
+## Example data processing
+
+### Evaluate data structure
+
+Landing and discard data by gear type can provide insight on discarding and retention practices by gear.  
+Additionally, plotting the data by catch share can provide information about discarding practices between 
+catch share and non-catch share sectors which should be considered when processing and using data from West Coast Groundfish Observer Program (WCGOP). 
+
+
+```{r gemm-data, eval = FALSE, echo=TRUE}
+gemm <- nwfscSurvey::pull_gemm(common_name = species_name)
+gemm_filtered <- gemm |> 
+  dplyr::filter(
+    species == species_name
+  ) 
+
+plot_gemm(
+  data = gemm_filtered,
+  plot = 1
+)
+```
+
+WCGOP collects primarily length data for discarded fish (i.e., age data are collected for select species as well). Length data from WCGOP can inform estimates of retention and selectivity curves in Stock Synthesis. The frequency and size of discarded fish often varies by gear type in WCGOP data.   
+
+```{r plot-lengths, eval=FALSE, echo=TRUE}
+plot_wcgop_bio(
+  data = biological_data,
+  species_name = species_name,
+  gear_groups = list(
+    "Bottom Trawl",
+    "Midwater Trawl",
+    "Shrimp Trawl",
+    "Fixed Gears", 
+    "Hook & Line",
+    "Pot"
+  ),
+  gear_names = c(
+    "Bottom Trawl",
+    "Midwater Trawl",
+    "Shrimp Trawl",
+    "Fixed Gears", 
+    "Hook & Line",
+    "Pot"
+  ),
+  fleet_groups = list(c("WA", "OR", "CA")),
+  fleet_names = c("coastwide"),
+  fleet_colname = "r_state"
+)
+```
+
+Three trawl gears have discard length data for the example speces; bottom trawl, midwater trawl, and shrimp trawl. Based on the GEMM data, bottom trawl catch share vessels represent the majority of discarding for the example species. Shrimp trawl often catches much smaller rockfish compared to other trawl gears due to the net and areas fished, but shrimp trawl often only represents a very small fraction of landing and discard mortality for non-target species.  Based on the landings data and the size frequency among trawl gears, it is recommended to only use discard length data from bottom trawl gear to represent the majority of discarding practices by trawl gear.
+
+There are variable observations of lengths from hook & line and pot gear, but the size of discarded fish are generally similar between the gears. Given the similarity in the discarded lengths, the hook & line and pot data can be combined to increase sample size. Length data from these gears will be catch weighted which helps ensure that the length data are representative of the gear with the highest impact on the species in terms of mortality.
+
+### Recommended data processing and grouping
+
+Based upon the data summaries, a proposed data grouping is provided below.  This should be considered as a starting point. The final data used and how the data are split should be based on a holistic view of how the data are modeled in terms of fleet in the stock assessment.
+
+```{r specification, eval=FALSE, echo=TRUE}
+# Omit data from midwater and shrimp trawl
+gear_groups <- list(
+  "Bottom Trawl",
+  c("Fixed Gears", "Hook & Line", "Pot")
+)
+gear_names <- c(
+  "trawl",
+  "fixed-gear"
+)
 fleet_groups <- list(c("WA", "OR", "CA"))
 fleet_names <- c("coastwide")
+fleet_colname <- "r_state"
+length_bins <- seq(12, 60, 2)
+age_bins <- 1:40
 ```
 
-where the above code groups the data into two coastwide fleets based upon gear
-types. The data can be grouped by state or by latitude.  The WCGOP data contains
-both a departure and return states.  Generally, the return state is used to group
-data based on state areas. If the data area being grouped by latitude this can be
-done by using the latitude of the set (SET_LAT), the average latitude across a
-set (AVG_LAT), or by the latitude that the gear was retreived (UP_LAT).  If the
-data needs to be split north and south of 40 10 N. latitude, the WCGOP data contains
-a field that specifies north or south based on the average latitude (AREA). Since
-the data can be split across various fields (state or latitude) the column name
-to specify the grouping needs to be specified:
+Load in the alternative GEMM data (the regular GEMM data would also work with a coastwide fleet area) and calculate weights based on the gear groupings.
 
-```r
-fleet_colname = "r_state"
-```
+```{r alt-gemm, echo=TRUE, eval=FALSE}
+format_gemm <- format_gemm_alt(
+  dir = gemm_dir,
+  species_name = species_name,
+  areas_to_keep = c("NORTH_42", "SOUTH_42"),
+  gears_to_keep = unlist(gear_groups),
+  data_file = "ALTERNATIVE_GEMM_2026-04-12.csv"
+) |>
+  dplyr::mutate(
+    area = "coastwide"
+  )
 
-where the above example groups the data based on the return state. The fleet 
-column name should be a column in the data.
-
-### Visualizing the Data
-
-Currently, there are a couple of functions that provide summaries and plots of the 
-data to help users.  The first is a function that pull data from the GEMM which
-has expanded catches based on the retained and discard observations by WCGOP. The
-catch by sector is then summarized by sectors that are catch shares or non-catch
-shares.  This information could be used to better inform how the rates between the
-groups could be combined for use in an assessment (e.g., are the majority of catches
-occurring by catch share vessels?).
-
-```r
-gemm <- nwfscSurvey(common_name = "Sablefish")
-gemm_check <- calc_prop_gemm_catch(
-  data = gemm,
-  species_name = "Sablefish"
+weights <- get_weights(
+  data = format_gemm |> dplyr::filter(gear %in% unlist(gear_groups)),
+  include_catch_share = FALSE
 )
+
 ```
 
-Visualize the discard length or ages by gear type or catch share vs. non-catch
-shares:
+### Process discard biological data
 
-```r 
-wcgop_bio <- plot_wcgop_bio(
-  data = biological_data,
-  species_name = "Sablefish",
-  plot = 1:2,
-  comp_column = "length"
-)
-```
-
-### Check confidentiality
-
-Once the grouping has been specified, the data are checked to ensure the grouping
-can meet confidentiality rules. This check based on all the data within the specified
-grouping, not just the observations of a particular species.
-
-```r
-ci <- check_confidential(
-  data = catch_data,
-  gear_groups = gear_groups,
-  gear_names = gear_names,
-  fleet_colname = fleet_colname,
-  fleet_groups = fleet_groups,
-  fleet_names = fleet_names
-)
-```
-
-### Biological Data
-
-The length and or age compositions of discarded fish can be the processed for use 
-in assessment.
-
-```r
-bio_data <- get_biological_data(
-  data = biological_data,
+```{r length-data, echo=TRUE, eval=FALSE}
+comps <- get_biological_data(
+  dir = output_dir,
+  biological_data = biological_data |> dplyr::mutate(SEX = "U"),
+  weight_data = weights,
   catch_data = catch_data,
-  species_name = "Sablefish",
-  len_bins = seq(20, 90, 2),
-  age_bins = 1:50,
+  species_name = species_name,
+  length_bins = length_bins,
+  age_bins = age_bins,
   gear_groups = gear_groups,
   gear_names = gear_names,
   fleet_colname = fleet_colname,
   fleet_groups = fleet_groups,
   fleet_names = fleet_names
 )
+
 ```
 
-where the species name, length, and age bins need to be provided.
+### Process and weight discard rates
 
-The mean weight of the discarded fish can also be calculated for using in an 
-assessment:
+Discard rates are provided by gear and area below (akin to a fleet). The revised processing of these data now provides a single discard rate by year for each fleet. The single discard rate is the weighted rate and variance between catch share and non-catch share by fleet.
 
-```r
-mean_weight <- get_mean_weights(
-  data = catch_data,
-  species_name = "Sablefish",
-  gear_groups = gear_groups,
-  gear_names = gear_names,
-  fleet_colname = fleet_colname,
-  fleet_groups = fleet_groups,
-  fleet_names = fleet_names
+```{r discard-rate, echo=TRUE, eval=FALSE}
+# Calculate weights based on catch share and area
+weights <- get_weights(
+  data = format_gemm,
+  include_catch_share = TRUE
 )
-```
-
-### Discard Rates and Total Observed Discards
-
-The observed catch are then processed for discard rates or totals.  Data from
-catch share and non-catch share vessels are processed separately based on 
-attributes of the data. Catch share vessels have 100 percent observer coverage 
-starting in 2011 and are treated as a census of discarding in the IFQ fishery.  
-Non-catch share vessels have variable rates of observer coverage and the discard 
-rates are based on the observed trips. These trips are then bootstrap to estimate 
-uncertainty around the discard rates. 
-
-```r
-ob_out <- do_discard_bootstrap(
-  data = catch_data,
-  species_name = "Sablefish",
+# Combine and format WCGOP observer and EM data
+data_combined <- combine_catch_data(
+  catch_data = catch_data,
+  em_catch_data = em_catch_data
+)
+# Calculate discard rates by fleet and catch share
+ob_out <- get_discard_rates(
+  dir = output_dir,
+  data = data_combined,
+  species_name = species_name,
   boot_number = 10000,
   gear_groups = gear_groups,
   gear_names = gear_names,
   fleet_colname = fleet_colname,
   fleet_groups = fleet_groups,
   fleet_names = fleet_names,
-  seed_number = 1,
-  rm_em_data = TRUE
+  seed_number = 1
 )
-```
-
-Additionally, a subset of catch share vessels use electronic monitoring (EM) rather
-that have a physical observer onboard for all trips. These vessels have specific
-rules about what they can and cannot be discarded at-sea and which species need
-to be recorded in the logbook and/or monitored by video. The EM program manual
-can be found [online](https://www.fisheries.noaa.gov/s3/2023-11/2024ElectronicMonitoring-ProgramManual-Updated-November2023.pdf) and includes a list of IFQ species.  All IFQ species
-can be discarded at sea within view of cameras. If appropriate, the discard from
-EM vessels can be processed and are treated as a census of discarding. A subset
-of trips for vessels that use EM will have a physical onboard observer and be
-included in the catch records. If EM discards are processed and added to the 
-observed non-EM catch share discards, one must exclude the physical onobard observer 
-data from EM vessels since this would duplicate records.
-
-
-```r
-em_out <- do_discard_bootstrap(
-  dir = here::here(),
-  data = em_catch_data,
-  species_name = "Sablefish",
-  gear_groups = gear_groups,
-  gear_names = gear_names,
-  fleet_colname = fleet_colname,
-  fleet_groups = fleet_groups,
-  fleet_names = fleet_names
-)
-```
-
-The discard rates from the catch share vessels with onboard observers and EM 
-observation can be then combined:
-
-```r
-combine_cs_discards(
+# Weight discard rates
+rates <- weight_discard_rates(
+  weight_data = weights,
+  ncs_data = ob_out$ncs,
   cs_data = ob_out$cs,
-  em_data = em_out$em
+  dir = output_dir
 )
 ```
 
-## Metadata
+Visualize the weighted discard rate by fleet:
 
-Description of data products:
+```{r plot-rates, echo=TRUE, eval=FALSE}
+plot_discard_rates(
+  data = rates
+)
+```
+
+## Data products provided to assessors
+
+The following CSV files will be provided for each data processing request:
+
 
 - Confidentiality Checks:
 
-  - confidentiality_catch_share.csv: The number of observed vessels, trips, hauls, and observations on non-catch and catch-share vessels of selected species given the request data stratification by area and gear type. To meet confidentiality a total of three or more vessels must be observed by stratification and year.
+  - wcgop_confidentiality.csv: The number of total observations, trips, hauls, and and vessels given the request data stratification by area and gear type. To meet confidentiality a total of three or more vessels must be observed by stratification and year.
 
-  - confidentiality_em_catch_share.csv: The number of observed vessels, trips, hauls, and observations on vessels using electronic monitoring (EM) of selected species given the request data stratification by area and gear type. To meet confidentiality a total of three or more vessels must be observed by stratification and year. The confidentiality check for EM vessels is separate from the previous confidentiality check since the EM data are in a separate data file given the unique nature of the data. The EM program began in 2015 and is limited to catch-share vessels with participation increasing in recent years. 
   
 - Biological Data:
 
-  - biological_discard_lengths.csv and biological_discard_ages.csv: The length/age observations of discarded fish formatted based on requested stratification, data bin structure, and sex. Only select species include sex-specific data within WCGOP. Data are formatted for SS3. 
+  - wcgop_discard_lengths.csv and if available wcgop_discard_age.csv: The length/age observations of discarded fish formatted based on requested stratification, data bin structure, and sex (majority of observations in WCGOP are unsexed). Only select species include sex-specific data within WCGOP. Data are formatted for SS3. 
+  
+  - wcgop_discard_sample_sizes_length.csv: The number of hauls and trips sample by stratification for each year and the resulting number of fish sampled. The input sample size (included in the wcgop_discard_lengths.csv file) is also provided based on the Stewart fishery data [input sample size calculation](https://www.pcouncil.org/documents/2021/10/status-of-dover-sole-microstomus-pacificus-along-the-u-s-west-coast-in-2021.pdf/#page=37).
 
-  - discard_mean_body_weights.csv: The mean body weight in kg of discarded fish. Only years with 30 or more observations by stratification are provided. Data are formatted for SS3. 
   
 - Discard Rates:
 
-  - discard_rates_catch_share.csv: The observed discard totals and rates for catch-share vessels. The catch-share fishery has full observer coverage, hence data are considered a census and no measure of uncertainty are provided. 
+  - wcgop_discard_rates_weighted.csv: The weighted discard rates based on the requested stratification by year formatted for SS3. 
+ 
+The intermediate files are also provided split between catch share and non-catch share before data weighting:
 
-  - discard_rates_em_catch_share.csv:  The observed discard totals and rates for catch-share vessels using EM. These data are considered a census and no measure of uncertainty are provided. 
+  - wcgop_discards_rates_catch_share.csv: The observed discard totals and rates for catch-share vessels. The catch-share fishery has full observer coverage, hence data are considered a census and no measure of uncertainty are provided. 
 
-  - discard_rates_combined_catch_share.csv: The combined discard totals between the catch-share vessels with onboard observers and  those using EM. Analysts should use this file when determining how to combine discard rates between catch-share and non-catch share vessels for use in stock assessment.
-
-  - discard_rates_noncatch_share.csv: The observed discard totals and rates for non-catch share vessels. These data are bootstrapped to estimate median discard rates and standard deviation for use in assessment.
+  - wcgop_discard_rates_noncatch_share.csv: The observed discard totals and rates for non-catch share vessels. These data are bootstrapped to estimate median discard rates and standard deviation for use in assessment.
   
 
 
