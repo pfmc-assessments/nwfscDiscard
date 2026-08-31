@@ -62,7 +62,7 @@
                         <h4 data-toc-skip class="author">Chantel
 Wetzel</h4>
             
-            <h4 data-toc-skip class="date">2026-07-02</h4>
+            <h4 data-toc-skip class="date">2026-08-31</h4>
       
 
       <div class="hidden name"><code>nwfscDiscard.Rmd</code></div>
@@ -86,10 +86,10 @@ used to process WCGOP data for West Coast groundfish assessments.</p>
 <ul>
 <li><p>Ensure confidentiality is met based on the requested
 stratification of data by gear and area.</p></li>
-<li><p>Summarize observed discard rates by gear and area for catch share
-and non- catch share vessels.</p></li>
-<li><p>Summarize biological data from observed discards for use in
-groundfish stock assessments.</p></li>
+<li><p>Process discard rates by gear and area for use in groundfish
+stock assessments.</p></li>
+<li><p>Process biological data from observer biological samples for use
+in groundfish stock assessments.</p></li>
 <li><p>Visualize data.</p></li>
 </ul>
 </div>
@@ -101,108 +101,184 @@ groundfish stock assessments.</p></li>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="st">"package:nwfscDiscard"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
+<h2 id="avialable-data-and-data-processing">Avialable data and data processing<a class="anchor" aria-label="anchor" href="#avialable-data-and-data-processing"></a>
+</h2>
+<p>WCGOP data include observations of the size, age for select species,
+and the amount of discards that from observed trips across various West
+Coast Groundfish sectors starting in 2002. Data from the onboard
+observers and electronic monitoring (EM) are available. The EM data only
+provides discard amounts, no biological data (length or age). Only
+vessels participating in the Individual Fishing Quota (IFQ, also
+referred to as the catch share fishery) fishery are allowed to use
+EM.</p>
+<p>As of 2024, WCGOP only observes federal fisheries. Historically,
+select fisheries that occurred only in state waters had federal
+observers. Most sectors observed by WCGOP have less than 100% observer
+coverage. Only the IFQ fishery has 100% observer coverage (as of 2026)
+with either onboard human observers or EM used for every vessels and
+trip. The observation rate can be variable for all other sectors and
+years. The Fisheries Observation Science (FOS) Program provides an <a href="https://repository.library.noaa.gov/view/noaa/61904" class="external-link">annual
+report</a> detailing coverage rates for each observed sector.</p>
+<p>WGCOP data includes the following gear types; bottom trawl, midwater
+trawl, shrimp trawl, fixed gears, hook &amp; line, and pot. The sectors
+represented in each gear type are:</p>
+<ul>
+<li><p>Bottom trawl: Catch shares and catch shares EM (since 2011),
+limited entry trawl (2002-2010), limited entry California halibut, open
+access California halibut, and sea cucumber.</p></li>
+<li><p>Midwater trawl: Catch shares (since 2011), limited entry trawl
+(2002-2010); midwater hake, and midwater rockfish;</p></li>
+<li><p>Shrimp trawl: Pink shrimp and ridgeback prawn;</p></li>
+<li><p>Fixed gears: Nearshore;</p></li>
+<li><p>Hook &amp; line: Catch shares and catch shares EM (since 2011),
+directed Pacific halibut, limited entry fixed gear DTL, limited entry
+sablefish, and open access fixed gear; and</p></li>
+<li><p>Pot: Catch shares and catch shares EM (since 2011), limited entry
+sablefish, and open access fixed gear.</p></li>
+</ul>
+<p>The Nearshore sector is a sector comprised of multiple fixed gear
+types that operate in shallow federal water areas. Additional
+information about sectors can be found <a href="https://www.fisheries.noaa.gov/west-coast/fisheries-observers/overview-observed-west-coast-fishery-sectors" class="external-link">online</a></p>
+<p>WCGOP data are grouped by gears and areas, as specified by the lead
+assessment author. The requested data grouping are checked to ensure
+confidentiality requirements are met. The data processing will weight
+the biological data within each gear group based on observed catches for
+the grouped gears and areas. For example, if hook &amp; line and pot
+gears are requested to be combined into a “fixed gear” group, the
+observations by hook &amp; line and pot for each year will be weighted
+by the corresponding catches for each gear type. The catches by gear are
+calculated from the Groundfish Expanded Multiyear Mortality (GEMM)
+report or from an alternative GEMM (provided by the FOS team), depending
+on the fleet areas requested. The discard rates are also processed and
+weighted by catches for the requested gears. However, the discard rates
+and variances are weighted by the catch between catch share and
+non-catch share sectors to produce a weighted discard rate by gear and
+area grouping.</p>
+</div>
+<div class="section level2">
+<h2 id="example-data-processing">Example data processing<a class="anchor" aria-label="anchor" href="#example-data-processing"></a>
 </h2>
 <div class="section level3">
-<h3 id="defining-data-structure">Defining Data Structure<a class="anchor" aria-label="anchor" href="#defining-data-structure"></a>
+<h3 id="evaluate-data-structure">Evaluate data structure<a class="anchor" aria-label="anchor" href="#evaluate-data-structure"></a>
 </h3>
-<p>The code combines the data into fleet structures requested by users
-based on gear and areas. The gear and area grouping are passed to all of
-the processing functions:</p>
+<p>Landing and discard data by gear type can provide insight on
+discarding and retention practices by gear.<br>
+Additionally, plotting the data by catch share can provide information
+about discarding practices between catch share and non-catch share
+sectors which should be considered when processing and using data from
+West Coast Groundfish Observer Program (WCGOP).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Gears to keep and how they should be grouped within a list:</span></span>
-<span><span class="va">gear_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bottom Trawl"</span>, <span class="st">"Midwater Trawl"</span>, <span class="st">"Shrimp Trawl"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Hook &amp; Line"</span>, <span class="st">"Pot"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">gear_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"trawl"</span>, <span class="st">"fixed gear"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">gemm</span> <span class="op">&lt;-</span> <span class="fu">nwfscSurvey</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/nwfscSurvey/man/pull_gemm.html" class="external-link">pull_gemm</a></span><span class="op">(</span>common_name <span class="op">=</span> <span class="va">species_name</span><span class="op">)</span></span>
+<span><span class="va">gemm_filtered</span> <span class="op">&lt;-</span> <span class="va">gemm</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>    <span class="va">species</span> <span class="op">==</span> <span class="va">species_name</span></span>
+<span>  <span class="op">)</span> </span>
 <span></span>
-<span><span class="co"># Fleet areas:</span></span>
-<span><span class="va">fleet_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"WA"</span>, <span class="st">"OR"</span>, <span class="st">"CA"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">fleet_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"coastwide"</span><span class="op">)</span></span></code></pre></div>
-<p>where the above code groups the data into two coastwide fleets based
-upon gear types. The data can be grouped by state or by latitude. The
-WCGOP data contains both a departure and return states. Generally, the
-return state is used to group data based on state areas. If the data
-area being grouped by latitude this can be done by using the latitude of
-the set (SET_LAT), the average latitude across a set (AVG_LAT), or by
-the latitude that the gear was retreived (UP_LAT). If the data needs to
-be split north and south of 40 10 N. latitude, the WCGOP data contains a
-field that specifies north or south based on the average latitude
-(AREA). Since the data can be split across various fields (state or
-latitude) the column name to specify the grouping needs to be
-specified:</p>
+<span><span class="fu"><a href="../reference/plot_gemm.html">plot_gemm</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">gemm_filtered</span>,</span>
+<span>  plot <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>WCGOP collects primarily length data for discarded fish (i.e., age
+data are collected for select species as well). Length data from WCGOP
+can inform estimates of retention and selectivity curves in Stock
+Synthesis. The frequency and size of discarded fish often varies by gear
+type in WCGOP data.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fleet_colname</span> <span class="op">=</span> <span class="st">"r_state"</span></span></code></pre></div>
-<p>where the above example groups the data based on the return state.
-The fleet column name should be a column in the data.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_wcgop_bio.html">plot_wcgop_bio</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">biological_data</span>,</span>
+<span>  species_name <span class="op">=</span> <span class="va">species_name</span>,</span>
+<span>  gear_groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Bottom Trawl"</span>,</span>
+<span>    <span class="st">"Midwater Trawl"</span>,</span>
+<span>    <span class="st">"Shrimp Trawl"</span>,</span>
+<span>    <span class="st">"Fixed Gears"</span>, </span>
+<span>    <span class="st">"Hook &amp; Line"</span>,</span>
+<span>    <span class="st">"Pot"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  gear_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Bottom Trawl"</span>,</span>
+<span>    <span class="st">"Midwater Trawl"</span>,</span>
+<span>    <span class="st">"Shrimp Trawl"</span>,</span>
+<span>    <span class="st">"Fixed Gears"</span>, </span>
+<span>    <span class="st">"Hook &amp; Line"</span>,</span>
+<span>    <span class="st">"Pot"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  fleet_groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"WA"</span>, <span class="st">"OR"</span>, <span class="st">"CA"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  fleet_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"coastwide"</span><span class="op">)</span>,</span>
+<span>  fleet_colname <span class="op">=</span> <span class="st">"r_state"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Three trawl gears have discard length data for the example speces;
+bottom trawl, midwater trawl, and shrimp trawl. Based on the GEMM data,
+bottom trawl catch share vessels represent the majority of discarding
+for the example species. Shrimp trawl often catches much smaller
+rockfish compared to other trawl gears due to the net and areas fished,
+but shrimp trawl often only represents a very small fraction of landing
+and discard mortality for non-target species. Based on the landings data
+and the size frequency among trawl gears, it is recommended to only use
+discard length data from bottom trawl gear to represent the majority of
+discarding practices by trawl gear.</p>
+<p>There are variable observations of lengths from hook &amp; line and
+pot gear, but the size of discarded fish are generally similar between
+the gears. Given the similarity in the discarded lengths, the hook &amp;
+line and pot data can be combined to increase sample size. Length data
+from these gears will be catch weighted which helps ensure that the
+length data are representative of the gear with the highest impact on
+the species in terms of mortality.</p>
 </div>
 <div class="section level3">
-<h3 id="visualizing-the-data">Visualizing the Data<a class="anchor" aria-label="anchor" href="#visualizing-the-data"></a>
+<h3 id="recommended-data-processing-and-grouping">Recommended data processing and grouping<a class="anchor" aria-label="anchor" href="#recommended-data-processing-and-grouping"></a>
 </h3>
-<p>Currently, there are a couple of functions that provide summaries and
-plots of the data to help users. The first is a function that pull data
-from the GEMM which has expanded catches based on the retained and
-discard observations by WCGOP. The catch by sector is then summarized by
-sectors that are catch shares or non-catch shares. This information
-could be used to better inform how the rates between the groups could be
-combined for use in an assessment (e.g., are the majority of catches
-occurring by catch share vessels?).</p>
+<p>Based upon the data summaries, a proposed data grouping is provided
+below. This should be considered as a starting point. The final data
+used and how the data are split should be based on a holistic view of
+how the data are modeled in terms of fleet in the stock assessment.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gemm</span> <span class="op">&lt;-</span> <span class="fu">nwfscSurvey</span><span class="op">(</span>common_name <span class="op">=</span> <span class="st">"Sablefish"</span><span class="op">)</span></span>
-<span><span class="va">gemm_check</span> <span class="op">&lt;-</span> <span class="fu">calc_prop_gemm_catch</span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">gemm</span>,</span>
-<span>  species_name <span class="op">=</span> <span class="st">"Sablefish"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>Visualize the discard length or ages by gear type or catch share
-vs. non-catch shares:</p>
+<code class="sourceCode R"><span><span class="co"># Omit data from midwater and shrimp trawl</span></span>
+<span><span class="va">gear_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Bottom Trawl"</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Fixed Gears"</span>, <span class="st">"Hook &amp; Line"</span>, <span class="st">"Pot"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">gear_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"trawl"</span>,</span>
+<span>  <span class="st">"fixed-gear"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">fleet_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"WA"</span>, <span class="st">"OR"</span>, <span class="st">"CA"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">fleet_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"coastwide"</span><span class="op">)</span></span>
+<span><span class="va">fleet_colname</span> <span class="op">&lt;-</span> <span class="st">"r_state"</span></span>
+<span><span class="va">length_bins</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">12</span>, <span class="fl">60</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">age_bins</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">40</span></span></code></pre></div>
+<p>Load in the alternative GEMM data (the regular GEMM data would also
+work with a coastwide fleet area) and calculate weights based on the
+gear groupings.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">wcgop_bio</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_wcgop_bio.html">plot_wcgop_bio</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">biological_data</span>,</span>
-<span>  species_name <span class="op">=</span> <span class="st">"Sablefish"</span>,</span>
-<span>  plot <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,</span>
-<span>  comp_column <span class="op">=</span> <span class="st">"length"</span></span>
+<code class="sourceCode R"><span><span class="va">format_gemm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/format_gemm_alt.html">format_gemm_alt</a></span><span class="op">(</span></span>
+<span>  dir <span class="op">=</span> <span class="va">gemm_dir</span>,</span>
+<span>  species_name <span class="op">=</span> <span class="va">species_name</span>,</span>
+<span>  areas_to_keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NORTH_42"</span>, <span class="st">"SOUTH_42"</span><span class="op">)</span>,</span>
+<span>  gears_to_keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">gear_groups</span><span class="op">)</span>,</span>
+<span>  data_file <span class="op">=</span> <span class="st">"ALTERNATIVE_GEMM_2026-04-12.csv"</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    area <span class="op">=</span> <span class="st">"coastwide"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_weights.html">get_weights</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">format_gemm</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">gear</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">gear_groups</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  include_catch_share <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="check-confidentiality">Check confidentiality<a class="anchor" aria-label="anchor" href="#check-confidentiality"></a>
+<h3 id="process-discard-biological-data">Process discard biological data<a class="anchor" aria-label="anchor" href="#process-discard-biological-data"></a>
 </h3>
-<p>Once the grouping has been specified, the data are checked to ensure
-the grouping can meet confidentiality rules. This check based on all the
-data within the specified grouping, not just the observations of a
-particular species.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ci</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/check_confidential.html">check_confidential</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">catch_data</span>,</span>
-<span>  gear_groups <span class="op">=</span> <span class="va">gear_groups</span>,</span>
-<span>  gear_names <span class="op">=</span> <span class="va">gear_names</span>,</span>
-<span>  fleet_colname <span class="op">=</span> <span class="va">fleet_colname</span>,</span>
-<span>  fleet_groups <span class="op">=</span> <span class="va">fleet_groups</span>,</span>
-<span>  fleet_names <span class="op">=</span> <span class="va">fleet_names</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="biological-data">Biological Data<a class="anchor" aria-label="anchor" href="#biological-data"></a>
-</h3>
-<p>The length and or age compositions of discarded fish can be the
-processed for use in assessment.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bio_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_biological_data.html">get_biological_data</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">biological_data</span>,</span>
+<code class="sourceCode R"><span><span class="va">comps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_biological_data.html">get_biological_data</a></span><span class="op">(</span></span>
+<span>  dir <span class="op">=</span> <span class="va">output_dir</span>,</span>
+<span>  biological_data <span class="op">=</span> <span class="va">biological_data</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>SEX <span class="op">=</span> <span class="st">"U"</span><span class="op">)</span>,</span>
+<span>  weight_data <span class="op">=</span> <span class="va">weights</span>,</span>
 <span>  catch_data <span class="op">=</span> <span class="va">catch_data</span>,</span>
-<span>  species_name <span class="op">=</span> <span class="st">"Sablefish"</span>,</span>
-<span>  len_bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">90</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>  age_bins <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">50</span>,</span>
-<span>  gear_groups <span class="op">=</span> <span class="va">gear_groups</span>,</span>
-<span>  gear_names <span class="op">=</span> <span class="va">gear_names</span>,</span>
-<span>  fleet_colname <span class="op">=</span> <span class="va">fleet_colname</span>,</span>
-<span>  fleet_groups <span class="op">=</span> <span class="va">fleet_groups</span>,</span>
-<span>  fleet_names <span class="op">=</span> <span class="va">fleet_names</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>where the species name, length, and age bins need to be provided.</p>
-<p>The mean weight of the discarded fish can also be calculated for
-using in an assessment:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mean_weight</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_mean_weights.html">get_mean_weights</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">catch_data</span>,</span>
-<span>  species_name <span class="op">=</span> <span class="st">"Sablefish"</span>,</span>
+<span>  species_name <span class="op">=</span> <span class="va">species_name</span>,</span>
+<span>  length_bins <span class="op">=</span> <span class="va">length_bins</span>,</span>
+<span>  age_bins <span class="op">=</span> <span class="va">age_bins</span>,</span>
 <span>  gear_groups <span class="op">=</span> <span class="va">gear_groups</span>,</span>
 <span>  gear_names <span class="op">=</span> <span class="va">gear_names</span>,</span>
 <span>  fleet_colname <span class="op">=</span> <span class="va">fleet_colname</span>,</span>
@@ -211,121 +287,100 @@ using in an assessment:</p>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="discard-rates-and-total-observed-discards">Discard Rates and Total Observed Discards<a class="anchor" aria-label="anchor" href="#discard-rates-and-total-observed-discards"></a>
+<h3 id="process-and-weight-discard-rates">Process and weight discard rates<a class="anchor" aria-label="anchor" href="#process-and-weight-discard-rates"></a>
 </h3>
-<p>The observed catch are then processed for discard rates or totals.
-Data from catch share and non-catch share vessels are processed
-separately based on attributes of the data. Catch share vessels have 100
-percent observer coverage starting in 2011 and are treated as a census
-of discarding in the IFQ fishery.<br>
-Non-catch share vessels have variable rates of observer coverage and the
-discard rates are based on the observed trips. These trips are then
-bootstrap to estimate uncertainty around the discard rates.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ob_out</span> <span class="op">&lt;-</span> <span class="fu">do_discard_bootstrap</span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">catch_data</span>,</span>
-<span>  species_name <span class="op">=</span> <span class="st">"Sablefish"</span>,</span>
+<p>Discard rates are provided by gear and area below (akin to a fleet).
+The revised processing of these data now provides a single discard rate
+by year for each fleet. The single discard rate is the weighted rate and
+variance between catch share and non-catch share by fleet.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Calculate weights based on catch share and area</span></span>
+<span><span class="va">weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_weights.html">get_weights</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">format_gemm</span>,</span>
+<span>  include_catch_share <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># Combine and format WCGOP observer and EM data</span></span>
+<span><span class="va">data_combined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combine_catch_data.html">combine_catch_data</a></span><span class="op">(</span></span>
+<span>  catch_data <span class="op">=</span> <span class="va">catch_data</span>,</span>
+<span>  em_catch_data <span class="op">=</span> <span class="va">em_catch_data</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># Calculate discard rates by fleet and catch share</span></span>
+<span><span class="va">ob_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_discard_rates.html">get_discard_rates</a></span><span class="op">(</span></span>
+<span>  dir <span class="op">=</span> <span class="va">output_dir</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">data_combined</span>,</span>
+<span>  species_name <span class="op">=</span> <span class="va">species_name</span>,</span>
 <span>  boot_number <span class="op">=</span> <span class="fl">10000</span>,</span>
 <span>  gear_groups <span class="op">=</span> <span class="va">gear_groups</span>,</span>
 <span>  gear_names <span class="op">=</span> <span class="va">gear_names</span>,</span>
 <span>  fleet_colname <span class="op">=</span> <span class="va">fleet_colname</span>,</span>
 <span>  fleet_groups <span class="op">=</span> <span class="va">fleet_groups</span>,</span>
 <span>  fleet_names <span class="op">=</span> <span class="va">fleet_names</span>,</span>
-<span>  seed_number <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  rm_em_data <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>Additionally, a subset of catch share vessels use electronic
-monitoring (EM) rather that have a physical observer onboard for all
-trips. These vessels have specific rules about what they can and cannot
-be discarded at-sea and which species need to be recorded in the logbook
-and/or monitored by video. The EM program manual can be found <a href="https://www.fisheries.noaa.gov/s3/2023-11/2024ElectronicMonitoring-ProgramManual-Updated-November2023.pdf" class="external-link">online</a>
-and includes a list of IFQ species. All IFQ species can be discarded at
-sea within view of cameras. If appropriate, the discard from EM vessels
-can be processed and are treated as a census of discarding. A subset of
-trips for vessels that use EM will have a physical onboard observer and
-be included in the catch records. If EM discards are processed and added
-to the observed non-EM catch share discards, one must exclude the
-physical onobard observer data from EM vessels since this would
-duplicate records.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">em_out</span> <span class="op">&lt;-</span> <span class="fu">do_discard_bootstrap</span><span class="op">(</span></span>
-<span>  dir <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu">here</span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  data <span class="op">=</span> <span class="va">em_catch_data</span>,</span>
-<span>  species_name <span class="op">=</span> <span class="st">"Sablefish"</span>,</span>
-<span>  gear_groups <span class="op">=</span> <span class="va">gear_groups</span>,</span>
-<span>  gear_names <span class="op">=</span> <span class="va">gear_names</span>,</span>
-<span>  fleet_colname <span class="op">=</span> <span class="va">fleet_colname</span>,</span>
-<span>  fleet_groups <span class="op">=</span> <span class="va">fleet_groups</span>,</span>
-<span>  fleet_names <span class="op">=</span> <span class="va">fleet_names</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>The discard rates from the catch share vessels with onboard observers
-and EM observation can be then combined:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/combine_cs_discards.html">combine_cs_discards</a></span><span class="op">(</span></span>
+<span>  seed_number <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># Weight discard rates</span></span>
+<span><span class="va">rates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/weight_discard_rates.html">weight_discard_rates</a></span><span class="op">(</span></span>
+<span>  weight_data <span class="op">=</span> <span class="va">weights</span>,</span>
+<span>  ncs_data <span class="op">=</span> <span class="va">ob_out</span><span class="op">$</span><span class="va">ncs</span>,</span>
 <span>  cs_data <span class="op">=</span> <span class="va">ob_out</span><span class="op">$</span><span class="va">cs</span>,</span>
-<span>  em_data <span class="op">=</span> <span class="va">em_out</span><span class="op">$</span><span class="va">em</span></span>
+<span>  dir <span class="op">=</span> <span class="va">output_dir</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Visualize the weighted discard rate by fleet:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_discard_rates.html">plot_discard_rates</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">rates</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
-<h2 id="metadata">Metadata<a class="anchor" aria-label="anchor" href="#metadata"></a>
+<h2 id="data-products-provided-to-assessors">Data products provided to assessors<a class="anchor" aria-label="anchor" href="#data-products-provided-to-assessors"></a>
 </h2>
-<p>Description of data products:</p>
+<p>The following CSV files will be provided for each data processing
+request:</p>
 <ul>
 <li>
 <p>Confidentiality Checks:</p>
 <ul>
-<li><p>confidentiality_catch_share.csv: The number of observed vessels,
-trips, hauls, and observations on non-catch and catch-share vessels of
-selected species given the request data stratification by area and gear
-type. To meet confidentiality a total of three or more vessels must be
-observed by stratification and year.</p></li>
-<li><p>confidentiality_em_catch_share.csv: The number of observed
-vessels, trips, hauls, and observations on vessels using electronic
-monitoring (EM) of selected species given the request data
-stratification by area and gear type. To meet confidentiality a total of
-three or more vessels must be observed by stratification and year. The
-confidentiality check for EM vessels is separate from the previous
-confidentiality check since the EM data are in a separate data file
-given the unique nature of the data. The EM program began in 2015 and is
-limited to catch-share vessels with participation increasing in recent
-years.</p></li>
+<li>wcgop_confidentiality.csv: The number of total observations, trips,
+hauls, and and vessels given the request data stratification by area and
+gear type. To meet confidentiality a total of three or more vessels must
+be observed by stratification and year.</li>
 </ul>
 </li>
 <li>
 <p>Biological Data:</p>
 <ul>
-<li><p>biological_discard_lengths.csv and biological_discard_ages.csv:
+<li><p>wcgop_discard_lengths.csv and if available wcgop_discard_age.csv:
 The length/age observations of discarded fish formatted based on
-requested stratification, data bin structure, and sex. Only select
-species include sex-specific data within WCGOP. Data are formatted for
-SS3.</p></li>
-<li><p>discard_mean_body_weights.csv: The mean body weight in kg of
-discarded fish. Only years with 30 or more observations by
-stratification are provided. Data are formatted for SS3.</p></li>
+requested stratification, data bin structure, and sex (majority of
+observations in WCGOP are unsexed). Only select species include
+sex-specific data within WCGOP. Data are formatted for SS3.</p></li>
+<li><p>wcgop_discard_sample_sizes_length.csv: The number of hauls and
+trips sample by stratification for each year and the resulting number of
+fish sampled. The input sample size (included in the
+wcgop_discard_lengths.csv file) is also provided based on the Stewart
+fishery data <a href="https://www.pcouncil.org/documents/2021/10/status-of-dover-sole-microstomus-pacificus-along-the-u-s-west-coast-in-2021.pdf/#page=37" class="external-link">input
+sample size calculation</a>.</p></li>
 </ul>
 </li>
 <li>
 <p>Discard Rates:</p>
 <ul>
-<li><p>discard_rates_catch_share.csv: The observed discard totals and
-rates for catch-share vessels. The catch-share fishery has full observer
-coverage, hence data are considered a census and no measure of
-uncertainty are provided.</p></li>
-<li><p>discard_rates_em_catch_share.csv: The observed discard totals and
-rates for catch-share vessels using EM. These data are considered a
-census and no measure of uncertainty are provided.</p></li>
-<li><p>discard_rates_combined_catch_share.csv: The combined discard
-totals between the catch-share vessels with onboard observers and those
-using EM. Analysts should use this file when determining how to combine
-discard rates between catch-share and non-catch share vessels for use in
-stock assessment.</p></li>
-<li><p>discard_rates_noncatch_share.csv: The observed discard totals and
-rates for non-catch share vessels. These data are bootstrapped to
-estimate median discard rates and standard deviation for use in
-assessment.</p></li>
+<li>wcgop_discard_rates_weighted.csv: The weighted discard rates based
+on the requested stratification by year formatted for SS3.</li>
 </ul>
 </li>
+</ul>
+<p>The intermediate files are also provided split between catch share
+and non-catch share before data weighting:</p>
+<ul>
+<li><p>wcgop_discards_rates_catch_share.csv: The observed discard totals
+and rates for catch-share vessels. The catch-share fishery has full
+observer coverage, hence data are considered a census and no measure of
+uncertainty are provided.</p></li>
+<li><p>wcgop_discard_rates_noncatch_share.csv: The observed discard
+totals and rates for non-catch share vessels. These data are
+bootstrapped to estimate median discard rates and standard deviation for
+use in assessment.</p></li>
 </ul>
 </div>
   </div>
@@ -345,7 +400,7 @@ assessment.</p></li>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
       </footer>
