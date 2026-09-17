@@ -105,22 +105,22 @@ plot_gemm <- function(
 
   catch_totals <- data_formatted |>
     dplyr::mutate(
-      all_total = sum(total_discard_with_mort_rates_applied_and_landings_mt)
+      all_total = sum(mortality_landings_and_discard_mortality)
     ) |>
     dplyr::group_by(year) |>
     dplyr::mutate(
-      landed_mt_by_year = sum(total_landings_mt),
-      discard_mt_by_year = sum(total_discard_mt),
-      dead_discard_mt_by_year = sum(total_discard_with_mort_rates_applied_mt),
+      landed_mt_by_year = sum(landings),
+      discard_mt_by_year = sum(discards),
+      dead_discard_mt_by_year = sum(discard_mortality),
       catch_by_year = sum(
-        total_discard_with_mort_rates_applied_and_landings_mt
+        mortality_landings_and_discard_mortality
       ),
     ) |>
     dplyr::ungroup() |>
     dplyr::group_by(sector) |>
     dplyr::mutate(
       catch_all_years_total = sum(
-        total_discard_with_mort_rates_applied_and_landings_mt
+        mortality_landings_and_discard_mortality
       )
     ) |>
     dplyr::mutate(
@@ -132,10 +132,10 @@ plot_gemm <- function(
   catch_by_catch_share_gear <- catch_totals |>
     dplyr::summarise(
       .by = c("year", "Group"),
-      discard_mt = sum(total_discard_mt),
-      dead_discard_mt = sum(total_discard_with_mort_rates_applied_mt),
-      landed_mt = sum(total_landings_mt),
-      catch = sum(total_discard_with_mort_rates_applied_and_landings_mt),
+      discard_mt = sum(discards),
+      dead_discard_mt = sum(discard_mortality),
+      landed_mt = sum(landings),
+      catch = sum(mortality_landings_and_discard_mortality),
       gemm_discard_rate = discard_mt / (landed_mt + discard_mt),
       gemm_dead_discard_rate = dead_discard_mt / (landed_mt + dead_discard_mt),
       prop_discard = discard_mt / unique(discard_mt_by_year),
