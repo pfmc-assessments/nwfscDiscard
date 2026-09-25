@@ -85,6 +85,7 @@ plot_gemm <- function(
             "CS EM - Pot",
             "Midwater Rockfish",
             "Midwater Hake EM",
+            "Midwater Hake",
             "Midwater Rockfish EM"
           ) ~
           "Catch Shares",
