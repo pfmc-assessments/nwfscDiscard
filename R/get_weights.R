@@ -50,9 +50,10 @@ get_weights <- function(
       dplyr::ungroup() |>
       dplyr::summarise(
         .by = c("year", "area", "catch_shares", "gear_type"),
-        gear_discard_mt = sum(gemm_dis_est_area, na.rm = TRUE),
-        gear_landings_mt = sum(landings_area, na.rm = TRUE),
-        gear_catch_mt = sum(gear_discard_mt + gear_landings_mt, na.rm = TRUE),
+        # Adding 0.01 to each data type gets around NaN issues
+        gear_discard_mt = 0.01 + sum(gemm_dis_est_area, na.rm = TRUE),
+        gear_landings_mt = 0.01 + sum(landings_area, na.rm = TRUE),
+        gear_catch_mt = 0.01 + sum(gear_discard_mt + gear_landings_mt, na.rm = TRUE),
         prop_discard = round(gear_discard_mt / unique(total_discard_mt), 4),
         prop_landed = round(gear_landings_mt / unique(total_landed_mt), 4),
         prop_catch = round(gear_catch_mt / unique(total_catch_mt), 4)
@@ -66,9 +67,9 @@ get_weights <- function(
     weights <- data |>
       dplyr::summarise(
         .by = c("year", "area", "gear", "gear_type"),
-        total_discard_mt = round(sum(gemm_dis_est_area, na.rm = TRUE), 4),
-        total_landed_mt = round(sum(landings_area, na.rm = TRUE), 4),
-        total_catch_mt = round(total_discard_mt + total_landed_mt, 4)
+        total_discard_mt = 0.01 + round(sum(gemm_dis_est_area, na.rm = TRUE), 4),
+        total_landed_mt = 0.01 + round(sum(landings_area, na.rm = TRUE), 4),
+        total_catch_mt = 0.01 + round(total_discard_mt + total_landed_mt, 4)
       ) |>
       dplyr::group_by(year, area, gear_type) |>
       dplyr::mutate(
