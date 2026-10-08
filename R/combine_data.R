@@ -35,14 +35,13 @@ combine_catch_data <- function(
     "DIS_MT",
     "RET_MT"
   )
-  em_cols <- cols_to_keep[cols_to_keep %in% colnames(em_catch_data)]
+
   em_late <- em_catch_data |>
-    dplyr::select(tidyr::all_of(em_cols)) |>
+    dplyr::rename_with(tolower) |>
     dplyr::rename(
-      TRIP_ID = EMTRIP_ID,
-      RYEAR = YEAR
+      trip_id = emtrip_id
     ) |>
-    dplyr::filter(RYEAR >= 2024) |>
+    dplyr::filter(year >= 2024) |>
     dplyr::mutate(
       sector = dplyr::case_when(
         sector == "Catch Shares EM" ~ "Catch Shares EM Low Review Rates",
@@ -52,20 +51,26 @@ combine_catch_data <- function(
         .default = sector
       )
     )
+
   em_early <- em_catch_data |>
-    dplyr::select(tidyr::all_of(em_cols)) |>
-    dplyr::filter(YEAR < 2024) |>
-    dplyr::rename(RYEAR = YEAR) |>
+    dplyr::filter(year < 2024) |>
     as.data.frame()
+
   cd_cols <- cols_to_keep[cols_to_keep %in% colnames(catch_data)]
   catch_data_select <- catch_data |>
     dplyr::select(tidyr::all_of(cd_cols)) |>
     dplyr::select(-YEAR) |>
+    dplyr::rename(year = RYEAR) |>
     dplyr::mutate(
       TRIP_ID = as.character(TRIP_ID),
       HAUL_ID = as.character(HAUL_ID)
     ) |>
-    dplyr::filter(sector != "Catch Shares EM")
+    dplyr::rename(
+      gear_to_use = gear
+    ) |>
+    dplyr::filter(sector != "Catch Shares EM") |>
+    dplyr::rename_with(tolower)
+
   catch_data_combined <- dplyr::bind_rows(
     tibble::tibble(catch_data_select),
     tibble::tibble(em_early),

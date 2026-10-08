@@ -58,12 +58,14 @@ format_gemm <- function(
             "LE Sablefish - Pot"
           ) ~
           "Pot",
+        sector == "Pink Shrimp" ~ "Shrimp Trawl",
         .default = "Bottom Trawl"
       ),
       gear_type = dplyr::case_when(
         gear == "Hook & Line" ~ "hook-and-line",
         gear == "Fixed Gear" ~ "hook-and-line",
         gear == "Pot" ~ "pot",
+        gear == "Shrimp Trawl" ~ "trawl",
         .default = "trawl"
       ),
       catch_shares = dplyr::case_when(

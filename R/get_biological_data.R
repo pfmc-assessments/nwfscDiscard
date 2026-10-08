@@ -151,6 +151,7 @@ get_biological_data <- function(
       ) |>
       dplyr::mutate(
         sex = nwfscSurvey::codify_sex(sex),
+        species_number = as.numeric(species_number),
         n_age = dplyr::case_when(
           !is.na(age) ~ frequency,
           .default = 0
@@ -228,6 +229,10 @@ get_biological_data <- function(
     #   Specimen Item table
     expansion_values <- data_and_weights |>
       dplyr::mutate(
+        exp_sp_wt = as.numeric(exp_sp_wt),
+        species_weight = as.numeric(species_weight),
+        hooks_sampled = as.numeric(hooks_sampled),
+        total_hooks = as.numeric(total_hooks),
         exp1 = dplyr::case_when(
           !is.na(species_number) | !is.na(bio_specimen_count) ~
             species_number / bio_specimen_count,

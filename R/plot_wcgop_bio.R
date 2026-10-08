@@ -78,7 +78,7 @@ plot_wcgop_bio <- function(
 
   p1 <- ggplot2::ggplot(
     data_plot,
-    ggplot2::aes(y = bio_plot, x = year, group = year)
+    ggplot2::aes(y = as.numeric(bio_plot), x = year, group = year)
   ) +
     ggplot2::geom_boxplot() +
     ggplot2::xlab("Year") +
